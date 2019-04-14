@@ -140,16 +140,14 @@ public class AnalisadorLexico {
                     devolucao = true;
                 }
             case 8:
-                // @TODO Verificar se isso funciona (HEXADECIMAL)
-                // Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
-                if (c >= '0' && c <= 'F') {
+                // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
+                if (Character.digit(c, 16) >= 0) {
                     lexema += c;
                     satual = 9;
                 }
             case 9:
-                // @TODO Verificar se isso funciona (HEXADECIMAL)
-                // Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
-                if (c >= '0' && c <= 'F') {
+                // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
+                if (Character.digit(c, 16) >= 0) {
                     lexema += c;
                     satual = sfinal;
                     devolve = false;
