@@ -1,284 +1,355 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
+import java.io.IOException;
 
 public class AnalisadorLexico {
-    TabelaSimbolo simbolos = new TabelaSimbolo();
-    String lexema = "";
-    public boolean devolve = false;
-    Simbolo simb;
-    boolean id = false, constante = false;
-    char c;
-    public static int linha = 1;
-    public boolean ehComentario = false;
-    public boolean ehEOF = false;
-    public static List validos = Arrays.asList(new Character[] { '@' }); // @TODO popular os validos
+   TabelaSimbolo simbolos = new TabelaSimbolo();
+   String lexema = "";
+   public boolean devolve = false;
+   Simbolo simb;
+   boolean id = false, constante = false;
+   char c;
+   public static int linha = 0;
+   public boolean ehComentario = false;
+   public boolean ehEOF = false;
+   public static List validos = Arrays.asList(new Character[] { '@' }); // @TODO popular os validos
 
-    Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
-        int satual = 0;
-        int sfinal = 1;
-        lexema = "";
-
-        while (satual != sfinal) {
-            c = (char) arquivo.read();
-            switch (satual) {
+   Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
+      int stateI = 0;
+      int stateF = 1;
+      lexema = "";
+   
+      while (stateI != stateF) {
+         switch (stateI) {
             case 0:
+               if(devolucao == false){
+                  c = (char)arquivo.read();
+               }
+               devolucao = false;
                 // Quebra de linha no arquivo
-                if (c == '\n' || c == 11) { // @TODO entender o char 11
-                    linha++;
-                } else if (c == '+' || c == '-' || c == '*' || c == '%' || c == '(' || c == ')' || c == '[' || c == ']'
+               if (c == '\n' || c == 11) { // @TODO entender o char 11
+                  linha++;
+               } else if (c == '+' || c == '-' || c == '*' || c == '%' || c == '(' || c == ')' || c == '[' || c == ']'
                         || c == '{' || c == '}' || c == ';') {
                     // Lê os tokens que possuem somente 1 caractere e vao para o estado final
                     // Nada é devolvido
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                } else if (c == '>') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               } else if (c == 32 || c == 11 || c == 8 || c == 13 || c == 9){
+                  // lendo "lixo" espaço em branco, enter tabs vertical e horizontal
+					   stateI = 0;
+               } else if (c == '/'){
+					   lexema += c;
+					   stateI = 14;
+				   } else if (c == '>') {
                     // Possui 2 variacoes: '>' e '>=', vai para o proximo estado para decidir qual o
                     // token
-                    lexema += c;
-                    satual = 2;
-                } else if (c == '<') {
+                  lexema += c;
+                  stateI = 2;
+               } else if (c == '<') {
                     // Possui 3 variacoes: '<', '<>' e '<=', vai para o proximo estado para decidir
                     // qual o token
-                    lexema += c;
-                    satual = 3;
-                } else if (c == '=') {
+                  lexema += c;
+                  stateI = 3;
+               } else if (c == '=') {
                     // Possui 2 variacoes: '=' e '==', vai para o proximo estado para decidir qual o
                     // token
-                    lexema += c;
-                    satual = 4;
-                } else if (c == '\'') {
+                  lexema += c;
+                  stateI = 4;
+               } else if (c == '\'') {
                     // Constante do tipo 'constante'
-                    lexema += c;
-                    satual = 11;
-                } else if (c == '"') {
+                  lexema += c;
+                  stateI = 11;
+               } else if (c == '"') {
                     // Constante do tipo "constante"
-                    lexema += c;
-                    satual = 12;
-                } else if (isLetra(c) || c == '.' || c == '_') {
+                  lexema += c;
+                  stateI = 12;
+               } else if (isLetra(c) || c == '.' || c == '_') {
                     // Criacao de um id ou token que possui lexema constituido por letras, '.' ou
                     // '_'
-                    lexema += c;
-                    satual = 5;
-                } else if (isDigito(c)) {
-                    if (c == '0') {
+                  lexema += c;
+                  stateI = 5;
+               } else if (isDigito(c)) {
+                  if (c == '0') {
                         // Constante do tipo 0x(hexa)(hexa)
-                        lexema += c;
-                        satual = 7;
-                    } else {
+                     lexema += c;
+                     stateI = 7;
+                  } else {
                         // Numero nao começado por 0
-                        lexema += c;
-                    }
+                     lexema += c;
+                     stateI = 14;
+                  }
+               } else if(c == 65535){
+                    stateI = stateF;
+                    lexema += c;
+                    ehEOF = true;
+                    devolve = false;
+                    arquivo.close();
+               } else {
+                	System.err.println(linha + ":Caractere invalido");
+					   System.exit(0);
                 }
+               break;
             case 2:
-                if (c == '=') {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                } else {
-                    satual = sfinal;
-                    devolve = true;
-                    devolucao = true;
-                }
+               c = (char)arquivo.read();
+               if (c == '=') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               } else {
+                  stateI = stateF;
+                  devolve = true;
+                  devolucao = true;
+               }
+               break;
             case 3:
-                if (c == '=') {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                } else if (c == '>') {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                } {
-                satual = sfinal;
-                this.devolve = true;
-                devolucao = true;
-            }
+               c = (char)arquivo.read();
+               if (c == '=') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               } else if (c == '>') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               } else {
+                  stateI = stateF;
+                  this.devolve = true;
+                  devolucao = true;
+               }
+               break;
             case 4:
-                if (c == '=') {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                } else {
-                    satual = sfinal;
-                    devolve = true;
-                    devolucao = true;
-                }
+               c = (char)arquivo.read();
+               if (c == '=') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               } else {
+                  stateI = stateF;
+                  devolve = true;
+                  devolucao = true;
+               }
+               break;
             case 5:
+               c = (char)arquivo.read();
                 // Continua no mesmo estado caso encontre '.' ou '_'
-                if (c == '.' || c == '_') {
-                    lexema += c;
-                } else if (isLetra(c) || isDigito(c)) {
+               if (c == '.' || c == '_') {
+                  lexema += c;
+               } else if (isLetra(c) || isDigito(c)) {
                     // Vai para o estado 6 caso seja digito ou letra (minimo um digito ou letra no
                     // id)
-                    lexema += c;
-                    satual = 6;
-                } else if (!isLetra(c) && !isDigito(c) && c != '.' && c != '_') {
-                    satual = sfinal;
-                    devolucao = true;
-                    devolve = true;
-                }
+                  lexema += c;
+                  stateI = 6;
+               } else if (!isLetra(c) && !isDigito(c) && c != '.' && c != '_') {
+                  stateI = stateF;
+                  devolucao = true;
+                  devolve = true;
+               }
+               break;
             case 6:
-                if (isDigito(c) || isLetra(c) || c == '.' || c == '_') {
-                    lexema += c;
-                } else {
-                    satual = sfinal;
-                    devolucao = true;
-                    devolve = true;
-                }
+               c = (char)arquivo.read();
+               if (isDigito(c) || isLetra(c) || c == '.' || c == '_') {
+                  lexema += c;
+               } else {
+                  stateI = stateF;
+                  devolucao = true;
+                  devolve = true;
+               }
+               break;
             case 7:
-                if (c == 'x' || c == 'X') {
-                    lexema += c;
-                    satual = 8;
-                } else if (isDigito(c)) {
-                    lexema += c;
-                    satual = 10;
-                } else {
-                    satual = sfinal;
-                    devolve = true;
-                    devolucao = true;
-                }
+               c = (char)arquivo.read();
+               if (c == 'x' || c == 'X') {
+                  lexema += c;
+                  stateI = 8;
+               } else if (isDigito(c)) {
+                  lexema += c;
+                  stateI = 10;
+               } else {
+                  stateI = stateF;
+                  devolve = true;
+                  devolucao = true;
+               }
+               break;
             case 8:
+               c = (char)arquivo.read();
                 // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
-                if (Character.digit(c, 16) >= 0) {
-                    lexema += c;
-                    satual = 9;
-                }
+               if (Character.digit(c, 16) >= 0) {
+                  lexema += c;
+                  stateI = 9;
+               }
+               break;
             case 9:
+               c = (char)arquivo.read();
                 // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
-                if (Character.digit(c, 16) >= 0) {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                }
+               if (Character.digit(c, 16) >= 0) {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               }
+               break;
             case 10:
-                if (isDigito(c)) {
-                    lexema += c;
-                } else {
-                    satual = sfinal;
-                    devolve = true;
-                    devolucao = true;
-                }
+               c = (char)arquivo.read();
+               if (isDigito(c)) {
+                  lexema += c;
+               } else {
+                  stateI = stateF;
+                  devolve = true;
+                  devolucao = true;
+               }
+               break;
             case 11:
-                if (isDigito(c) || isLetra(c)) {
-                    lexema += c;
-                } else if (c == '\'') {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                }
+               c = (char)arquivo.read();
+               if (isDigito(c) || isLetra(c)) {
+                  lexema += c;
+               } else if (c == '\'') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               }
+               break;
             case 12:
-                if (isDigito(c) || isLetra(c) || isValido(c)) {
-                    lexema += c;
-                    satual = 13;
-                }
+               c = (char)arquivo.read();
+               if (isDigito(c) || isLetra(c) || isValido(c)) {
+                  lexema += c;
+                  stateI = 13;
+               }
+               break;
             case 13:
-                if (isDigito(c) || isLetra(c) || isValido(c)) {
-                    lexema += c;
-                } else if (c == '"') {
-                    lexema += c;
-                    satual = sfinal;
-                    devolve = false;
-                }
+               c = (char)arquivo.read();
+               if (isDigito(c) || isLetra(c) || isValido(c)) {
+                  lexema += c;
+               } else if (c == '"') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               }
+               break;
             case 14:
-                if (c != '*') {
-                    satual = sfinal;
-                    devolucao = true;
-                    devolve = true;
-                } else {
-                    satual = 15;
-                }
+               c = (char)arquivo.read();
+               if (c != '*') {
+                  stateI = stateF;
+                  devolucao = true;
+                  devolve = true;
+               } else {
+                  stateI = 15;
+               }
+               break;
             case 15:
-                if (c == '*')
-                    satual = 16;
+               c = (char)arquivo.read();
+               if (c == '*')
+                  stateI = 16;
+               break;
             case 16:
-                if (c == '/')
-                    satual = 0;
-                else
-                    satual = 15;
-            }
-        }
-
-        if (!ehEOF) {
+               c = (char)arquivo.read();
+               if (c == '/') {
+                  stateI = 0;
+                  lexema = "";
+                  }
+               else
+                  stateI = 15;
+               break;
+         }
+      }
+   
+      if (!ehEOF) {
             // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
-            if (simbolos.tabela.get(lexema.toLowerCase()) != null) {
-                simb = simbolos.tabela.get(lexema.toLowerCase());
-            } else if (isLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
+         if (simbolos.tabela.get(lexema.toLowerCase()) != null) {
+            simb = simbolos.tabela.get(lexema.toLowerCase());
+         } else if (isLetra(lexema.charAt(0)) || lexema.charAt(0) == '.' || lexema.charAt(0) == '_') {
                 // Insere um novo ID na tabela de simbolos
-                simb = simbolos.inserirID(lexema);
-            } else if (isDigito(lexema.charAt(0))) {
-
-                if (lexema.charAt(0) == '0') {
-                    if (lexema.length() == 1) {
-                        simb = simbolos.inserirConst(lexema, "tipo_inteiro");
-                    } else {
+            simb = simbolos.inserirID(lexema);
+         } else if (isDigito(lexema.charAt(0))) {
+         
+            if (lexema.charAt(0) == '0') {
+               if (lexema.length() == 1) {
+                  simb = simbolos.inserirConst(lexema, "tipo_inteiro");
+               } else {
                         // Constante hexadecimal
-                        if (lexema.length() > 2 && (lexema.charAt(1) == 'X' || lexema.charAt(2) == 'x')) {
+                  if (lexema.length() > 2 && (lexema.charAt(1) == 'X' || lexema.charAt(2) == 'x')) {
                             // Constantes hexa sao do tipo 0xFF -> 4 caracteres
-                            if (lexema.length() == 4) {
+                     if (lexema.length() == 4) {
                                 // Verifica se os 2 ultimos digitos sao hexadecimais
-                                if (Character.digit(lexema.charAt(2), 16) >= 0
+                        if (Character.digit(lexema.charAt(2), 16) >= 0
                                         && Character.digit(lexema.charAt(3), 16) >= 0) {
-                                    simb = simbolos.inserirConst(lexema, "tipo_inteiro");
-                                } else {
-                                    printError();
-                                }
-                            }
+                           simb = simbolos.inserirConst(lexema, "tipo_inteiro");
                         } else {
+                           printError();
+                        }
+                     }
+                  } else {
                             // Verifica se possui algum caracter nao numerico
-                            for (int i = 0; i < lexema.length(); i++) {
-                                if (!isDigito(lexema.charAt(i))) {
-                                    printError();
-                                }
-                            }
-
-                            simb = simbolos.inserirConst(lexema, "tipo_inteiro");
-                        }
-
-                    }
-                } else {
-                    // Verifica se possui algum caracter nao numerico
-                    for (int i = 0; i < lexema.length(); i++) {
+                     for (int i = 0; i < lexema.length(); i++) {
                         if (!isDigito(lexema.charAt(i))) {
-                            printError();
+                           printError();
                         }
-                    }
-
-                    simb = simbolos.inserirConst(lexema, "tipo_inteiro");
-                }
-            } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
-                simb = simbolos.inserirConst(lexema, "tipo_string");
-            } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
-                simb = simbolos.inserirConst(lexema, "tipo_string");
+                     }
+                  
+                     simb = simbolos.inserirConst(lexema, "tipo_inteiro");
+                  }
+               
+               }
             } else {
-                printError();
+                    // Verifica se possui algum caracter nao numerico
+               for (int i = 0; i < lexema.length(); i++) {
+                  if (!isDigito(lexema.charAt(i))) {
+                     printError();
+                  }
+               }
+            
+               simb = simbolos.inserirConst(lexema, "tipo_inteiro");
             }
-        }
+         } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
+            simb = simbolos.inserirConst(lexema, "tipo_string");
+         } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
+            simb = simbolos.inserirConst(lexema, "tipo_string");
+         } else {
+            printError();
+         }
+      }
+   
+      return simb;
+   }
 
-        return simb;
-    }
+   public static boolean isLetra(char c) {
+      boolean ehLetra = false;
+      if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z')
+         ehLetra = true;
+      return ehLetra;
+   }
 
-    public static boolean isLetra(char c) {
-        boolean ehLetra = false;
-        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z')
-            ehLetra = true;
-        return ehLetra;
-    }
+   public static boolean isDigito(char c) {
+      boolean ehDigito = false;
+      if (c >= '0' && c <= '9')
+         ehDigito = true;
+      return ehDigito;
+   }
 
-    public static boolean isDigito(char c) {
-        boolean ehDigito = false;
-        if (c >= '0' && c <= '9')
-            ehDigito = true;
-        return ehDigito;
-    }
+   public static boolean isValido(char c) {
+      return validos.indexOf(c) >= 0;
+   }
 
-    public static boolean isValido(char c) {
-        return validos.indexOf(c) >= 0;
-    }
-
-    public static void printError() {
-        System.out.println("Erro na linha: " + linha + ". Lexema não reconhecido: " + lexema);
-        System.exit(1);
-    }
+   public void printError() {
+      System.out.println("Erro na linha: " + linha + ". Lexema nao reconhecido: " + lexema);
+      System.exit(1);
+   }
+   
+   public static void main(String[] args) throws Exception {
+      try (FileReader reader = new FileReader("exemplo1.l");
+             BufferedReader br = new BufferedReader(reader)) {
+         AnalisadorLexico aL = new AnalisadorLexico();
+         Simbolo simb = new Simbolo();
+         boolean dev = false;
+            // read line by line
+         String line;
+         do {
+            simb = aL.analisarLexema(aL.devolve,br);
+         } while ((line = br.readLine()) != null) 
+      
+      } catch (IOException e) {
+         System.err.format("IOException: %s%n", e);
+      }
+   }
 }
