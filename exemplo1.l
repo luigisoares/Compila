@@ -10,5 +10,5 @@ Const MAXITER=10;
   write("Digite seu nome: ");
   readln(nome);
   For n=1 to MAXITER do {
-    writeln(“Ola' ",nome);
+    writeln("Ola' ",nome);
   }

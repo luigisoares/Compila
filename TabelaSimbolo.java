@@ -44,7 +44,8 @@ public class TabelaSimbolo {
    public final byte BOOLEAN = 38;
 	
    public final byte ID = 39;
-   public final byte VALORCONST = 34; 
+   public final byte VALORCONST = 40; 
+    public final byte VIR = 41; 
 	
    public TabelaSimbolo() {
       tabela.put("if", new Simbolo(IF,"if", ++index));
@@ -84,6 +85,7 @@ public class TabelaSimbolo {
       tabela.put("*", new Simbolo(MUL,"*", ++index));
       tabela.put("%", new Simbolo(MOD,"%", ++index));
       tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++index));
+      tabela.put(",", new Simbolo(VIR,",", ++index));
    
    }
 	
@@ -95,7 +97,9 @@ public class TabelaSimbolo {
 	
    public Simbolo buscaSimbolo(String lexema){
       lexema = lexema.toLowerCase();
-      return tabela.get(lexema);
+      Simbolo aux = tabela.get(lexema);
+      return ((aux == null) ? "NULL" : ""+tabela.get(lexema));
+      
    }
 	
    public Simbolo inserirID(String lexema){
