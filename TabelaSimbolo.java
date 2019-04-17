@@ -2,7 +2,7 @@ import java.util.HashMap;
 public class TabelaSimbolo {
    public HashMap<String, Simbolo> tabela = new HashMap<>();
    public static int index = -1;
-	
+   
    public final byte IF = 0;
    public final byte INTEGER = 1;
    public final byte CHAR = 2; 
@@ -33,7 +33,7 @@ public class TabelaSimbolo {
    public final byte MAIORIG = 27;
    public final byte MENORIG = 28;
    public final byte DIFF = 29;
-   public final byte IGUALIGUAL = 30;
+   public final byte VIR = 30;
    public final byte ADD = 31;
    public final byte SUB = 32;
    public final byte DIV = 33;
@@ -45,7 +45,6 @@ public class TabelaSimbolo {
 	
    public final byte ID = 39;
    public final byte VALORCONST = 40; 
-    public final byte VIR = 41; 
 	
    public TabelaSimbolo() {
       tabela.put("if", new Simbolo(IF,"if", ++index));
@@ -78,15 +77,14 @@ public class TabelaSimbolo {
       tabela.put(">=", new Simbolo(MAIORIG,">=", ++index));
       tabela.put("<=", new Simbolo(MENORIG,"<=", ++index));
       tabela.put("<>", new Simbolo(DIFF,"<>", ++index));
-      tabela.put("==", new Simbolo(IGUALIGUAL,"==", ++index));
+      //tabela.put("==", new Simbolo(IGUALIGUAL,"==", ++index));
+      tabela.put(",", new Simbolo(VIR,",", ++index));
       tabela.put("+", new Simbolo(ADD,"+", ++index));
       tabela.put("-", new Simbolo(SUB,"-", ++index));
       tabela.put("/", new Simbolo(DIV,"/", ++index));
       tabela.put("*", new Simbolo(MUL,"*", ++index));
       tabela.put("%", new Simbolo(MOD,"%", ++index));
-      tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++index));
-      tabela.put(",", new Simbolo(VIR,",", ++index));
-   
+      tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++index));   
    }
 	
    public String pesquisa(String lexema){
@@ -98,7 +96,7 @@ public class TabelaSimbolo {
    public Simbolo buscaSimbolo(String lexema){
       lexema = lexema.toLowerCase();
       Simbolo aux = tabela.get(lexema);
-      return ((aux == null) ? "NULL" : ""+tabela.get(lexema));
+      return ((aux == null) ? null : tabela.get(lexema));
       
    }
 	
@@ -111,11 +109,10 @@ public class TabelaSimbolo {
 	
    public Simbolo inserirConst(String lexema, String tipo){
       lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(CONST, lexema, tipo, ++index);
+      Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
       tabela.put(lexema, simbolo);
       return tabela.get(lexema);
-   }
-   
+   }   
   
    public static void main(String[] args){
       TabelaSimbolo tbl = new TabelaSimbolo();

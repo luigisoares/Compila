@@ -1,4 +1,3 @@
-
 /* Exemplo de Programa na linguagem L */
 
 Var integer n;

@@ -23,9 +23,9 @@ public class AnalisadorLexico {
       int stateI = 0;
       int stateF = 1;
       lexema = "";
-   //int pos = 0;
-   //c = (char)arquivo.read();
-   //while(c != '\n' || c != '\r'){
+      //int pos = 0;
+      //c = (char)arquivo.read();
+      //while(c != '\n' || c != '\r'){
       while (stateI != stateF) {
          switch (stateI) {
             case 0:
@@ -38,14 +38,14 @@ public class AnalisadorLexico {
                if (c == '\n' || c == 11) { // @TODO entender o char 11
                   linha++;
                } else if (c == '+' || c == '-' || c == '*' || c == '%' || c == '(' || c == ')' || c == '[' || c == ']'
-                        || c == '{' || c == '}' || c == ';' || c == ',') {
-                  // LÃª os tokens que possuem somente 1 caractere e vao para o estado final
-                  // Nada Ã© devolvido
+                        || c == '{' || c == '}' || c == ';' || c == ',' || c == '=') {
+                  // LÃƒÂª os tokens que possuem somente 1 caractere e vao para o estado final
+                  // Nada ÃƒÂ© devolvido
                   lexema += c;
                   stateI = stateF;
                   devolve = false;
                } else if (c == 32 || c == 11 || c == 8 || c == 13 || c == 9){
-                  // lendo "lixo" espaÃ§o em branco, enter tabs vertical e horizontal
+                  // lendo "lixo" espaÃƒÂ§o em branco, enter tabs vertical e horizontal
                   stateI = 0;
                } else if (c == '/'){
                   lexema += c;
@@ -60,16 +60,18 @@ public class AnalisadorLexico {
                   // qual o token
                   lexema += c;
                   stateI = 3;
-               } else if (c == '=') {
+               } 
+               /*else if (c == '=') {
                   // Possui 2 variacoes: '=' e '==', vai para o proximo estado para decidir qual o
                   // token
                   lexema += c;
                   stateI = 4;
-               } else if (c == '\'') {
+               }*/
+               else if (c == '\'') {
                   // Constante do tipo 'constante'
                   lexema += c;
                   stateI = 11;
-               } else if (c == '"') {
+               } else if (c == '"' || c == '\u00E2' || c == 'â' || c == '\u20AC' || c == '€' || c == 'œ' || c == '\u0153') {
                   // Constante do tipo "constante"
                   lexema += c;
                   stateI = 12;
@@ -84,7 +86,7 @@ public class AnalisadorLexico {
                      lexema += c;
                      stateI = 7;
                   } else {
-                        // Numero nao comeÃ§ado por 0
+                        // Numero nao comeÃƒÂ§ado por 0
                      lexema += c;
                      stateI = 10;
                   }
@@ -131,7 +133,7 @@ public class AnalisadorLexico {
                }
                break;
             case 4:
-               c = (char)arquivo.read();
+               /*c = (char)arquivo.read();
                c1 = (char)arquivo2.read();
                if (c == '=') {
                   lexema += c;
@@ -141,7 +143,7 @@ public class AnalisadorLexico {
                   stateI = stateF;
                   devolve = true;
                   devolucao = true;
-               }
+               }*/
                break;
             case 5:
                c = (char)arquivo.read();
@@ -240,7 +242,7 @@ public class AnalisadorLexico {
                c1 = (char)arquivo2.read();
                if (isDigito(c) || isLetra(c) || isValido(c)) {
                   lexema += c;
-               } else if (c == '"') {
+               } else if (c == '"' || c == '\u00E2' || c == 'â' || c == '\u20AC' || c == '€' || c == 'œ' || c == '\u0153') {
                   lexema += c;
                   stateI = stateF;
                   devolve = false;
@@ -275,7 +277,7 @@ public class AnalisadorLexico {
                break;
          }
       }
-   
+      simb = null;
       if (!ehEOF) {
             // Seleciona o simbolo da tabela de simbolos caso ele ja esteja na tabela
          if (simbolos.tabela.get(lexema.toLowerCase()) != null) {
@@ -339,7 +341,7 @@ public class AnalisadorLexico {
       stateF = 1;
       lexema = "";
    }*/
-      int b = 0;
+   
       return simb;
    }
 
@@ -368,15 +370,17 @@ public class AnalisadorLexico {
 
    public static void main(String[] args) throws Exception {
       try (
-      FileReader reader = new FileReader("exemplo1.l");
+      FileReader reader = new FileReader("exemplo2.l");
       BufferedReader br = new BufferedReader(reader)) {
          AnalisadorLexico aL = new AnalisadorLexico();
-         FileReader reader2 = new FileReader("exemplo1.l");
+         FileReader reader2 = new FileReader("exemplo2.l");
          BufferedReader br2 = new BufferedReader(reader2);
          Simbolo simb = new Simbolo();
-         String line;
          while(br2.read() != 65535){
             simb = aL.analisarLexema(aL.devolve,br,br2);
+            if(simb != null){
+               System.out.println(simb.getLexema());
+            }     
          }
       } catch (IOException e) {
          System.err.format("IOException: %s%n", e);
