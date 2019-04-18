@@ -19,8 +19,8 @@ public class AnalisadorLexico {
    public boolean ehEOF = false;
    public static List validos = Arrays.asList(new Character[] { '@' }); // @TODO popular os validos
 
-   Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
-      BufferedReader arquivo2 = null;
+   Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo, BufferedReader arquivo2) throws Exception {
+      //BufferedReader arquivo2 = null;
       int stateI = 0;
       int stateF = 1;
       lexema = "";
@@ -70,8 +70,7 @@ public class AnalisadorLexico {
                // Constante do tipo 'constante'
                lexema += c;
                stateI = 11;
-            } else if (c == '"' || c == '\u00E2' || c == 'â' || c == '\u20AC' || c == '€' || c == 'œ'
-                  || c == '\u0153') {
+            } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                // Constante do tipo "constante"
                lexema += c;
                stateI = 12;
@@ -150,10 +149,9 @@ public class AnalisadorLexico {
                // id)
                lexema += c;
                stateI = 6;
-            } else if (!isLetra(c) && !isDigito(c) && c != '.' && c != '_') {
-               stateI = stateF;
-               devolucao = true;
-               devolve = true;
+            } else if (c != '.' && c != '_') {
+               stateI = 0;
+               lexema = "";
             }
             break;
          case 6:
@@ -236,8 +234,7 @@ public class AnalisadorLexico {
             c1 = (char) arquivo2.read();
             if (isDigito(c) || isLetra(c) || isValido(c)) {
                lexema += c;
-            } else if (c == '"' || c == '\u00E2' || c == 'â' || c == '\u20AC' || c == '€' || c == 'œ'
-                  || c == '\u0153') {
+            } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                lexema += c;
                stateI = stateF;
                devolve = false;
@@ -358,16 +355,16 @@ public class AnalisadorLexico {
    }
 
    public static void main(String[] args) throws Exception {
-      try (FileReader reader = new FileReader("exemplo2.l"); BufferedReader br = new BufferedReader(reader)) {
+      try (FileReader reader = new FileReader("exemplo1.l"); BufferedReader br = new BufferedReader(reader)) {
          AnalisadorLexico aL = new AnalisadorLexico();
-         FileReader reader2 = new FileReader("exemplo2.l");
+         FileReader reader2 = new FileReader("exemplo1.l");
          BufferedReader br2 = new BufferedReader(reader2);
-         Simbolo simb = new Simbolo();
+         Simbolo simbol = new Simbolo();
          while (br2.read() != 65535) {
-            simb = aL.analisarLexema(aL.devolve, br);
-            // simb = aL.analisarLexema(aL.devolve, br, br2);
-            if (simb != null) {
-               System.out.println(simb.getLexema());
+            //simb = aL.analisarLexema(aL.devolve, br);
+            simbol = aL.analisarLexema(aL.devolve, br, br2);
+            if (simbol != null) {
+               System.out.println(simbol.getToken()+" "+simbol.getLexema());
             }
          }
       } catch (IOException e) {

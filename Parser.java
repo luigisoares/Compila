@@ -3,210 +3,348 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 public class Parser {
-	AnalisadorLexico lexico;
-	TabelaSimbolo tabela;
-	Simbolo s;
-	BufferedReader arquivo;
+   AnalisadorLexico lexico;
+   TabelaSimbolo tabela;
+   Simbolo s;
+   BufferedReader arquivo;
+   BufferedReader arquivo2;
+   
+   Parser(BufferedReader arquivo,BufferedReader arquivo2) {
+      try {
+         this.arquivo = arquivo;
+         lexico = new AnalisadorLexico();
+         tabela = new TabelaSimbolo();
+         s = lexico.analisarLexema(lexico.devolve, arquivo, arquivo2);
+         if (s == null) { // comentario
+            s = lexico.analisarLexema(lexico.devolve, arquivo,arquivo2);
+         }
+      } catch (Exception e) {
+         System.out.print(e.getMessage());
+      }
+   }
 
-	Parser(BufferedReader arquivo) {
-		try {
-			this.arquivo = arquivo;
-			lexico = new AnalisadorLexico();
-			tabela = new TabelaSimbolo();
-			s = lexico.analisarLexema(lexico.devolve, arquivo);
-			if (s == null) { // comentario
-				s = lexico.analisarLexema(lexico.devolve, arquivo);
-			}
-		} catch (Exception e) {
-			System.out.print(e.getMessage());
-		}
-	}
+   void casaToken(byte token) {
+      try {
+         if (s != null) {
+            if (s.getToken() == token) {
+               s = lexico.analisarLexema(lexico.devolve, arquivo,arquivo2);
+            } else {
+               if (lexico.ehEOF) {
+                  System.err.println(lexico.linha + ":Fim de Arquivo nÃ£o esperado.");
+                  System.exit(0);
+               } else {
+                  System.err.println(lexico.linha + ":Token nÃ£o esperado: " + s.getLexema());
+                  System.exit(0);
+               }
+            }
+         }
+      } catch (Exception e) {
+         System.err.println("casaT" + e.toString());
+      }
+   }
 
-	void casaToken(byte token) {
-		try {
-			if (s != null) {
-				if (s.getToken() == token) {
-					s = lexico.analisarLexema(lexico.devolve, arquivo);
-				} else {
-					if (lexico.ehEOF) {
-						System.err.println(lexico.linha + ":Fim de Arquivo não esperado.");
-						System.exit(0);
-					} else {
-						System.err.println(lexico.linha + ":Token não esperado: " + s.getLexema());
-						System.exit(0);
-					}
-				}
-			}
-		} catch (Exception e) {
-			System.err.println("casaT" + e.toString());
-		}
-	}
+   void S() {
+      try {
+         if (s != null) {
+            D();
+            C();
+            if (!lexico.ehEOF) {
+               System.err.println(lexico.linha + ":Token nÃ£o esperado: " + s.getLexema());
+               System.exit(0);
+            }
+         }
+      } catch (Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-	void S() {
-		try {
-			if (s != null) {
-				D();
-				C();
-				if (!lexico.ehEOF) {
-					System.err.println(lexico.linha + ":Token não esperado: " + s.getLexema());
-					System.exit(0);
-				}
-			}
-		} catch (Exception e) {
-			System.err.println(e.toString());
-		}
-	}
+   void D() {
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.VAR) {
+            casaToken(tabela.VAR);
+            if(s.getToken() == tabela.INTEGER) {
+               casaToken(tabela.INTEGER);
+            } else {
+               casaToken(tabela.CHAR);
+            }
+         
+            casaToken(tabela.ID);
+            D1();
+            casaToken(tabela.PV);
+         } else {
+            casaToken(tabela.CONST);
+            casaToken(tabela.ID);
+            casaToken(tabela.ATT);
+            CONSTV();
+            casaToken(tabela.PV);
+         }
+      
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-	void D() {
-		try {
-			checkEOF();
+   void D1() {
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.VIR) {
+            casaToken(tabela.VIR);
+            casaToken(tabela.ID);
+            if(s.getToken() == tabela.ACOL) {
+               casaToken(tabela.ACOL);
+            	//casaToken(tabela.NUM); // @TODO Como pegar o numero
+               casaToken(tabela.FCOL);
+            }
+            if(s.getToken() == tabela.VIR) {
+               while(s.getToken() != tabela.PV) {
+                  casaToken(tabela.VIR);
+                  casaToken(tabela.ID);
+                  if(s.getToken() == tabela.ACOL) {
+                     casaToken(tabela.ACOL);
+                  	//casaToken(tabela.NUM); // @TODO Como pegar o numero
+                     casaToken(tabela.FCOL);
+                  }	
+               }
+            }
+         } else if(s.getToken() == tabela.ATT) {
+            casaToken(tabela.ATT);
+            if(s.getToken() == tabela.ADD) {
+               casaToken(tabela.ADD);
+            } else if(s.getToken() == tabela.SUB) {
+               casaToken(tabela.SUB);
+            }
+         
+         	//casaToken(tabela.NUM); // @TODO como pegar o numero
+         } else if(s.getToken() == tabela.ACOL) {
+            casaToken(tabela.ACOL);
+         	//casaToken(tabela.NUM); // @TODO Como pegar o numero
+            casaToken(tabela.FCOL);
+         }
+      
+      } catch (Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-			if(s.getToken() == tabela.VAR) {
-				casaToken(tabela.VAR);
-				if(s.getToken() == tabela.INTEGER) {
-					casaToken(tabela.INTEGER);
-				} else {
-					casaToken(tabela.CHAR);
-				}
+   void CONSTV() {
+      try {
+         /*checkEOF();
+      	if(s.getToken() == tabela.ZERO) { // @TODO Como pegar o 0 ?
+      		casaToken(tabela.ZERO);
+      		casaToken(tabela.X);	// @TODO Como pegar o X ?
+      		casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
+      		casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
+      	} else if(s.getToken() == tabela.CHAR) {
+            casaToken(tabela.CHAR);
+         } else if (s.getToken() == tabela.ASPAS) {
+            casaToken(tabela.ASPAS);
+            while(s.getToken() != tabela.ASPAS) {
+            	// @TODO O que fazer enquanto ele nÃ£o termina de ler a string ?
+            }
+            casaToken(tabela.ASPAS);
+         }*/
+      } catch(Exception e){
+         System.err.println(e.toString());
+      }
+   }
 
-				casaToken(tabela.ID);
-				D1();
-				casaToken(tabela.PV);
-			} else {
-				casaToken(tabela.CONST);
-				casaToken(tabela.ID);
-				casaToken(tabela.ATT);
-				CONSTV();
-				casaToken(tabela.PV);
-			}
+   void C() {
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.ID) {
+            casaToken(tabela.ID);
+            C1();
+            casaToken(tabela.PV);
+         } else if(s.getToken() == tabela.FOR) {
+            casaToken(tabela.FOR);
+            casaToken(tabela.ID);
+            casaToken(tabela.ATT);
+         	//casaToken(tabela.NUM); // @TODO Como pegar o num ?
+            casaToken(tabela.TO);
+         	//casaToken(tabela.NUM); // @TODO Como pegar o num ?
+            if(s.getToken() == tabela.STEP) {
+               casaToken(tabela.STEP);
+            	//if(s.getToken() == tabela.NUM) {
+            	//	casaToken(tabela.NUM); // @TODO Como pegar o num ?
+            	//}
+            }
+            C2();
+         } else if(s.getToken() == tabela.IF) {
+            casaToken(tabela.IF);
+            E();
+            casaToken(tabela.THEN);
+            C3();
+         	// @ TODO como pegar os vÃ¡rios comandos e depois o else ?
+         } else if(s.getToken() == tabela.PV) {
+            casaToken(tabela.PV);
+         } else if(s.getToken() == tabela.READLN) {
+            casaToken(tabela.READLN);
+            casaToken(tabela.APAR);
+            casaToken(tabela.ID);
+            casaToken(tabela.FPAR);
+         } else if(s.getToken() == tabela.WRITELN) {
+            casaToken(tabela.WRITELN);
+            casaToken(tabela.APAR);
+            E();
+         	// @TODO Como pegar vÃ¡rias expressÃµes ?
+            casaToken(tabela.FPAR);
+         } else if(s.getToken() == tabela.WRITE) {
+            casaToken(tabela.WRITE);
+            casaToken(tabela.APAR);
+            E();
+         	// @TODO Como pegar vÃ¡rias expressÃµes ?
+            casaToken(tabela.FPAR);
+         }
+      
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-		} catch(Exception e) {
-			System.err.println(e.toString());
-		}
-	}
+   void C1() {
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.ATT) {
+            casaToken(tabela.ATT);
+            E();
+         } else {
+            casaToken(tabela.ACOL);
+            E();
+            casaToken(tabela.FCOL);
+            casaToken(tabela.ATT);
+            E();
+         }
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-	void D1() {
-		try {
-			checkEOF();
+   void C2() {
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.ACHAVE) {
+            casaToken(tabela.ACHAVE);
+            C();
+            casaToken(tabela.FCHAVE);
+         } else {
+            C();
+         }
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-			if(s.getToken() == tabela.VIR) {
-				casaToken(tabela.VIR);
-				casaToken(tabela.ID);
-				if(s.getToken() == tabela.ACOL) {
-					casaToken(tabela.ACOL);
-					casaToken(tabela.NUM); // @TODO Como pegar o numero
-					casaToken(tabela.ACOL);
-				}
-				if(s.getToken() == tabela.VIR) {
-					while(s.getToken() != tabela.PV) {
-						casaToken(tabela.VIR);
-						casaToken(tabela.ID);
-						if(s.getToken() == tabela.ACOL) {
-							casaToken(tabela.ACOL);
-							casaToken(tabela.NUM); // @TODO Como pegar o numero
-							casaToken(tabela.ACOL);
-						}	
-					}
-				}
-			} else if(s.getToken() == tabela.ATT) {
-				casaToken(tabela.ATT);
-				if(s.getToken() == tabela.ADD) {
-					casaToken(tabela.ADD);
-				} else if(s.getToken() == tabela.SUB) {
-					casaToken(tabela.SUB);
-				}
+   void C3() {
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.ACHAVE) {
+            casaToken(tabela.ACHAVE);
+            C();
+            casaToken(tabela.FCHAVE);
+            if(s.getToken() == tabela.ELSE){
+               casaToken(tabela.ELSE);
+               casaToken(tabela.ACHAVE);
+               C();
+               casaToken(tabela.FCHAVE);
+            }
+         } else {
+            C();
+            if(s.getToken() == tabela.ELSE){
+               C();
+            }
+         }
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
+		
+   void E(){
+      try {
+         checkEOF();
+      
+         E1();
+         if(s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG ||
+            s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT ) {
+            E1();
+         }
+      	
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }	
+		
+   void E1(){
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.ADD) {
+            casaToken(tabela.ADD);
+         } else if(s.getToken() == tabela.SUB) {
+            casaToken(tabela.SUB);
+         }
+      
+         E2();
+         if(s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
+            E2();
+         }
+      	
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }	
 
-				casaToken(tabela.NUM); // @TODO como pegar o numero
-			} else if(s.getToken() == tabela.ACOL) {
-				casaToken(tabela.ACOL);
-				casaToken(tabela.NUM); // @TODO Como pegar o numero
-				casaToken(tabela.FCHAVE);
-			}
+   void E2(){
+      try {
+         checkEOF();
+      
+         F();
+         if(s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
+            F();
+         }
+      
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-		} catch (Exception e) {
-			System.err.println(e.toString());
-		}
-	}
+   void F(){
+      try {
+         checkEOF();
+      
+         if(s.getToken() == tabela.APAR){
+            casaToken(tabela.APAR);
+            E();
+            casaToken(tabela.FPAR);
+         } else if(s.getToken() == tabela.NOT){
+            casaToken(tabela.NOT);
+            F();
+         } 
+         //else if(s.getToken() == tabela.NUM){
+         	//casaToken(tabela.NUM);
+         	// @TODO Como pegar o numero
+         //} 
+         else {
+            casaToken(tabela.ID);
+         	// @TODO Como pegar o numero
+         }
+      
+      } catch(Exception e) {
+         System.err.println(e.toString());
+      }
+   }
 
-	void CONSTV() {
-		try {
-			checkEOF();
-			if(s.getToken() == tabela.ZERO) { // @TODO Como pegar o 0 ?
-				casaToken(tabela.ZERO);
-				casaToken(tabela.X);	// @TODO Como pegar o X ?
-				casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
-				casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
-			} else if(s.getToken() == tabela.CHAR) {
-				casaToken(tabela.CHAR);
-			} else if (s.getToken() == tabela.ASPAS) {
-				casaToken(tabela.ASPAS);
-				while(s.getToken() != tabela.ASPAS) {
-					// @TODO O que fazer enquanto ele não termina de ler a string ?
-				}
-				casaToken(tabela.ASPAS);
-			}
-		} catch(Exception e){
-			System.err.println(e.toString());
-		}
-	}
-
-	void C() {
-		try {
-			checkEOF();
-
-			if(s.getToken() == tabela.ID) {
-				casaToken(tabela.ID);
-				C1();
-				casaToken(tabela.PV);
-			} else if(s.getToken() == tabela.FOR) {
-				casaToken(tabela.FOR);
-				casaToken(tabela.ID);
-				casaToken(tabela.ATT);
-				casaToken(tabela.NUM); // @TODO Como pegar o num ?
-				casaToken(tabela.TO);
-				casaToken(tabela.NUM); // @TODO Como pegar o num ?
-				if(s.getToken() == tabela.STEP) {
-					casaToken(tabela.STEP);
-				}
-				casaToken(tabela.NUM); // @TODO Como pegar o num ?
-				C2();
-			} else if(s.getToken() == tabela.IF) {
-				casaToken(tabela.IF);
-				E();
-				casaToken(tabela.THEN);
-				C();
-				// @ TODO como pegar os vários comandos e depois o else ?
-			} else if(s.getToken() == tabela.PV) {
-				casaToken(tabela.PV);
-			} else if(s.getToken() == tabela.READLN) {
-				casaToken(tabela.READLN);
-				casaToken(tabela.APAR);
-				casaToken(tabela.ID);
-				casaToken(tabela.FPAR);
-			} else if(s.getToken() == tabela.WRITELN) {
-				casaToken(tabela.WRITELN);
-				casaToken(tabela.APAR);
-				E();
-				// @TODO Como pegar várias expressões ?
-				casaToken(tabela.FPAR);
-			} else if(s.getToken() == tabela.WRITE) {
-				casaToken(tabela.WRITE);
-				casaToken(tabela.APAR);
-				E();
-				// @TODO Como pegar várias expressões ?
-				casaToken(tabela.FPAR);
-			}
-
-		} catch(Exception e) {
-			System.err.println(e.toString());
-		}
-	}
-
-	void checkEOF() {
-		if (lexico.ehEOF) {
-			System.err.println(lexico.linha + ":Fim de arquivo não esperado.");
-			System.exit(0);
-		}
-	}
+   void checkEOF() {
+      if (lexico.ehEOF) {
+         System.err.println(lexico.linha + ":Fim de arquivo nÃ£o esperado.");
+         System.exit(0);
+      }
+   }
 
 }
