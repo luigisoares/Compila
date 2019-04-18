@@ -4,11 +4,8 @@ public class Simbolo {
 	//private String classe = "";
    private String tipo = "";
    private int endereco;
-	
-   public Simbolo(){
-   	
-   }
-
+   
+   
    public Simbolo(byte token, String lexema, int endereco){
       this.lexema = lexema;
       this.token = token;

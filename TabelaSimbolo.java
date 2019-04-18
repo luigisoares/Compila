@@ -42,9 +42,11 @@ public class TabelaSimbolo {
    public final byte TRUE = 36;
    public final byte FALSE = 37;
    public final byte BOOLEAN = 38;
+   public final byte ASPAS = 39;
+   public final byte APOST = 40;
 	
-   public final byte ID = 39;
-   public final byte VALORCONST = 40; 
+   public final byte ID = 41;
+   public final byte VALORCONST = 42; 
 	
    public TabelaSimbolo() {
       tabela.put("if", new Simbolo(IF,"if", ++index));
@@ -85,6 +87,8 @@ public class TabelaSimbolo {
       tabela.put("*", new Simbolo(MUL,"*", ++index));
       tabela.put("%", new Simbolo(MOD,"%", ++index));
       tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++index));   
+      tabela.put("'", new Simbolo(APOST,"'", ++index));   
+      tabela.put("\"", new Simbolo(ASPAS,"\"", ++index));   
    }
 	
    public String pesquisa(String lexema){
