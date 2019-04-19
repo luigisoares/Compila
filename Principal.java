@@ -12,8 +12,9 @@ public class Principal {
 		String file = "";
 		try{
 			do{
-				System.out.print("Digite o nome do arquivo: ");
-				file = in.readLine();
+				// System.out.print("Digite o nome do arquivo: ");
+				// file = in.readLine();
+				file = "exemplo1.l";
 				if(file.length() > 0){
 					if(file.charAt(file.length()-2) != '.' && file.charAt(file.length() - 1) != 'l' && file.charAt(file.length() - 1) != 'L'){
 						System.out.print("Digite o nome do arquivo: ");
@@ -33,7 +34,7 @@ public class Principal {
 		try{
 			lerCaminho();
 			p = new Parser(arquivo);
-         p.S();
+         	p.S();
 			System.out.println("Finalizado - sem erros.");
 		}catch (Exception e) {
 			System.err.println("Erro: " + e.getMessage());
