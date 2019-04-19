@@ -17,7 +17,7 @@ public class AnalisadorLexico {
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
-   public static List validos = Arrays.asList(new Character[] { '@' }); // @TODO popular os validos
+   public static List validos = Arrays.asList(new Character[] { '_' },new Character[] { '.' },new Character[] { ',' },new Character[] { ';' },new Character[] { '&' },new Character[] { ':' },new Character[] { '(' },new Character[] { ')' },new Character[] { '[' },new Character[] { ']' },new Character[] { '{' },new Character[] { '}' },new Character[] { '+' },new Character[] { '-' },new Character[] { '*' },new Character[] { '\'' },new Character[] { '/' },new Character[] { '%' },new Character[] { '^' },new Character[] { '@' },new Character[] { '!' },new Character[] { '?' },new Character[] { '>' },new Character[] { '<' },new Character[] { '=' }); // @TODO popular os validos
 
    Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
       //BufferedReader arquivo2 = null;
