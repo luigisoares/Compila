@@ -32,8 +32,7 @@ public class Parser {
 						System.err.println((lexico.linha + 1) + ":Fim de Arquivo nao esperado.");
 						System.exit(0);
 					} else {
-						System.err.println((lexico.linha + 1) + ":Token nao esperado: " + s.getLexema());
-						System.exit(0);
+						tokenInesperado();
 					}
 				}
 			}
@@ -45,8 +44,12 @@ public class Parser {
 	void S() {
 		try {
 			if (s != null) {
-				D();
-				C();
+				do {
+					D();
+				} while (ehDeclaracao());
+				do {
+					C();
+				} while (ehComando());
 				if (lexico.ehEOF) {
 					System.err.println((lexico.linha + 1) + ":Token nao esperado: " + s.getLexema());
 					System.exit(0);
@@ -60,6 +63,7 @@ public class Parser {
 	void D() {
 		try {
 			checkEOF();
+			System.out.println("D()");
 			if (s.getToken() == tabela.VAR) {
 				casaToken(tabela.VAR);
 				if (s.getToken() == tabela.INTEGER) {
@@ -78,7 +82,6 @@ public class Parser {
 				CONSTV();
 				casaToken(tabela.PV);
 			}
-
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}
@@ -153,6 +156,7 @@ public class Parser {
 	void C() {
 		try {
 			checkEOF();
+			System.out.println("C()");
 			if (s.getToken() == tabela.ID) {
 				casaToken(tabela.ID);
 				C1();
@@ -163,13 +167,18 @@ public class Parser {
 				casaToken(tabela.ATT);
 				casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
 				casaToken(tabela.TO);
-				casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
+				if(s.getToken() == tabela.ID) {
+					casaToken(tabela.ID);
+				} else {
+					casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
+				}
 				if (s.getToken() == tabela.STEP) {
 					casaToken(tabela.STEP);
 					if (s.getToken() == tabela.VALORCONST) {
 						casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
 					}
 				}
+				casaToken(tabela.DO);
 				C2();
 			} else if (s.getToken() == tabela.IF) {
 				casaToken(tabela.IF);
@@ -196,6 +205,8 @@ public class Parser {
 				E();
 				// @TODO Como pegar vÃ¡rias expressÃµes ?
 				casaToken(tabela.FPAR);
+			} else {
+				tokenInesperado();
 			}
 
 		} catch (Exception e) {
@@ -228,7 +239,9 @@ public class Parser {
 
 			if (s.getToken() == tabela.ACHAVE) {
 				casaToken(tabela.ACHAVE);
-				C();
+				while(ehComando()) {
+					C();
+				}	
 				casaToken(tabela.FCHAVE);
 			} else {
 				C();
@@ -341,6 +354,21 @@ public class Parser {
 			System.err.println(lexico.linha + ":Fim de arquivo nao esperado.");
 			System.exit(0);
 		}
+	}
+
+	void tokenInesperado() {
+		System.err.println((lexico.linha + 1) + ":Token nao esperado: " + s.getLexema());
+		System.exit(0);
+	}
+
+	boolean ehDeclaracao() {
+		return (s.getToken() == tabela.VAR || s.getToken() == tabela.CONST);
+	}
+
+	boolean ehComando() {
+		return (s.getToken() == tabela.ID || s.getToken() == tabela.FOR || s.getToken() == tabela.IF
+				|| s.getToken() == tabela.PV || s.getToken() == tabela.READLN || s.getToken() == tabela.WRITELN
+				|| s.getToken() == tabela.WRITE);
 	}
 
 }
