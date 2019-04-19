@@ -17,5 +17,5 @@ Const MAXITER=10;
   for i = 3 to 10 do {
     temp = n1;
     n1 = n2;
-    n2 = n3 + temp;
+    n2 = n3 + temp * 3 / ( 2 + x * 3 - (4 + 2 - 1));
   }

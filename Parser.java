@@ -277,9 +277,10 @@ public class Parser {
 		try {
 			checkEOF();
 			E1();
-			if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
+			while (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
 					|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT
-					|| s.getToken() == tabela.ADD || s.getToken() == tabela.SUB) {
+					|| s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.MUL
+					|| s.getToken() == tabela.DIV || s.getToken() == tabela.VALORCONST || s.getToken() == tabela.APAR) {
 				E1();
 			}
 
@@ -312,7 +313,6 @@ public class Parser {
 	void E2() {
 		try {
 			checkEOF();
-
 			F();
 			if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
 					|| s.getToken() == tabela.AND) {
@@ -337,9 +337,13 @@ public class Parser {
 				F();
 			} else if (s.getToken() == tabela.VALORCONST) {
 				casaToken(tabela.VALORCONST);
-			} else if(s.getToken() == tabela.ID){
+			} else if (s.getToken() == tabela.ID) {
 				casaToken(tabela.ID);
 				// @TODO Como pegar o numero
+			} else if (s.getToken() == tabela.MUL) {
+				casaToken(tabela.MUL);
+			} else if (s.getToken() == tabela.DIV) {
+				casaToken(tabela.DIV);
 			}
 
 		} catch (Exception e) {
