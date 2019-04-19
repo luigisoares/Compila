@@ -63,7 +63,6 @@ public class Parser {
 	void D() {
 		try {
 			checkEOF();
-			System.out.println("D()");
 			if (s.getToken() == tabela.VAR) {
 				casaToken(tabela.VAR);
 				if (s.getToken() == tabela.INTEGER) {
@@ -156,7 +155,6 @@ public class Parser {
 	void C() {
 		try {
 			checkEOF();
-			System.out.println("C()");
 			if (s.getToken() == tabela.ID) {
 				casaToken(tabela.ID);
 				C1();
@@ -167,7 +165,7 @@ public class Parser {
 				casaToken(tabela.ATT);
 				casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
 				casaToken(tabela.TO);
-				if(s.getToken() == tabela.ID) {
+				if (s.getToken() == tabela.ID) {
 					casaToken(tabela.ID);
 				} else {
 					casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
@@ -217,7 +215,6 @@ public class Parser {
 	void C1() {
 		try {
 			checkEOF();
-
 			if (s.getToken() == tabela.ATT) {
 				casaToken(tabela.ATT);
 				E();
@@ -239,9 +236,9 @@ public class Parser {
 
 			if (s.getToken() == tabela.ACHAVE) {
 				casaToken(tabela.ACHAVE);
-				while(ehComando()) {
+				while (ehComando()) {
 					C();
-				}	
+				}
 				casaToken(tabela.FCHAVE);
 			} else {
 				C();
@@ -279,14 +276,16 @@ public class Parser {
 	void E() {
 		try {
 			checkEOF();
-
 			E1();
 			if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
-					|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
+					|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT
+					|| s.getToken() == tabela.ADD || s.getToken() == tabela.SUB) {
 				E1();
 			}
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			System.err.println(e.toString());
 		}
 	}
@@ -294,7 +293,6 @@ public class Parser {
 	void E1() {
 		try {
 			checkEOF();
-
 			if (s.getToken() == tabela.ADD) {
 				casaToken(tabela.ADD);
 			} else if (s.getToken() == tabela.SUB) {
@@ -339,7 +337,7 @@ public class Parser {
 				F();
 			} else if (s.getToken() == tabela.VALORCONST) {
 				casaToken(tabela.VALORCONST);
-			} else {
+			} else if(s.getToken() == tabela.ID){
 				casaToken(tabela.ID);
 				// @TODO Como pegar o numero
 			}
