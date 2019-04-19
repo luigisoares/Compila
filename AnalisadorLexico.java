@@ -280,7 +280,7 @@ public class AnalisadorLexico {
                   simb = simbolos.inserirConst(lexema, "tipo_inteiro");
                } else {
                   // Constante hexadecimal
-                  if (lexema.length() > 2 && (lexema.charAt(1) == 'X' || lexema.charAt(2) == 'x')) {
+                  if (lexema.length() > 2 && (lexema.charAt(1) == 'X' || lexema.charAt(1) == 'x')) {
                      // Constantes hexa sao do tipo 0xFF -> 4 caracteres
                      if (lexema.length() == 4) {
                         // Verifica se os 2 ultimos digitos sao hexadecimais
