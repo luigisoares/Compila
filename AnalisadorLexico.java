@@ -131,11 +131,11 @@ public class AnalisadorLexico {
                }
                break;
             case 4:
-            /*
-             * c = (char)arquivo.read(); c1 = (char)arquivo2.read(); if (c == '=') { lexema
-             * += c; stateI = stateF; devolve = false; } else { stateI = stateF; devolve =
-             * true; devolucao = true; }
-             */
+               if (c == '\'') {
+                  lexema += c;
+                  stateI = stateF;
+                  devolve = false;
+               }
                break;
             case 5:
                c = (char) arquivo.read();
@@ -215,11 +215,8 @@ public class AnalisadorLexico {
             
                if (isDigito(c) || isLetra(c)) {
                   lexema += c;
-               } else if (c == '\'') {
-                  lexema += c;
-                  stateI = stateF;
-                  devolve = false;
-               }
+                  stateI = 4;
+               } 
                break;
             case 12:
                c = (char) arquivo.read();
