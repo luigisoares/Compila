@@ -32,7 +32,8 @@ public class Principal {
 	public static void main(String[] args) throws Exception{
 		try{
 			lerCaminho();
-			p = new Parser(arquivo,arquivo);
+			p = new Parser(arquivo);
+         p.S();
 			System.out.println("Finalizado - sem erros.");
 		}catch (Exception e) {
 			System.err.println("Erro: " + e.getMessage());

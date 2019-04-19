@@ -7,16 +7,15 @@ public class Parser {
    TabelaSimbolo tabela;
    Simbolo s;
    BufferedReader arquivo;
-   BufferedReader arquivo2;
    
-   Parser(BufferedReader arquivo,BufferedReader arquivo2) {
+   Parser(BufferedReader arquivo) {
       try {
          this.arquivo = arquivo;
          lexico = new AnalisadorLexico();
          tabela = new TabelaSimbolo();
-         s = lexico.analisarLexema(lexico.devolve, arquivo, arquivo2);
+         s = lexico.analisarLexema(lexico.devolve, arquivo);
          if (s == null) { // comentario
-            s = lexico.analisarLexema(lexico.devolve, arquivo,arquivo2);
+            s = lexico.analisarLexema(lexico.devolve, arquivo);
          }
       } catch (Exception e) {
          System.out.print(e.getMessage());
@@ -27,13 +26,13 @@ public class Parser {
       try {
          if (s != null) {
             if (s.getToken() == token) {
-               s = lexico.analisarLexema(lexico.devolve, arquivo,arquivo2);
+               s = lexico.analisarLexema(lexico.devolve, arquivo);
             } else {
                if (lexico.ehEOF) {
-                  System.err.println(lexico.linha + ":Fim de Arquivo nÃ£o esperado.");
+                  System.err.println(lexico.linha + ":Fim de Arquivo nao esperado.");
                   System.exit(0);
                } else {
-                  System.err.println(lexico.linha + ":Token nÃ£o esperado: " + s.getLexema());
+                  System.err.println(lexico.linha + ":Token nao esperado: " + s.getLexema());
                   System.exit(0);
                }
             }
@@ -48,8 +47,8 @@ public class Parser {
          if (s != null) {
             D();
             C();
-            if (!lexico.ehEOF) {
-               System.err.println(lexico.linha + ":Token nÃ£o esperado: " + s.getLexema());
+            if (lexico.ehEOF) {
+               System.err.println(lexico.linha + ":Token nao esperado: " + s.getLexema());
                System.exit(0);
             }
          }
@@ -131,21 +130,21 @@ public class Parser {
 
    void CONSTV() {
       try {
-         /*checkEOF();
-      	if(s.getToken() == tabela.ZERO) { // @TODO Como pegar o 0 ?
-      		casaToken(tabela.ZERO);
-      		casaToken(tabela.X);	// @TODO Como pegar o X ?
-      		casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
-      		casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
+         checkEOF();
+      	if(s.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
+      		casaToken(tabela.VALORCONST);
+      		// casaToken(tabela.X);	// @TODO Como pegar o X ?
+      		// casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
+      		// casaToken(tabela.HEXA);	// @TODO Como pegar os hexa ?
       	} else if(s.getToken() == tabela.CHAR) {
             casaToken(tabela.CHAR);
          } else if (s.getToken() == tabela.ASPAS) {
             casaToken(tabela.ASPAS);
             while(s.getToken() != tabela.ASPAS) {
-            	// @TODO O que fazer enquanto ele nÃ£o termina de ler a string ?
+
             }
             casaToken(tabela.ASPAS);
-         }*/
+         }
       } catch(Exception e){
          System.err.println(e.toString());
       }
@@ -163,14 +162,14 @@ public class Parser {
             casaToken(tabela.FOR);
             casaToken(tabela.ID);
             casaToken(tabela.ATT);
-         	//casaToken(tabela.NUM); // @TODO Como pegar o num ?
+         	casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
             casaToken(tabela.TO);
-         	//casaToken(tabela.NUM); // @TODO Como pegar o num ?
+         	casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
             if(s.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
-            	//if(s.getToken() == tabela.NUM) {
-            	//	casaToken(tabela.NUM); // @TODO Como pegar o num ?
-            	//}
+            	if(s.getToken() == tabela.VALORCONST) {
+            		casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
+            	}
             }
             C2();
          } else if(s.getToken() == tabela.IF) {
@@ -325,11 +324,10 @@ public class Parser {
          } else if(s.getToken() == tabela.NOT){
             casaToken(tabela.NOT);
             F();
+         } else if(s.getToken() == tabela.VALORCONST){
+         	casaToken(tabela.VALORCONST);
+         	//@TODO Como pegar o numero
          } 
-         //else if(s.getToken() == tabela.NUM){
-         	//casaToken(tabela.NUM);
-         	// @TODO Como pegar o numero
-         //} 
          else {
             casaToken(tabela.ID);
          	// @TODO Como pegar o numero
@@ -342,7 +340,7 @@ public class Parser {
 
    void checkEOF() {
       if (lexico.ehEOF) {
-         System.err.println(lexico.linha + ":Fim de arquivo nÃ£o esperado.");
+         System.err.println(lexico.linha + ":Fim de arquivo nao esperado.");
          System.exit(0);
       }
    }

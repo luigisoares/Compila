@@ -118,7 +118,7 @@ public class TabelaSimbolo {
       return tabela.get(lexema);
    }   
   
-   public static void main(String[] args){
+   /*public static void main(String[] args){
       TabelaSimbolo tbl = new TabelaSimbolo();
       System.out.println(tbl.pesquisa("if"));
       System.out.println(tbl.pesquisa("FI"));
@@ -131,5 +131,5 @@ public class TabelaSimbolo {
       System.out.println(tbl.pesquisa("boolean"));
       System.out.println(tbl.pesquisa("teste"));
       
-   }
+   }*/
 }
