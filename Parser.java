@@ -176,7 +176,7 @@ public class Parser {
             E();
             casaToken(tabela.THEN);
             C3();
-         	// @ TODO como pegar os vÃ¡rios comandos e depois o else ?
+            casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.READLN) {
@@ -184,6 +184,7 @@ public class Parser {
             casaToken(tabela.APAR);
             casaToken(tabela.ID);
             casaToken(tabela.FPAR);
+            casaToken(tabela.PV);
          } else if (s.getToken() == tabela.WRITELN) {
             casaToken(tabela.WRITELN);
             casaToken(tabela.APAR);
@@ -193,6 +194,7 @@ public class Parser {
                E();
             }
             casaToken(tabela.FPAR);
+            casaToken(tabela.PV);
          } else if (s.getToken() == tabela.WRITE) {
             casaToken(tabela.WRITE);
             casaToken(tabela.APAR);
@@ -202,6 +204,7 @@ public class Parser {
                E();
             }
             casaToken(tabela.FPAR);
+            casaToken(tabela.PV);
          } else {
             tokenInesperado();
          }
@@ -300,6 +303,13 @@ public class Parser {
       
          E2();
          if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
+            if (s.getToken() == tabela.ADD) {
+               casaToken(tabela.ADD);
+            } else if (s.getToken() == tabela.SUB) {
+               casaToken(tabela.SUB);
+            } else {
+               casaToken(tabela.OR);
+            }
             E2();
          }
       
@@ -311,7 +321,7 @@ public class Parser {
    void E2() {
       try {
          checkEOF();
-      
+
          F();
          if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
          		|| s.getToken() == tabela.AND) {
@@ -338,7 +348,6 @@ public class Parser {
             casaToken(tabela.VALORCONST);
          } else {
             casaToken(tabela.ID);
-         	// @TODO Como pegar o numero
          }
       
       } catch (Exception e) {

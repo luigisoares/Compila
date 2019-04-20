@@ -10,7 +10,13 @@ MAXITER=0x04;
 
   write("Digite seu nome: ");
   readln(nome);
-  For n=1 to MAXITER do {
+  For n=1 to MAXITER step do {
     writeln("Ola' ", oa, "abc");
     write("Ola' ", oa, "abc");
+  };
+
+  if 4 or 5 then {
+    write("teste");
+  } else {
+    readln(nome);
   }
