@@ -131,10 +131,15 @@ public class AnalisadorLexico {
                }
                break;
             case 4:
+               c = (char) arquivo.read();
                if (c == '\'') {
                   lexema += c;
                   stateI = stateF;
                   devolve = false;
+               } else {
+                  stateI = stateF;
+                  this.devolve = true;
+                  devolucao = true;
                }
                break;
             case 5:

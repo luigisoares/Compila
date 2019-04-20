@@ -11,5 +11,6 @@ MAXITER=0x04;
   write("Digite seu nome: ");
   readln(nome);
   For n=1 to MAXITER do {
-    writeln("Ola' ");
+    writeln("Ola' ", oa, "abc");
+    write("Ola' ", oa, "abc");
   }

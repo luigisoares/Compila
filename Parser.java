@@ -63,7 +63,6 @@ public class Parser {
    void D() {
       try {
          checkEOF();
-         System.out.println("D()");
          if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
             if (s.getToken() == tabela.INTEGER) {
@@ -90,7 +89,6 @@ public class Parser {
    void D1() {
       try {
          checkEOF();
-      
          if (s.getToken() == tabela.VIR) {
             casaToken(tabela.VIR);
             casaToken(tabela.ID);
@@ -156,7 +154,6 @@ public class Parser {
    void C() {
       try {
          checkEOF();
-         System.out.println("C()");
          if (s.getToken() == tabela.ID) {
             casaToken(tabela.ID);
             C1();
@@ -197,13 +194,19 @@ public class Parser {
             casaToken(tabela.WRITELN);
             casaToken(tabela.APAR);
             E();
-         	// @TODO Como pegar vÃ¡rias expressÃµes ?
+            while(s.getToken() == tabela.VIR) {
+               casaToken(tabela.VIR);
+               E();
+            }
             casaToken(tabela.FPAR);
          } else if (s.getToken() == tabela.WRITE) {
             casaToken(tabela.WRITE);
             casaToken(tabela.APAR);
             E();
-         	// @TODO Como pegar vÃ¡rias expressÃµes ?
+            while(s.getToken() == tabela.VIR) {
+               casaToken(tabela.VIR);
+               E();
+            }
             casaToken(tabela.FPAR);
          } else {
             tokenInesperado();
