@@ -316,6 +316,14 @@ public class AnalisadorLexico {
          } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
             simb = simbolos.inserirConst(lexema, "tipo_string");
          } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
+            String temp = "";
+            for(int i = 0; i < lexema.length(); i++){
+               if(i == lexema.length() - 1) {
+                  temp += '$';
+               }
+               temp += lexema.charAt(i);
+            }
+            lexema = temp;
             simb = simbolos.inserirConst(lexema, "tipo_string");
          } else {
             printError();

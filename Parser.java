@@ -48,10 +48,6 @@ public class Parser {
             do {
                C();
             } while (ehComando());
-            if (lexico.ehEOF) {
-               System.err.println((lexico.linha + 1) + ":Token nao esperado: " + s.getLexema());
-               System.exit(0);
-            }
          }
       } catch (Exception e) {
          System.err.println(e.toString());
@@ -363,13 +359,13 @@ public class Parser {
    }
 
    boolean ehDeclaracao() {
-      return (s.getToken() == tabela.VAR || s.getToken() == tabela.CONST);
+      return (s != null && (s.getToken() == tabela.VAR || s.getToken() == tabela.CONST));
    }
 
    boolean ehComando() {
-      return (s.getToken() == tabela.ID || s.getToken() == tabela.FOR || s.getToken() == tabela.IF
+      return (s != null && (s.getToken() == tabela.ID || s.getToken() == tabela.FOR || s.getToken() == tabela.IF
          	|| s.getToken() == tabela.PV || s.getToken() == tabela.READLN || s.getToken() == tabela.WRITELN
-         	|| s.getToken() == tabela.WRITE);
+         	|| s.getToken() == tabela.WRITE));
    }
 
 }
