@@ -74,11 +74,24 @@ public class Parser {
             D1();
             casaToken(tabela.PV);
          } else {
-            casaToken(tabela.CONST);
-            casaToken(tabela.ID);
-            casaToken(tabela.ATT);
-            CONSTV();
-            casaToken(tabela.PV);
+            if(s.getToken() == tabela.CONST || s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
+               if(s.getToken() == tabela.CONST){
+                  casaToken(tabela.CONST);
+                  casaToken(tabela.ID);
+                  casaToken(tabela.ATT);
+                  CONSTV();
+               } else {
+                  if(s.getToken() == tabela.INTEGER){
+                     casaToken(tabela.INTEGER);
+                  } else if(s.getToken() == tabela.CHAR){
+                     casaToken(tabela.CHAR);
+                  }
+                  casaToken(tabela.ID);
+                  D1();
+               }
+               
+               casaToken(tabela.PV);
+            }
          }
       } catch (Exception e) {
          checkEOF();
@@ -164,12 +177,12 @@ public class Parser {
             casaToken(tabela.FOR);
             casaToken(tabela.ID);
             casaToken(tabela.ATT);
-            casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
+            casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             casaToken(tabela.TO);
             if(s.getToken() == tabela.ID) {
                casaToken(tabela.ID);
             } else {
-               casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
+               casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             }
             if (s.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
@@ -268,13 +281,17 @@ public class Parser {
       
          if (s.getToken() == tabela.ACHAVE) {
             casaToken(tabela.ACHAVE);
-            C();
+            do{
+               C();
+            }while(ehComando());
             casaToken(tabela.FCHAVE);
             if (s.getToken() == tabela.ELSE) {
                casaToken(tabela.ELSE);
                if(s.getToken() == tabela.ACHAVE){
                   casaToken(tabela.ACHAVE);
-                  C();
+                  do{
+                     C();
+                  }while(ehComando());
                   casaToken(tabela.FCHAVE);
                }else {
                   C();
@@ -364,6 +381,15 @@ public class Parser {
          F();
          if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
          		|| s.getToken() == tabela.AND) {
+            if(s.getToken() == tabela.MUL){
+               casaToken(tabela.MUL);
+            }else if(s.getToken() == tabela.DIV){
+               casaToken(tabela.DIV);
+            }else if(s.getToken() == tabela.MOD){
+               casaToken(tabela.MOD);
+            }else{
+               casaToken(tabela.AND);
+            }
             F();
          }
       
@@ -414,7 +440,7 @@ public class Parser {
    }
 
    boolean ehDeclaracao() {
-      return (s != null && (s.getToken() == tabela.VAR || s.getToken() == tabela.CONST));
+      return (s != null && (s.getToken() == tabela.VAR || s.getToken() == tabela.CONST ||  s.getToken() == tabela.INTEGER ||  s.getToken() == tabela.CHAR));
    }
 
    boolean ehComando() {

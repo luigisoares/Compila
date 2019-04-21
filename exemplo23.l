@@ -16,7 +16,7 @@ MAXITER=0x04;
     write("Ola' ", oa, "abc");
   };
 
-  if 4 or 5 then {
+  if not(5 < 3 and n) then {
     if 1 then {
       readln(arroba);
     } else {

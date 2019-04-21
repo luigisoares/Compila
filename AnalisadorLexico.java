@@ -13,8 +13,9 @@ public class AnalisadorLexico {
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
-   public static List validos = Arrays.asList(new Character[] { '_' },new Character[] { '.' },new Character[] { ',' },new Character[] { ';' },new Character[] { '&' },new Character[] { ':' },new Character[] { '(' },new Character[] { ')' },new Character[] { '[' },new Character[] { ']' },new Character[] { '{' },new Character[] { '}' },new Character[] { '+' },new Character[] { '-' },new Character[] { '*' },new Character[] { '\'' },new Character[] { '/' },new Character[] { '%' },new Character[] { '^' },new Character[] { '@' },new Character[] { '!' },new Character[] { '?' },new Character[] { '>' },new Character[] { '<' },new Character[] { '=' }); // @TODO popular os validos
-
+   public static char validos[] = {' ' ,'_' ,  '.' ,  ',' ,  ';' ,  '&' ,  ':' ,  '(' ,  ')' ,  '[' ,  ']' , '{','}', '+' ,  '-' ,  '\'' ,  '/' , '*',  '%' ,  '^' ,  '@' ,  '!' ,  '?' ,  '>' ,  '<' ,  '='};
+   
+   
    Simbolo analisarLexema(boolean devolucao, BufferedReader arquivo) throws Exception {
       //BufferedReader arquivo2 = null;
       int stateI = 0;
@@ -93,7 +94,7 @@ public class AnalisadorLexico {
                   arquivo.close();
                } else {
                   //System.err.println(linha + ":Caractere invalido");
-                  System.out.println("Erro na linha: " + linha + ". Lexema nao reconhecido: [" + c +"]");
+                  System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + c +"]");
                   System.exit(0);
                }
                break;
@@ -223,7 +224,7 @@ public class AnalisadorLexico {
             case 12:
                c = (char) arquivo.read();
             
-               if (isDigito(c) || isLetra(c) || isValido(c)) {
+               if (isValido(c)) {
                   lexema += c;
                   stateI = 13;
                }
@@ -231,12 +232,14 @@ public class AnalisadorLexico {
             case 13:
                c = (char) arquivo.read();
             
-               if (isDigito(c) || isLetra(c) || isValido(c)) {
+               if (isValido(c)) {
                   lexema += c;
                } else if (c == '"' || c == '\u00E2' || c == '\u20AC' || c == '\u0153') {
                   lexema += c;
                   stateI = stateF;
                   devolve = false;
+               } else {
+                  printErrorCaracter();
                }
                break;
             case 14:
@@ -353,11 +356,16 @@ public class AnalisadorLexico {
    }
 
    public static boolean isValido(char c) {
-      return validos.indexOf(c) >= 0;
+      return (isLetra(c) || isDigito(c) || new String(validos).indexOf(c) >= 0);
    }
 
    public void printError() {
-      System.out.println("Erro na linha: " + linha + ". Lexema nao reconhecido: [" + lexema+"]");
+      System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema+"]");
+      System.exit(1);
+   }
+   
+   public void printErrorCaracter() {
+      System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + c +"]");
       System.exit(1);
    }
 
