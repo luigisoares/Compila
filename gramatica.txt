@@ -5,7 +5,7 @@ CONSTV 	-> 0x(hexa)(hexa) | char | '"' string '"' | num
 C		-> id C' ';'| FOR id = E to E [step [num]] do C'' | if E then C''' | ';' | readln'('id')'';' | write'('E{,E}')'';' | writeln'('E{,E}')'';'
 C'		-> = E | '['E']' = E 
 C''		-> C | '{' {C} '}'
-C'''	-> C [ else C] | '{' {C} '}' [else '{' {C} '}'] 
+C'''	-> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)] 
 E		-> E' {('<' | '>' | '<=' | '>=' | '<>' | '=') E'}
 E'		-> [+ | -] E'' {('+' | '-' | or ) E''}
 E''		-> F {('*' | '/' | '%' | and) F}

@@ -6,7 +6,7 @@ Var integer n[3], max;
 
   For I=0 to 2 do {
     write("Digite um numero: ");
-    readln(n[i]);
+    readln(n);
   }
   If n[0] > n[1] then {
     If n[0] > n[2] then max=n[0]; else max=n[2];

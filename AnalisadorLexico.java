@@ -32,7 +32,7 @@ public class AnalisadorLexico {
                }
                devolucao = false;
             // Quebra de linha no arquivo
-               if (c == '\n' || c == 11) { // @TODO entender o char 11
+               if (c == '\n') { // @TODO entender o char 11
                   linha++;
                } else if (c == '+' || c == '-' || c == '*' || c == '%' || c == '(' || c == ')' || c == '[' || c == ']'
                   || c == '{' || c == '}' || c == ';' || c == ',' || c == '=') {
@@ -81,7 +81,7 @@ public class AnalisadorLexico {
                      lexema += c;
                      stateI = 7;
                   } else {
-                  // Numero nao comeÃƒÂ§ado por 0
+                  // Numero nao comecado por 0
                      lexema += c;
                      stateI = 10;
                   }
@@ -92,7 +92,8 @@ public class AnalisadorLexico {
                   devolve = false;
                   arquivo.close();
                } else {
-                  System.err.println(linha + ":Caractere invalido");
+                  //System.err.println(linha + ":Caractere invalido");
+                  System.out.println("Erro na linha: " + linha + ". Lexema nao reconhecido: [" + c +"]");
                   System.exit(0);
                }
                break;
@@ -356,7 +357,7 @@ public class AnalisadorLexico {
    }
 
    public void printError() {
-      System.out.println("Erro na linha: " + linha + ". Lexema nao reconhecido: " + lexema);
+      System.out.println("Erro na linha: " + linha + ". Lexema nao reconhecido: [" + lexema+"]");
       System.exit(1);
    }
 

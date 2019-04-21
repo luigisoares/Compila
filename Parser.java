@@ -16,6 +16,7 @@ public class Parser {
             s = lexico.analisarLexema(lexico.devolve, arquivo);
          }
       } catch (Exception e) {
+         checkEOF();
          System.out.print(e.getMessage());
       }
    }
@@ -35,6 +36,7 @@ public class Parser {
             }
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println("casaT" + e.toString());
       }
    }
@@ -43,13 +45,16 @@ public class Parser {
       try {
          if (s != null) {
             do {
+               checkEOF();
                D();
             } while (ehDeclaracao());
             do {
+               checkEOF();
                C();
             } while (ehComando());
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -76,6 +81,7 @@ public class Parser {
             casaToken(tabela.PV);
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -119,6 +125,7 @@ public class Parser {
          }
       
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -141,6 +148,7 @@ public class Parser {
             casaToken(tabela.ASPAS);
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -176,7 +184,7 @@ public class Parser {
             E();
             casaToken(tabela.THEN);
             C3();
-            casaToken(tabela.PV);
+            //casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.READLN) {
@@ -210,6 +218,7 @@ public class Parser {
          }
       
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -229,6 +238,7 @@ public class Parser {
             E();
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -247,6 +257,7 @@ public class Parser {
             C();
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -261,17 +272,29 @@ public class Parser {
             casaToken(tabela.FCHAVE);
             if (s.getToken() == tabela.ELSE) {
                casaToken(tabela.ELSE);
-               casaToken(tabela.ACHAVE);
-               C();
-               casaToken(tabela.FCHAVE);
-            }
+               if(s.getToken() == tabela.ACHAVE){
+                  casaToken(tabela.ACHAVE);
+                  C();
+                  casaToken(tabela.FCHAVE);
+               }else {
+                  C();
+               }
+            } 
          } else {
             C();
             if (s.getToken() == tabela.ELSE) {
-               C();
-            }
+               casaToken(tabela.ELSE);
+               if(s.getToken() == tabela.ACHAVE){
+                  casaToken(tabela.ACHAVE);
+                  C();
+                  casaToken(tabela.FCHAVE);
+               }else {
+                  C();
+               }
+            } 
          }
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -283,10 +306,25 @@ public class Parser {
          E1();
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
          		|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
+            if(s.getToken() == tabela.MAIOR){
+               casaToken(tabela.MAIOR);
+            } else if(s.getToken() == tabela.MENOR){
+               casaToken(tabela.MENOR);
+            } else if(s.getToken() == tabela.MAIORIG){
+               casaToken(tabela.MAIORIG);
+            } else if(s.getToken() == tabela.MENORIG){
+               casaToken(tabela.MENORIG);
+            } else if(s.getToken() == tabela.DIFF){
+               casaToken(tabela.DIFF);
+            } else if(s.getToken() == tabela.ATT){
+               casaToken(tabela.ATT);
+            }
+               
             E1();
          }
       
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -314,6 +352,7 @@ public class Parser {
          }
       
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -321,7 +360,7 @@ public class Parser {
    void E2() {
       try {
          checkEOF();
-
+      
          F();
          if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
          		|| s.getToken() == tabela.AND) {
@@ -329,6 +368,7 @@ public class Parser {
          }
       
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
@@ -348,9 +388,15 @@ public class Parser {
             casaToken(tabela.VALORCONST);
          } else {
             casaToken(tabela.ID);
-         }
+            if (s.getToken() == tabela.ACOL){
+               casaToken(tabela.ACOL);
+               casaToken(tabela.VALORCONST);
+               casaToken(tabela.FCOL);
+            }
+         } 
       
       } catch (Exception e) {
+         checkEOF();
          System.err.println(e.toString());
       }
    }
