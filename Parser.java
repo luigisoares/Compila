@@ -168,7 +168,6 @@ public class Parser {
 
    void C() {
       try {
-         checkEOF();
          if (s.getToken() == tabela.ID) {
             casaToken(tabela.ID);
             C1();
@@ -199,7 +198,7 @@ public class Parser {
             E();
             casaToken(tabela.THEN);
             C3();
-            //casaToken(tabela.PV);
+            // casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.READLN) {
@@ -430,7 +429,7 @@ public class Parser {
 
    void checkEOF() {
       if (lexico.ehEOF) {
-         System.err.println(lexico.linha + ":Fim de arquivo nao esperado.");
+         System.err.println((lexico.linha + 1) + ":Fim de arquivo nao esperado.");
          System.exit(0);
       }
    }
