@@ -198,7 +198,6 @@ public class Parser {
             E();
             casaToken(tabela.THEN);
             C3();
-            System.out.println(s.getLexema());
             // casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
@@ -301,7 +300,7 @@ public class Parser {
             } 
          } else {
             C();
-            if (s.getToken() == tabela.ELSE) {
+            if (s != null && s.getToken() == tabela.ELSE) {
                casaToken(tabela.ELSE);
                if(s.getToken() == tabela.ACHAVE){
                   casaToken(tabela.ACHAVE);
