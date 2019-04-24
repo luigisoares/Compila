@@ -32,6 +32,7 @@ public class AnalisadorLexico {
                
                }
                devolucao = false;
+               //checkEOF(c);
             // Quebra de linha no arquivo
                if (c == '\n') { // @TODO entender o char 11
                   linha++;
@@ -100,6 +101,7 @@ public class AnalisadorLexico {
                break;
             case 2:
                c = (char) arquivo.read();
+            //checkEOF(c);
             
                if (c == '=') {
                   lexema += c;
@@ -113,6 +115,7 @@ public class AnalisadorLexico {
                break;
             case 3:
                c = (char) arquivo.read();
+            //checkEOF(c);
             
                if (c == '=') {
                   lexema += c;
@@ -130,6 +133,8 @@ public class AnalisadorLexico {
                break;
             case 4:
                c = (char) arquivo.read();
+               //checkEOF(c);
+               
                if (c == '\'') {
                   lexema += c;
                   stateI = stateF;
@@ -142,6 +147,7 @@ public class AnalisadorLexico {
                break;
             case 5:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
             // Continua no mesmo estado caso encontre '.' ou '_'
                if (c == '.' || c == '_') {
@@ -159,6 +165,7 @@ public class AnalisadorLexico {
                break;
             case 6:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (isDigito(c) || isLetra(c) || c == '.' || c == '_') {
                   lexema += c;
@@ -170,6 +177,7 @@ public class AnalisadorLexico {
                break;
             case 7:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (c == 'x' || c == 'X') {
                   lexema += c;
@@ -185,25 +193,32 @@ public class AnalisadorLexico {
                break;
             case 8:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
             // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
                if (Character.digit(c, 16) >= 0) {
                   lexema += c;
                   stateI = 9;
+               } else {
+                  printErrorHexa();
                }
                break;
             case 9:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
             // @TODO Aceitar todas as letras, e tratar o resultado no analisador sintatico ?
                if (Character.digit(c, 16) >= 0) {
                   lexema += c;
                   stateI = stateF;
                   devolve = false;
+               }else {
+                  printErrorHexa();
                }
                break;
             case 10:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (isDigito(c)) {
                   lexema += c;
@@ -215,6 +230,7 @@ public class AnalisadorLexico {
                break;
             case 11:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (isDigito(c) || isLetra(c)) {
                   lexema += c;
@@ -223,6 +239,7 @@ public class AnalisadorLexico {
                break;
             case 12:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (isValido(c)) {
                   lexema += c;
@@ -231,6 +248,7 @@ public class AnalisadorLexico {
                break;
             case 13:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (isValido(c)) {
                   lexema += c;
@@ -244,6 +262,7 @@ public class AnalisadorLexico {
                break;
             case 14:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (c != '*') {
                   stateI = stateF;
@@ -255,12 +274,14 @@ public class AnalisadorLexico {
                break;
             case 15:
                c = (char) arquivo.read();
-            
+               checkEOF(c);
+               //System.out.println(c);
                if (c == '*')
                   stateI = 16;
                break;
             case 16:
                c = (char) arquivo.read();
+               //checkEOF(c);
             
                if (c == '/') {
                   stateI = 0;
@@ -333,10 +354,6 @@ public class AnalisadorLexico {
             printError();
          }
       }
-      /*
-       * arrSimb[pos] = simb; pos++; //c = (char)arquivo.read(); stateI = 0; stateF =
-       * 1; lexema = ""; }
-       */
    
       return simb;
    }
@@ -365,8 +382,22 @@ public class AnalisadorLexico {
    }
    
    public void printErrorCaracter() {
-      System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + c +"]");
+      System.out.println("Erro na linha: " + (linha+1) + ". Caractere nao reconhecido: [" + c +"]");
       System.exit(1);
+   }
+   
+   public void printErrorHexa() {
+      System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema +""+ c +"]");
+      System.exit(1);
+   }
+   
+   
+   
+   void checkEOF(char c) {
+      if (this.ehEOF || c == 65535) {
+         System.err.println(this.linha + ":Fim de arquivo nao esperado.");
+         System.exit(0);
+      }
    }
 
    /*public static void main(String[] args) throws Exception {

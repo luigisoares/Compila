@@ -34,6 +34,8 @@ public class Parser {
                   tokenInesperado();
                }
             }
+         } else {
+            checkEOF();
          }
       } catch (Exception e) {
          checkEOF();
@@ -168,6 +170,7 @@ public class Parser {
 
    void C() {
       try {
+         checkEOF();
          if (s.getToken() == tabela.ID) {
             casaToken(tabela.ID);
             C1();
@@ -176,20 +179,18 @@ public class Parser {
             casaToken(tabela.FOR);
             casaToken(tabela.ID);
             casaToken(tabela.ATT);
-            // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             E();
+            //casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             casaToken(tabela.TO);
             if(s.getToken() == tabela.ID) {
                casaToken(tabela.ID);
             } else {
                E();
-               // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
+               //casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             }
             if (s.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
-               if (s.getToken() == tabela.VALORCONST) {
-                  casaToken(tabela.VALORCONST); // @TODO Como pegar o num ?
-               }
+               casaToken(tabela.VALORCONST); // @TODO Como pegar o num ? 
             }
             casaToken(tabela.DO);
             C2();
@@ -198,7 +199,7 @@ public class Parser {
             E();
             casaToken(tabela.THEN);
             C3();
-            // casaToken(tabela.PV);
+            //casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.READLN) {
@@ -337,6 +338,7 @@ public class Parser {
             } else if(s.getToken() == tabela.ATT){
                casaToken(tabela.ATT);
             }
+               
             E1();
          }
       
@@ -357,7 +359,8 @@ public class Parser {
          }
       
          E2();
-         while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
+		 while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
+         //if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
             if (s.getToken() == tabela.ADD) {
                casaToken(tabela.ADD);
             } else if (s.getToken() == tabela.SUB) {
@@ -379,8 +382,8 @@ public class Parser {
          checkEOF();
       
          F();
-         while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
-         		|| s.getToken() == tabela.AND) {
+		 while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
+         //if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
             if(s.getToken() == tabela.MUL){
                casaToken(tabela.MUL);
             }else if(s.getToken() == tabela.DIV){
