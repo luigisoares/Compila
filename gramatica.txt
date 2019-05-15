@@ -1,15 +1,14 @@
 THE ULTIMATE
 
 S 		-> {D}+{C}+
-D 		-> VAR (integer | char) id [D'] ';' | CONST id = CONSTV' ';'
-D' 		-> = CONSTV[,id[ = CONSTV |'['num']']{,id[ = CONSTV | '['num']']}] | '['num']'[,id[ = CONSTV |'['num']']{,id[ = CONSTV | '['num']']}]
-CONSTV 		-> 0x(hexa)(hexa) | char | E
-CONSTV' 	-> 0x(hexa)(hexa) | char | [-] num
-T		-> id = CONSTV' ';' ----> NÃO ESTÁ SENDO USADA EM LUGAR ALGUM, ONDE ESTAVA ?
+D 		-> VAR (integer | char) id [D'] ';' | CONST id( = CONSTV' ';' | '['num']' = '"' string '"')
+D' 		-> = CONSTV{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
+CONSTV 	-> 0x(hexa)(hexa) | char | E
+CONSTV' -> 0x(hexa)(hexa) | char | [-] num
 C		-> id C' ';'| FOR id = E to E [step num] do C'' | if E then C''' | ';' | readln'('id')'';' | write'('E{,E}')'';' | writeln'('E{,E}')'';'
 C'		-> = E | '['E']' = E 
 C''		-> C | '{' {C} '}'
-C'''		-> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)] 
+C'''	-> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)] 
 E		-> E' {('<' | '>' | '<=' | '>=' | '<>' | '=') E'}
 E'		-> [+ | -] E'' {('+' | '-' | or ) E''}
 E''		-> F {('*' | '/' | '%' | and) F}
