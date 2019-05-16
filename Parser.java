@@ -68,7 +68,7 @@ public class Parser {
       }
    }
 
-   //D 		-> VAR (integer | char) id [D'] ';' | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
+   //D 		-> VAR (integer | char) id [D'] ';' | CONST id( = CONSTV' | '['num']' = '"' string '"') ';' | (integer | char) id [D'] ';'
    void D() {
       try {
          checkEOF();
@@ -91,7 +91,7 @@ public class Parser {
                   CONSTV1();
                } else{
                   casaToken(tabela.ACOL);
-                  casaToken(tabela.VALORCONST) //@TODO NUM
+                  casaToken(tabela.VALORCONST); //@TODO NUM
                   casaToken(tabela.FCOL);
                   casaToken(tabela.ATT);
                   casaToken(tabela.ASPAS);
@@ -100,6 +100,15 @@ public class Parser {
                }
                casaToken(tabela.PV);   
             }     
+         } else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
+            if (s.getToken() == tabela.INTEGER) {
+               casaToken(tabela.INTEGER);
+            } else {
+               casaToken(tabela.CHAR);
+            }         
+            casaToken(tabela.ID);
+            D1();
+            casaToken(tabela.PV);
          }
       } catch (Exception e) {
          checkEOF();

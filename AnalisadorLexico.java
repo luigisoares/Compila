@@ -376,8 +376,7 @@ public class AnalisadorLexico {
       return (isLetra(c) || isDigito(c) || new String(validos).indexOf(c) >= 0);
    }
 
-   public void printE
-   rror() {
+   public void printError() {
       System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema+"]");
       System.exit(1);
    }
