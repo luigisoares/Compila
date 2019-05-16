@@ -7,9 +7,7 @@ public class AnalisadorLexico {
    String lexema = "";
    public boolean devolve = false;
    Simbolo simb;
-   boolean id = false, constante = false;
    char c;
-   char c1;
    public static int linha = 0;
    public boolean ehComentario = false;
    public boolean ehEOF = false;
@@ -270,6 +268,7 @@ public class AnalisadorLexico {
                   devolve = true;
                } else {
                   stateI = 15;
+                  ehComentario = true;
                }
                break;
             case 15:
@@ -286,6 +285,7 @@ public class AnalisadorLexico {
                if (c == '/') {
                   stateI = 0;
                   lexema = "";
+                  ehComentario = false;
                } else
                   stateI = 15;
                break;
@@ -376,7 +376,8 @@ public class AnalisadorLexico {
       return (isLetra(c) || isDigito(c) || new String(validos).indexOf(c) >= 0);
    }
 
-   public void printError() {
+   public void printE
+   rror() {
       System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema+"]");
       System.exit(1);
    }

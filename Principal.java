@@ -13,7 +13,7 @@ public class Principal {
 			do{
 				// System.out.print("Digite o nome do arquivo: ");
 				// file = in.readLine();
-            //file = "exemplo1.l";
+            file = "exemplo1.l";
             //file = "t1.l"; // HEXA
             //file = "t2.l"; // $ no meio da string
             //file = "t3.l"; // comentario sem fechar

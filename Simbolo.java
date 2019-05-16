@@ -1,8 +1,9 @@
 public class Simbolo {
    private String lexema = "";
    private byte token;
-	//private String classe = "";
+   private String classe = "";
    private String tipo = "";
+   private int tamanho = 0;
    private int endereco;
    
    
@@ -17,6 +18,16 @@ public class Simbolo {
       this.token = token;
       this.tipo = tipo;
       this.endereco = endereco;
+      //this.tamanho = tamanho;
+   }
+   
+   public Simbolo(String lexema, byte token, String classe, String tipo, int endereco, int tamanho) {
+      this.lexema = lexema;
+      this.token = token;
+      this.classe = classe;
+      this.tipo = tipo;
+      this.endereco = endereco;
+      this.tamanho = tamanho;
    }
 
    public byte getToken(){
@@ -38,6 +49,14 @@ public class Simbolo {
    public void setTipo(String tipo) {
       this.tipo = tipo;
    }
+   
+   public String getClasse() {
+      return classe;
+   }
+
+   public void setClasse(String classe) {
+      this.classe = classe;
+   }
 
    public int getEndereco() {
       return endereco;
@@ -45,6 +64,14 @@ public class Simbolo {
 
    public void setEndereco(int endereco) {
       this.endereco = endereco;
+   }
+   
+   public int getTamanho() {
+      return tamanho;
+   }
+
+   public void setTamanho(int tamanho) {
+      this.tamanho = tamanho;
    }
 
 }

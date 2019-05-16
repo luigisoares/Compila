@@ -106,19 +106,31 @@ public class TabelaSimbolo {
 	
    public Simbolo inserirID(String lexema){
       lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(ID,lexema, ++index);
-      tabela.put(lexema, simbolo);
-      return tabela.get(lexema);
+      boolean existe = (buscaSimbolo(lexema) == null ) ? false : true;
+      if( !existe ){
+         Simbolo simbolo = new Simbolo(ID,lexema, ++index);
+         tabela.put(lexema, simbolo);
+         return tabela.get(lexema);
+      } else {
+         printErrorUnicidade(lexema);
+         return null;
+      }
    }
 	
    public Simbolo inserirConst(String lexema, String tipo){
       lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
-      tabela.put(lexema, simbolo);
-      return tabela.get(lexema);
+      boolean existe = (buscaSimbolo(lexema) == null ) ? false : true;
+      if( !existe ){
+         Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
+         tabela.put(lexema, simbolo);
+         return tabela.get(lexema);
+      } else {
+         printErrorUnicidade(lexema);
+         return null;
+      }
    }   
   
-   /*public static void main(String[] args){
+   public static void main(String[] args){
       TabelaSimbolo tbl = new TabelaSimbolo();
       System.out.println(tbl.pesquisa("if"));
       System.out.println(tbl.pesquisa("FI"));
@@ -130,6 +142,12 @@ public class TabelaSimbolo {
       tbl.inserirID("teste");
       System.out.println(tbl.pesquisa("boolean"));
       System.out.println(tbl.pesquisa("teste"));
-      
-   }*/
+      tbl.inserirID("TEstE");
+      System.out.println(tbl.pesquisa("teste"));
+   }
+   
+   public void printErrorUnicidade(String lexema) {
+      System.out.println("Identificador ou constante ja presente na tabela de simbolos: " + lexema);
+      System.exit(1);
+   }
 }

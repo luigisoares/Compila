@@ -42,58 +42,64 @@ public class Parser {
          System.err.println("casaT" + e.toString());
       }
    }
-
+   
+   //S 		-> {D}+{C}+
    void S() {
-      try {
-         if (s != null) {
-            do {
+      try 
+      {
+         if (s != null) 
+         {
+            do
+            {
                checkEOF();
-               D();
-            } while (ehDeclaracao());
-            do {
+               D(); 
+            }while(ehDeclaracao());
+            do
+            {
                checkEOF();
                C();
-            } while (ehComando());
-         }
-      } catch (Exception e) {
+            }while(ehComando());
+         }            
+      } 
+      catch (Exception e) 
+      {
          checkEOF();
          System.err.println(e.toString());
       }
    }
 
+   //D 		-> VAR (integer | char) id [D'] ';' | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
    void D() {
       try {
          checkEOF();
-         if (s.getToken() == tabela.VAR) {
+         if (s.getToken() == tabela.VAR) { // OLD
             casaToken(tabela.VAR);
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
             } else {
                casaToken(tabela.CHAR);
-            }
-         
+            }         
             casaToken(tabela.ID);
             D1();
             casaToken(tabela.PV);
-         } else {
-            if(s.getToken() == tabela.CONST || s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
-               if(s.getToken() == tabela.CONST){
-                  casaToken(tabela.CONST);
-                  casaToken(tabela.ID);
+         } else if(s.getToken() == tabela.CONST){
+            casaToken(tabela.CONST);
+            casaToken(tabela.ID);
+            if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL){
+               if(s.getToken() == tabela.ATT){
                   casaToken(tabela.ATT);
-                  CONSTV();
-               } else {
-                  if(s.getToken() == tabela.INTEGER){
-                     casaToken(tabela.INTEGER);
-                  } else if(s.getToken() == tabela.CHAR){
-                     casaToken(tabela.CHAR);
-                  }
-                  casaToken(tabela.ID);
-                  D1();
+                  CONSTV1();
+               } else{
+                  casaToken(tabela.ACOL);
+                  casaToken(tabela.VALORCONST) //@TODO NUM
+                  casaToken(tabela.FCOL);
+                  casaToken(tabela.ATT);
+                  casaToken(tabela.ASPAS);
+                  casaToken(tabela.VALORCONST); //@TODO STRING
+                  casaToken(tabela.ASPAS);
                }
-               
-               casaToken(tabela.PV);
-            }
+               casaToken(tabela.PV);   
+            }     
          }
       } catch (Exception e) {
          checkEOF();
@@ -101,66 +107,71 @@ public class Parser {
       }
    }
 
+   //D' 		-> = CONSTV{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
    void D1() {
       try {
          checkEOF();
-         if (s.getToken() == tabela.VIR) {
-            casaToken(tabela.VIR);
-            casaToken(tabela.ID);
-            if (s.getToken() == tabela.ACOL) {
+         if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL){
+            if(s.getToken() == tabela.ATT){
+               casaToken(tabela.ATT);
+               CONSTV();
+               if (s.getToken() == tabela.VIR) {
+                  while (s.getToken() != tabela.PV) {
+                     casaToken(tabela.VIR);
+                     casaToken(tabela.ID);
+                     if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+                        if (s.getToken() == tabela.ACOL){
+                           casaToken(tabela.ACOL);
+                           casaToken(tabela.VALORCONST);
+                           casaToken(tabela.FCOL);
+                        } else {
+                           casaToken(tabela.ATT);
+                           CONSTV();
+                        }
+                     }
+                  }
+               }
+            } else if(s.getToken() == tabela.ACOL){
                casaToken(tabela.ACOL);
                casaToken(tabela.VALORCONST);
                casaToken(tabela.FCOL);
-            }
-            if (s.getToken() == tabela.VIR) {
-               while (s.getToken() != tabela.PV) {
-                  casaToken(tabela.VIR);
-                  casaToken(tabela.ID);
-                  if (s.getToken() == tabela.ACOL) {
-                     casaToken(tabela.ACOL);
-                     casaToken(tabela.VALORCONST);
-                     casaToken(tabela.FCOL);
+               if (s.getToken() == tabela.VIR) {
+                  while (s.getToken() != tabela.PV) {
+                     casaToken(tabela.VIR);
+                     casaToken(tabela.ID);
+                     if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+                        if (s.getToken() == tabela.ACOL){
+                           casaToken(tabela.ACOL);
+                           casaToken(tabela.VALORCONST);
+                           casaToken(tabela.FCOL);
+                        } else {
+                           casaToken(tabela.ATT);
+                           CONSTV();
+                        }
+                     }
                   }
                }
             }
-         } else if (s.getToken() == tabela.ATT) {
-            casaToken(tabela.ATT);
-            if (s.getToken() == tabela.ADD) {
-               casaToken(tabela.ADD);
-            } else if (s.getToken() == tabela.SUB) {
-               casaToken(tabela.SUB);
-            }
-         
-            casaToken(tabela.VALORCONST);
-         } else if (s.getToken() == tabela.ACOL) {
-            casaToken(tabela.ACOL);
-            casaToken(tabela.VALORCONST);
-            casaToken(tabela.FCOL);
-            D1();
          }
-      
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
    }
 
+   //CONSTV 	-> 0x(hexa)(hexa) | char | E
    void CONSTV() {
       try {
          checkEOF();
          if (s.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
-            casaToken(tabela.VALORCONST);
+            casaToken(tabela.VALORCONST); //HEXA
          	// casaToken(tabela.X); // @TODO Como pegar o X ?
          	// casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
          	// casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
          } else if (s.getToken() == tabela.CHAR) {
             casaToken(tabela.CHAR);
-         } else if (s.getToken() == tabela.ASPAS) {
-            casaToken(tabela.ASPAS);
-            while (s.getToken() != tabela.ASPAS) {
-            
-            }
-            casaToken(tabela.ASPAS);
+         } else{
+            E();
          }
       } catch (Exception e) {
          checkEOF();
@@ -168,6 +179,30 @@ public class Parser {
       }
    }
 
+   //CONSTV' -> 0x(hexa)(hexa) | char | [-] num
+   void CONSTV1() {
+      try {
+         checkEOF();
+         if (s.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
+            casaToken(tabela.VALORCONST); //HEXA
+         	// casaToken(tabela.X); // @TODO Como pegar o X ?
+         	// casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
+         	// casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
+         } else if (s.getToken() == tabela.CHAR) {
+            casaToken(tabela.CHAR);
+         } else if (s.getToken() == tabela.SUB || s.getToken() == tabela.VALORCONST) {
+            if (s.getToken() == tabela.SUB) {
+               casaToken(tabela.SUB);
+            }   
+            casaToken(tabela.VALORCONST);
+         }
+      } catch (Exception e) {
+         checkEOF();
+         System.err.println(e.toString());
+      }
+   }
+
+   //C		-> id C' ';'| FOR id = E to E [step num] do C'' | if E then C''' | ';' | readln'('id')'';' | write'('E{,E}')'';' | writeln'('E{,E}')'';'
    void C() {
       try {
          checkEOF();
@@ -238,6 +273,7 @@ public class Parser {
       }
    }
 
+   //C'		-> = E | '['E']' = E
    void C1() {
       try {
          checkEOF();
@@ -258,6 +294,7 @@ public class Parser {
       }
    }
 
+   //C''		-> C | '{' {C} '}'
    void C2() {
       try {
          checkEOF();
@@ -277,6 +314,7 @@ public class Parser {
       }
    }
 
+   //C'''	-> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)]
    void C3() {
       try {
          checkEOF();
@@ -318,6 +356,7 @@ public class Parser {
       }
    }
 
+   //E		-> E' {('<' | '>' | '<=' | '>=' | '<>' | '=') E'}
    void E() {
       try {
          checkEOF();
@@ -348,6 +387,7 @@ public class Parser {
       }
    }
 
+   //E'		-> [+ | -] E'' {('+' | '-' | or ) E''}
    void E1() {
       try {
          checkEOF();
@@ -359,7 +399,7 @@ public class Parser {
          }
       
          E2();
-		 while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
+         while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
          //if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
             if (s.getToken() == tabela.ADD) {
                casaToken(tabela.ADD);
@@ -377,12 +417,13 @@ public class Parser {
       }
    }
 
+   //E''		-> F {('*' | '/' | '%' | and) F}
    void E2() {
       try {
          checkEOF();
       
          F();
-		 while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
+         while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
          //if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
             if(s.getToken() == tabela.MUL){
                casaToken(tabela.MUL);
@@ -402,6 +443,7 @@ public class Parser {
       }
    }
 
+   //F		-> '(' E ')' | not F | id ['[' E ']']| num
    void F() {
       try {
          checkEOF();
