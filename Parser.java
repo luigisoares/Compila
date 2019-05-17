@@ -68,20 +68,22 @@ public class Parser {
       }
    }
 
-   //D 		-> VAR (integer | char) id [D'] ';' | CONST id( = CONSTV' | '['num']' = '"' string '"') ';' | (integer | char) id [D'] ';'
+   //D 		-> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
    void D() {
       try {
          checkEOF();
-         if (s.getToken() == tabela.VAR) { // OLD
+         if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
-            if (s.getToken() == tabela.INTEGER) {
-               casaToken(tabela.INTEGER);
-            } else {
-               casaToken(tabela.CHAR);
-            }         
-            casaToken(tabela.ID);
-            D1();
-            casaToken(tabela.PV);
+               while(!(s.getToken() == tabela.CONST || ehComando())){
+               if (s.getToken() == tabela.INTEGER) {
+                  casaToken(tabela.INTEGER);
+               } else {
+                  casaToken(tabela.CHAR);
+               }         
+               casaToken(tabela.ID);
+               D1();
+               casaToken(tabela.PV);
+            }
          } else if(s.getToken() == tabela.CONST){
             casaToken(tabela.CONST);
             casaToken(tabela.ID);
@@ -100,7 +102,8 @@ public class Parser {
                }
                casaToken(tabela.PV);   
             }     
-         } else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
+         } 
+         /*else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
             } else {
@@ -109,7 +112,7 @@ public class Parser {
             casaToken(tabela.ID);
             D1();
             casaToken(tabela.PV);
-         }
+         }*/
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());

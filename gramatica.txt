@@ -1,7 +1,7 @@
 THE ULTIMATE
 
 S 		-> {D}+{C}+
-D 		-> VAR (integer | char) id [D'] ';' | CONST id( = CONSTV' | '['num']' = '"' string '"') ';' | (integer | char) id [D'] ';'
+D 		-> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
 D' 		-> = CONSTV{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
 CONSTV 	-> 0x(hexa)(hexa) | char | E
 CONSTV' -> 0x(hexa)(hexa) | char | [-] num
