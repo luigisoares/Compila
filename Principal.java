@@ -22,6 +22,7 @@ public class Principal {
             //file = "t6.l"; // no +- printa o -
             //file = "t7.l"; // no step do for não tem valor pra saber os steps
             //file = "t8.l"; // EOF esqueceu de por } no final do for
+
 				if(file.length() > 2){
 					if(file.charAt(file.length()-2) != '.' && file.charAt(file.length() - 1) != 'l' && file.charAt(file.length() - 1) != 'L'){
 						System.out.print("Digite o nome do arquivo: ");
