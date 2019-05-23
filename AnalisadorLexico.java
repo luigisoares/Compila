@@ -390,9 +390,7 @@ public class AnalisadorLexico {
       System.out.println("Erro na linha: " + (linha+1) + ". Lexema nao reconhecido: [" + lexema +""+ c +"]");
       System.exit(1);
    }
-   
-   
-   
+    
    void checkEOF(char c) {
       if (this.ehEOF || c == 65535) {
          System.err.println(this.linha + ":Fim de arquivo nao esperado.");

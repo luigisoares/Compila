@@ -17,7 +17,7 @@ public class Principal {
             //file = "t1.l"; // HEXA
             //file = "t2.l"; // $ no meio da string
             //file = "t3.l"; // comentario sem fechar
-            //file = "t4.l"; // ! no lugar do ]
+            file = "t4.l"; // ! no lugar do ]
             //file = "t5.l"; // esqueceu o ;
             //file = "t6.l"; // no +- printa o -
             //file = "t7.l"; // no step do for não tem valor pra saber os steps
