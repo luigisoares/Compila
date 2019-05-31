@@ -74,7 +74,7 @@ public class Parser {
          checkEOF();
          if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
-               while(!(s.getToken() == tabela.CONST || ehComando())){
+            while(!(s.getToken() == tabela.CONST || ehComando())){
                if (s.getToken() == tabela.INTEGER) {
                   casaToken(tabela.INTEGER);
                } else {
@@ -90,7 +90,7 @@ public class Parser {
             if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL){
                if(s.getToken() == tabela.ATT){
                   casaToken(tabela.ATT);
-                  CONSTV1();
+                  CONSTV();
                } else{
                   casaToken(tabela.ACOL);
                   casaToken(tabela.VALORCONST); //@TODO NUM
@@ -220,7 +220,7 @@ public class Parser {
          checkEOF();
          if (s.getToken() == tabela.ID) {
             casaToken(tabela.ID);
-            C1();
+            A();
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.FOR) {
             casaToken(tabela.FOR);
@@ -240,12 +240,12 @@ public class Parser {
                casaToken(tabela.VALORCONST); // @TODO Como pegar o num ? 
             }
             casaToken(tabela.DO);
-            C2();
+            H();
          } else if (s.getToken() == tabela.IF) {
             casaToken(tabela.IF);
             E();
             casaToken(tabela.THEN);
-            C3();
+            J();
             //casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
@@ -285,8 +285,8 @@ public class Parser {
       }
    }
 
-   //C'		-> = E | '['E']' = E
-   void C1() {
+   //A		-> = E | '['E']' = E
+   void A() {
       try {
          checkEOF();
       
@@ -306,8 +306,8 @@ public class Parser {
       }
    }
 
-   //C''		-> C | '{' {C} '}'
-   void C2() {
+   //H		-> C | '{' {C} '}'
+   void H() {
       try {
          checkEOF();
       
@@ -326,8 +326,8 @@ public class Parser {
       }
    }
 
-   //C'''	-> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)]
-   void C3() {
+   //J	-> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)]
+   void J() {
       try {
          checkEOF();
       
