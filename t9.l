@@ -1,9 +1,8 @@
 /* Exemplo de Programa na linguagem L */
 
-Var integer n,y=3,o[3];
-Var char nome='x';
+Var integer n,y=3,o=65;
+Var char nome='x',vitor=0x4A;
 Var char nomw=0x44;
-Var integer luigi="ABC";
 const l=45;
 Var char k;
 Var char qw,q,e;

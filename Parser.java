@@ -151,7 +151,8 @@ public class Parser {
                            casaToken(tabela.FCOL);
                         } else {
                            casaToken(tabela.ATT);
-                           CONSTV();
+                           temp = CONSTV();
+                           acaoSemantica42(id, temp);
                         }
                      }
                   }
@@ -168,7 +169,8 @@ public class Parser {
                         casaToken(tabela.FCOL);
                      } else {
                         casaToken(tabela.ATT);
-                        CONSTV();
+                        temp = CONSTV();
+                        acaoSemantica42(id, temp);
                      }
                   }
                }
@@ -188,7 +190,8 @@ public class Parser {
                            casaToken(tabela.FCOL);
                         } else {
                            casaToken(tabela.ATT);
-                           CONSTV();
+                           temp = CONSTV();
+                           acaoSemantica42(id, temp);
                         }
                      }
                   }
