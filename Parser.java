@@ -75,14 +75,14 @@ public class Parser {
          if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
             // while(!(s.getToken() == tabela.CONST || ehComando())){
-               if (s.getToken() == tabela.INTEGER) {
-                  casaToken(tabela.INTEGER);
-               } else {
-                  casaToken(tabela.CHAR);
-               }         
-               casaToken(tabela.ID);
-               D1();
-               casaToken(tabela.PV);
+            if (s.getToken() == tabela.INTEGER) {
+               casaToken(tabela.INTEGER);
+            } else {
+               casaToken(tabela.CHAR);
+            }         
+            casaToken(tabela.ID);
+            D1();
+            casaToken(tabela.PV);
             // }
          } else if(s.getToken() == tabela.CONST){
             casaToken(tabela.CONST);
@@ -119,11 +119,11 @@ public class Parser {
       }
    }
 
-   //D' 		-> = CONSTV{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
+   //D' 		-> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
    void D1() {
       try {
          checkEOF();
-         if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL){
+         if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL || s.getToken() == tabela.VIR){
             if(s.getToken() == tabela.ATT){
                casaToken(tabela.ATT);
                CONSTV();
@@ -140,6 +140,21 @@ public class Parser {
                            casaToken(tabela.ATT);
                            CONSTV();
                         }
+                     }
+                  }
+               }
+            } else if (s.getToken() == tabela.VIR) {
+               while (s.getToken() != tabela.PV) {
+                  casaToken(tabela.VIR);
+                  casaToken(tabela.ID);
+                  if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+                     if (s.getToken() == tabela.ACOL){
+                        casaToken(tabela.ACOL);
+                        casaToken(tabela.VALORCONST);
+                        casaToken(tabela.FCOL);
+                     } else {
+                        casaToken(tabela.ATT);
+                        CONSTV();
                      }
                   }
                }

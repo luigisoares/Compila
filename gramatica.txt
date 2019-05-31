@@ -2,7 +2,7 @@ THE ULTIMATE
 
 S 		-> {D}+{C}+
 D 		-> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
-D' 		-> = CONSTV{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
+D' 		-> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
 CONSTV 	-> 0x(hexa)(hexa) | char | E
 CONSTV' -> 0x(hexa)(hexa) | char | [-] num
 C		-> id C' ';'| FOR id = E to E [step num] do C'' | if E then C''' | ';' | readln'('id')'';' | write'('E{,E}')'';' | writeln'('E{,E}')'';'
