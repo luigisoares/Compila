@@ -311,7 +311,7 @@ public class AnalisadorLexico {
                      if (lexema.length() == 4) {
                         // Verifica se os 2 ultimos digitos sao hexadecimais
                         if (Character.digit(lexema.charAt(2), 16) >= 0 && Character.digit(lexema.charAt(3), 16) >= 0) {
-                           simb = simbolos.inserirConst(lexema, "tipo_inteiro");
+                           simb = simbolos.inserirHexa(lexema, "tipo_caracter");
                         } else {
                            printError();
                         }

@@ -2,9 +2,9 @@
 
 Var integer n,y=3,o[3];
 Var char nome;
-const l="abc";
+const l= 0x50;
 Var char k;
-Var char c,q,e;
+Var char qw,q,e;
 Integer wi[40];
 char yi[40];
 Const MAXITER=0;

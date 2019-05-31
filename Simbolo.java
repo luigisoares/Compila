@@ -6,6 +6,9 @@ public class Simbolo {
    private int tamanho = 0;
    private int endereco;
    
+   public Simbolo(){
+      
+   }
    
    public Simbolo(byte token, String lexema, int endereco){
       this.lexema = lexema;

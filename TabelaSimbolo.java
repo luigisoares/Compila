@@ -47,6 +47,7 @@ public class TabelaSimbolo {
 	
    public final byte ID = 41;
    public final byte VALORCONST = 42; 
+   public final byte HEXA = 43;
 	
    public TabelaSimbolo() {
       tabela.put("if", new Simbolo(IF,"if", ++index));
@@ -106,29 +107,24 @@ public class TabelaSimbolo {
 	
    public Simbolo inserirID(String lexema){
       lexema = lexema.toLowerCase();
-      boolean existe = (buscaSimbolo(lexema) == null ) ? false : true;
-      if( !existe ){
-         Simbolo simbolo = new Simbolo(ID,lexema, ++index);
-         tabela.put(lexema, simbolo);
-         return tabela.get(lexema);
-      } else {
-         printErrorUnicidade(lexema);
-         return null;
-      }
+      Simbolo simbolo = new Simbolo(ID,lexema, ++index);
+      tabela.put(lexema, simbolo);
+      return tabela.get(lexema);
    }
 	
    public Simbolo inserirConst(String lexema, String tipo){
       lexema = lexema.toLowerCase();
-      boolean existe = (buscaSimbolo(lexema) == null ) ? false : true;
-      if( !existe ){
-         Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
-         tabela.put(lexema, simbolo);
-         return tabela.get(lexema);
-      } else {
-         printErrorUnicidade(lexema);
-         return null;
-      }
+      Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
+      tabela.put(lexema, simbolo);
+      return tabela.get(lexema);
    }   
+
+   public Simbolo inserirHexa(String lexema, String tipo) {
+      lexema = lexema.toLowerCase();
+      Simbolo simbolo = new Simbolo(HEXA, lexema, tipo, ++index);
+      tabela.put(lexema, simbolo);
+      return tabela.get(lexema);
+   }
   
    public static void main(String[] args){
       TabelaSimbolo tbl = new TabelaSimbolo();
@@ -145,9 +141,5 @@ public class TabelaSimbolo {
       tbl.inserirID("TEstE");
       System.out.println(tbl.pesquisa("teste"));
    }
-   
-   public void printErrorUnicidade(String lexema) {
-      System.out.println("Identificador ou constante ja presente na tabela de simbolos: " + lexema);
-      System.exit(1);
-   }
+
 }

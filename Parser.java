@@ -87,7 +87,7 @@ public class Parser {
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
             acaoSemantica50(simboloParaAnalise,condicao);
-            D1();
+            D1(simboloParaAnalise);
             casaToken(tabela.PV);
          } else if(s.getToken() == tabela.CONST){
             casaToken(tabela.CONST);
@@ -96,7 +96,7 @@ public class Parser {
             if(s.getToken() == tabela.ATT){
                if(s.getToken() == tabela.ATT){
                   casaToken(tabela.ATT);
-                  CONSTV();
+                  System.out.println(CONSTV().getTipo());
                }  
             } else{
                casaToken(tabela.ACOL);
@@ -120,7 +120,7 @@ public class Parser {
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
             acaoSemantica50(simboloParaAnalise, condicao);
-            D1();
+            D1(simboloParaAnalise);
             casaToken(tabela.PV);
          }
       } catch (Exception e) {
@@ -130,7 +130,7 @@ public class Parser {
    }
 
    //D' 		-> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
-   void D1() {
+   void D1(Simbolo id) {
       try {
          checkEOF();
          if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL || s.getToken() == tabela.VIR){
@@ -200,14 +200,18 @@ public class Parser {
    }
 
    //CONSTV 	-> 0x(hexa)(hexa) | char | E
-   void CONSTV() {
+   Simbolo CONSTV() {
+      Simbolo constvSimbolo = new Simbolo();
       try {
          checkEOF();
-         if (s.getToken() == tabela.VALORCONST) { // @TODO Como pegar o 0 ?
-            casaToken(tabela.VALORCONST); //HEXA
-         	// casaToken(tabela.X); // @TODO Como pegar o X ?
-         	// casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
-         	// casaToken(tabela.HEXA); // @TODO Como pegar os hexa ?
+         if (s.getToken() == tabela.VALORCONST || s.getToken() == tabela.HEXA) { // @TODO Como pegar o 0 ?
+            if(s.getToken() == tabela.VALORCONST) {
+               casaToken(tabela.VALORCONST); //HEXA
+            } else {
+               System.out.println(s.getLexema());
+               casaToken(tabela.HEXA); //HEXA
+               constvSimbolo.setTipo("tipo_caracter");
+            }
          } else if (s.getToken() == tabela.CHAR) {
             casaToken(tabela.CHAR);
          } else{
@@ -217,6 +221,7 @@ public class Parser {
          checkEOF();
          System.err.println(e.toString());
       }
+      return constvSimbolo;
    }
 
    //CONSTV' -> 0x(hexa)(hexa) | char | [-] num
@@ -490,6 +495,7 @@ public class Parser {
    //F		-> '(' E ')' | not F | id ['[' E ']']| num
    void F() {
       try {
+
          checkEOF();
       
          if (s.getToken() == tabela.APAR) {
@@ -515,7 +521,7 @@ public class Parser {
          checkEOF();
          System.err.println(e.toString());
       }
-   }
+}
 
    void checkEOF() {
       if (lexico.ehEOF) {
@@ -571,6 +577,11 @@ public class Parser {
    boolean acaoSemantica10() {
       return true;
    }
+
+   // Implementada por passagem de parametros do metodo D1
+   // void acaoSemantica40(Simbolo id, Simbolo D1) {
+   //    D1.setTipo(id.getTipo());  
+   // }
 
    void acaoSemantica50(Simbolo simbolo, boolean condicao) {
       if(condicao) {
