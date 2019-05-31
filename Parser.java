@@ -120,7 +120,6 @@ public class Parser {
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
             acaoSemantica50(simboloParaAnalise, condicao);
-            System.out.println(simboloParaAnalise.getTipo());
             D1(simboloParaAnalise);
             casaToken(tabela.PV);
          }
@@ -253,7 +252,7 @@ public class Parser {
          if (s.getToken() == tabela.ID) {
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
-            A();
+            A(simboloParaAnalise);
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.FOR) {
             casaToken(tabela.FOR);
@@ -323,19 +322,24 @@ public class Parser {
    }
 
    //A		-> = E | '['E']' = E
-   void A() {
+   void A(Simbolo id) {
+   Simbolo simboloA = new Simbolo();
+   Simbolo simboloA1 = new Simbolo();
+   Simbolo simboloA2 = new Simbolo();
+   
       try {
          checkEOF();
       
          if (s.getToken() == tabela.ATT) {
             casaToken(tabela.ATT);
-            E();
+            acaoSemantica5(id);
+            simboloA = E(); //acaoSemantica49
          } else {
             casaToken(tabela.ACOL);
-            E();
+            simboloA1 = E();
             casaToken(tabela.FCOL);
             casaToken(tabela.ATT);
-            E();
+            simboloA2 = E(); //acaoSemantica49
          }
       } catch (Exception e) {
          checkEOF();
@@ -409,24 +413,32 @@ public class Parser {
    Simbolo E() {
       Simbolo simboloE = new Simbolo();
       Simbolo simboloE2 = new Simbolo();
+      boolean condicao;
       try {
          checkEOF();
          
          simboloE = E1(); // acaoSemantica7
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
          		|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
+               condicao = acaoSemantica9();
             if(s.getToken() == tabela.MAIOR){
-               casaToken(tabela.MAIOR);
+               casaToken(tabela.MAIOR);              
+               acaoSemantica8(simboloE);
             } else if(s.getToken() == tabela.MENOR){
                casaToken(tabela.MENOR);
+               acaoSemantica8(simboloE);
             } else if(s.getToken() == tabela.MAIORIG){
                casaToken(tabela.MAIORIG);
+               acaoSemantica8(simboloE);
             } else if(s.getToken() == tabela.MENORIG){
                casaToken(tabela.MENORIG);
+               acaoSemantica8(simboloE);
             } else if(s.getToken() == tabela.DIFF){
                casaToken(tabela.DIFF);
+               acaoSemantica8(simboloE);
             } else if(s.getToken() == tabela.ATT){
                casaToken(tabela.ATT);
+               condicao = acaoSemantica10();
             }
                
             simboloE2 = E1();
@@ -524,10 +536,12 @@ public class Parser {
             F();
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
+            // \/ acaoSemantica29
             simboloF = new Simbolo(simboloParaAnalise.getToken(),simboloParaAnalise.getLexema(),simboloParaAnalise.getEndereco(),simboloParaAnalise.getTipo(),"classe_variavel",0);
          } else {
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
+            // acaoSemantica30
             simboloF = lexico.simbolos.buscaSimbolo(simboloParaAnalise.getLexema());
             if (s.getToken() == tabela.ACOL){
                casaToken(tabela.ACOL);
@@ -618,6 +632,20 @@ public class Parser {
          simbolo.setTipo("tipo_caracter");
       } else {
          simbolo.setTipo("tipo_inteiro");
+      }
+   }
+
+   void acaoSemantica8(Simbolo simbolo){
+      if(simbolo.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica5(Simbolo simbolo){
+      if(simbolo.getClasse() == "classe_constante"){
+         System.out.println((lexico.linha + 1) + ":classe de identificador incompativel "+simbolo.getLexema());
+         System.exit(0);
       }
    }
 

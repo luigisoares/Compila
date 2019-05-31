@@ -8,9 +8,9 @@ Var char k;
 Var char qw,q,e;
 Integer wi[40];
 char yi[40];
-Const MAXITER="abc";
+Const MAXITER = 'b';
 
-k = 'c';
+k = n < 10;
 
 /* Programa Principal */
 
