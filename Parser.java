@@ -52,7 +52,7 @@ public class Parser {
             do
             {
                checkEOF();
-               D(); 
+               D();
             }while(ehDeclaracao());
             do
             {
@@ -74,7 +74,7 @@ public class Parser {
          checkEOF();
          if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
-            while(!(s.getToken() == tabela.CONST || ehComando())){
+            // while(!(s.getToken() == tabela.CONST || ehComando())){
                if (s.getToken() == tabela.INTEGER) {
                   casaToken(tabela.INTEGER);
                } else {
@@ -83,27 +83,27 @@ public class Parser {
                casaToken(tabela.ID);
                D1();
                casaToken(tabela.PV);
-            }
+            // }
          } else if(s.getToken() == tabela.CONST){
             casaToken(tabela.CONST);
             casaToken(tabela.ID);
-            if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL){
+            if(s.getToken() == tabela.ATT){
                if(s.getToken() == tabela.ATT){
                   casaToken(tabela.ATT);
                   CONSTV();
-               } else{
-                  casaToken(tabela.ACOL);
-                  casaToken(tabela.VALORCONST); //@TODO NUM
-                  casaToken(tabela.FCOL);
-                  casaToken(tabela.ATT);
-                  casaToken(tabela.ASPAS);
-                  casaToken(tabela.VALORCONST); //@TODO STRING
-                  casaToken(tabela.ASPAS);
-               }
-               casaToken(tabela.PV);   
-            }     
+               }  
+            } else{
+               casaToken(tabela.ACOL);
+               casaToken(tabela.VALORCONST); //@TODO NUM
+               casaToken(tabela.FCOL);
+               casaToken(tabela.ATT);
+               casaToken(tabela.ASPAS);
+               casaToken(tabela.VALORCONST); //@TODO STRING
+               casaToken(tabela.ASPAS);
+            }    
+            casaToken(tabela.PV);  
          } 
-         /*else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
+         else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
             } else {
@@ -112,7 +112,7 @@ public class Parser {
             casaToken(tabela.ID);
             D1();
             casaToken(tabela.PV);
-         }*/
+         }
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
