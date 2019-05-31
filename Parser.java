@@ -240,17 +240,20 @@ public class Parser {
       try {
          checkEOF();
          if (s.getToken() == tabela.ID) {
+            acaoSemantica3(s);
             casaToken(tabela.ID);
             A();
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.FOR) {
             casaToken(tabela.FOR);
+            acaoSemantica3(s);
             casaToken(tabela.ID);
             casaToken(tabela.ATT);
             E();
             //casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             casaToken(tabela.TO);
             if(s.getToken() == tabela.ID) {
+               acaoSemantica3(s);
                casaToken(tabela.ID);
             } else {
                E();
@@ -273,6 +276,7 @@ public class Parser {
          } else if (s.getToken() == tabela.READLN) {
             casaToken(tabela.READLN);
             casaToken(tabela.APAR);
+            acaoSemantica3(s);
             casaToken(tabela.ID);
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
@@ -491,6 +495,7 @@ public class Parser {
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
          } else {
+            acaoSemantica3(s);
             casaToken(tabela.ID);
             if (s.getToken() == tabela.ACOL){
                casaToken(tabela.ACOL);
@@ -538,11 +543,18 @@ public class Parser {
 
    void acaoSemantica2(Simbolo simbolo) {
       if(!simbolo.getClasse().equals("")) {
-         System.out.println((lexico.linha + 1) + ":identificador ja declarado " + s.getLexema());
+         System.out.println((lexico.linha + 1) + ":identificador ja declarado " + simbolo.getLexema());
          System.exit(0);
       }
 
       simbolo.setClasse("classe_constante");
+   }
+
+   void acaoSemantica3(Simbolo simbolo) {
+      if(simbolo.getClasse().equals("")) {
+         System.out.println((lexico.linha + 1) + ":identificador nao declarado " + simbolo.getLexema());
+         System.exit(0);
+      }
    }
 
 }

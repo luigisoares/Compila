@@ -6,8 +6,8 @@ const l="abc";
 Var char k;
 const ou=3; 
 Var char c,q,e;
-/* Integer w[40];
-char y[40]; */
+Integer wi[40];
+char yi[40];
 Const MAXITER=0;
 
 /* Programa Principal */
