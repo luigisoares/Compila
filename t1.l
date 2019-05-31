@@ -2,7 +2,7 @@
 
 Var integer n;
 Char nome[40];
-Const MAXITER=0xT0;
+Const MAXITER=0xA0;
 
 /* Programa Principal */
 

@@ -113,7 +113,7 @@ public class TabelaSimbolo {
 	
    public Simbolo inserirConst(String lexema, String tipo){
       lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
+      Simbolo simbolo = new Simbolo(VALORCONST, lexema, ++index, tipo);
       tabela.put(lexema, simbolo);
       return tabela.get(lexema);
    }

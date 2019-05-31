@@ -9,8 +9,8 @@ public class Parser {
    Parser(BufferedReader arquivo) {
       try {
          this.arquivo = arquivo;
-         lexico = new AnalisadorLexico();
          tabela = new TabelaSimbolo();
+         lexico = new AnalisadorLexico(tabela);
          s = lexico.analisarLexema(lexico.devolve, arquivo);
          if (s == null) { // comentario
             s = lexico.analisarLexema(lexico.devolve, arquivo);
@@ -79,7 +79,7 @@ public class Parser {
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
                condicao = acaoSemantica9();
-
+            
             } else {
                casaToken(tabela.CHAR);
                condicao = acaoSemantica10();
@@ -120,6 +120,7 @@ public class Parser {
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
             acaoSemantica50(simboloParaAnalise, condicao);
+            System.out.println(simboloParaAnalise.getTipo());
             D1(simboloParaAnalise);
             casaToken(tabela.PV);
          }
@@ -213,7 +214,7 @@ public class Parser {
             casaToken(tabela.VALORCONST);
             constvSimbolo.setTipo(simboloParaAnalise.getTipo());
          } else{
-            E();
+            constvSimbolo = E();
          }
       } catch (Exception e) {
          checkEOF();
@@ -271,7 +272,8 @@ public class Parser {
             }
             if (s.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
-               casaToken(tabela.VALORCONST); // @TODO Como pegar o num ? 
+               casaToken(tabela.ID); // @TODO Como pegar o num ? 
+               acaoSemantica3(simboloParaAnalise);
             }
             casaToken(tabela.DO);
             H();
@@ -372,7 +374,7 @@ public class Parser {
                C();
             }while(ehComando());
             casaToken(tabela.FCHAVE);
-            if (s.getToken() == tabela.ELSE) {
+            if (s != null && s.getToken() == tabela.ELSE) { // caso o opcional seja no  EOF
                casaToken(tabela.ELSE);
                if(s.getToken() == tabela.ACHAVE){
                   casaToken(tabela.ACHAVE);
@@ -404,11 +406,13 @@ public class Parser {
    }
 
    //E		-> E' {('<' | '>' | '<=' | '>=' | '<>' | '=') E'}
-   void E() {
+   Simbolo E() {
+      Simbolo simboloE = new Simbolo();
+      Simbolo simboloE2 = new Simbolo();
       try {
          checkEOF();
-      
-         E1();
+         
+         simboloE = E1(); // acaoSemantica7
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
          		|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
             if(s.getToken() == tabela.MAIOR){
@@ -425,17 +429,22 @@ public class Parser {
                casaToken(tabela.ATT);
             }
                
-            E1();
+            simboloE2 = E1();
          }
       
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
+      
+         
+         return simboloE;
    }
 
    //E'		-> [+ | -] E'' {('+' | '-' | or ) E''}
-   void E1() {
+   Simbolo E1() {
+      Simbolo simboloE1 = new Simbolo();
+      Simbolo simboloE1_2 = new Simbolo();
       try {
          checkEOF();
       
@@ -445,7 +454,7 @@ public class Parser {
             casaToken(tabela.SUB);
          }
       
-         E2();
+         simboloE1 = E2(); // acaoSemantica14
          while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
          //if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
             if (s.getToken() == tabela.ADD) {
@@ -455,21 +464,26 @@ public class Parser {
             } else {
                casaToken(tabela.OR);
             }
-            E2();
+            simboloE1_2 = E2();
          }
-      
+         
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
+      
+         return simboloE1;
+      
    }
 
    //E''		-> F {('*' | '/' | '%' | and) F}
-   void E2() {
+   Simbolo E2() {
+      Simbolo simboloE2 = new Simbolo();
+      Simbolo simboloE2_1 = new Simbolo();
       try {
          checkEOF();
       
-         F();
+         simboloE2 = F(); // acaoSemantica20
          while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
          //if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
             if(s.getToken() == tabela.MUL){
@@ -481,19 +495,24 @@ public class Parser {
             }else{
                casaToken(tabela.AND);
             }
-            F();
+            simboloE2_1 = F();
          }
       
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
+         
+         return simboloE2;
+      
    }
 
    //F		-> '(' E ')' | not F | id ['[' E ']']| num
-   void F() {
+   Simbolo F() {
+      Simbolo simboloF = new Simbolo();
+      Simbolo simboloF1 = new Simbolo();
       try {
-
+      
          checkEOF();
       
          if (s.getToken() == tabela.APAR) {
@@ -505,12 +524,15 @@ public class Parser {
             F();
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
+            simboloF = new Simbolo(simboloParaAnalise.getToken(),simboloParaAnalise.getLexema(),simboloParaAnalise.getEndereco(),simboloParaAnalise.getTipo(),"classe_variavel",0);
          } else {
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
+            simboloF = lexico.simbolos.buscaSimbolo(simboloParaAnalise.getLexema());
             if (s.getToken() == tabela.ACOL){
                casaToken(tabela.ACOL);
-               casaToken(tabela.VALORCONST);
+               //casaToken(tabela.VALORCONST); @TODO VITAO
+               E();
                casaToken(tabela.FCOL);
             }
          } 
@@ -519,7 +541,10 @@ public class Parser {
          checkEOF();
          System.err.println(e.toString());
       }
-}
+         
+         return simboloF;
+      
+   }
 
    void checkEOF() {
       if (lexico.ehEOF) {
@@ -548,7 +573,7 @@ public class Parser {
          System.out.println((lexico.linha + 1) + ":identificador ja declarado " + simbolo.getLexema());
          System.exit(0);
       }
-
+   
       simbolo.setClasse("classe_variavel");
    }
 
@@ -557,7 +582,7 @@ public class Parser {
          System.out.println((lexico.linha + 1) + ":identificador ja declarado " + simbolo.getLexema());
          System.exit(0);
       }
-
+   
       simbolo.setClasse("classe_constante");
    }
 

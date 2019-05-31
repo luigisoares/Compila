@@ -10,6 +10,8 @@ Integer wi[40];
 char yi[40];
 Const MAXITER="abc";
 
+k = 'c';
+
 /* Programa Principal */
 
   write("Digite seu nome: ");

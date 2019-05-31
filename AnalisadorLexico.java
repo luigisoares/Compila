@@ -3,7 +3,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AnalisadorLexico {
-   TabelaSimbolo simbolos = new TabelaSimbolo();
+   public TabelaSimbolo simbolos;
+  public AnalisadorLexico(TabelaSimbolo tabela){
+   this.simbolos = tabela;
+  }
+
    String lexema = "";
    public boolean devolve = false;
    Simbolo simb;

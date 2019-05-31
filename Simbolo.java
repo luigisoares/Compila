@@ -9,23 +9,23 @@ public class Simbolo {
    public Simbolo(){
       
    }
-   
+      
    public Simbolo(byte token, String lexema, int endereco){
       this.lexema = lexema;
       this.token = token;
       this.endereco = endereco;
    }
 	
-   public Simbolo(byte token, String lexema, String tipo, int endereco){
+   public Simbolo(byte token, String lexema,int endereco, String tipo){
       this.token = token;
       this.lexema = lexema;
       this.tipo = tipo;
       this.endereco = endereco;
    }
    
-   public Simbolo(String lexema, byte token, String classe, String tipo, int endereco, int tamanho) {
-      this.lexema = lexema;
+   public Simbolo(byte token,String lexema, int endereco, String tipo,String classe, int tamanho) {
       this.token = token;
+      this.lexema = lexema;
       this.classe = classe;
       this.tipo = tipo;
       this.endereco = endereco;
