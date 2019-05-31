@@ -71,17 +71,22 @@ public class Parser {
 
    //D 		-> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
    void D() {
+      boolean condicao;
       try {
          checkEOF();
          if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
+               condicao = acaoSemantica9();
+
             } else {
                casaToken(tabela.CHAR);
+               condicao = acaoSemantica10();
             }         
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
+            acaoSemantica50(simboloParaAnalise,condicao);
             D1();
             casaToken(tabela.PV);
          } else if(s.getToken() == tabela.CONST){
@@ -107,11 +112,14 @@ public class Parser {
          else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR){
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
+               condicao = acaoSemantica9();
             } else {
                casaToken(tabela.CHAR);
+               condicao = acaoSemantica10();
             }         
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
+            acaoSemantica50(simboloParaAnalise, condicao);
             D1();
             casaToken(tabela.PV);
          }
