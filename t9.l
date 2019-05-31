@@ -1,10 +1,9 @@
 /* Exemplo de Programa na linguagem L */
 
 Var integer n,y=3,o[3];
-const w=6;
+Var char nome;
 const l="abc";
 Var char k;
-const ou=3; 
 Var char c,q,e;
 Integer wi[40];
 char yi[40];
