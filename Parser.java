@@ -96,7 +96,7 @@ public class Parser {
             if(s.getToken() == tabela.ATT){
                if(s.getToken() == tabela.ATT){
                   casaToken(tabela.ATT);
-                  System.out.println(CONSTV().getTipo());
+                  CONSTV();
                }  
             } else{
                casaToken(tabela.ACOL);
@@ -131,12 +131,14 @@ public class Parser {
 
    //D' 		-> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV | '['num']']}
    void D1(Simbolo id) {
+      Simbolo temp;
       try {
          checkEOF();
          if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL || s.getToken() == tabela.VIR){
             if(s.getToken() == tabela.ATT){
                casaToken(tabela.ATT);
-               CONSTV();
+               temp = CONSTV();
+               acaoSemantica42(id, temp);
                if (s.getToken() == tabela.VIR) {
                   while (s.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
@@ -204,16 +206,9 @@ public class Parser {
       Simbolo constvSimbolo = new Simbolo();
       try {
          checkEOF();
-         if (s.getToken() == tabela.VALORCONST || s.getToken() == tabela.HEXA) { // @TODO Como pegar o 0 ?
-            if(s.getToken() == tabela.VALORCONST) {
-               casaToken(tabela.VALORCONST); //HEXA
-            } else {
-               System.out.println(s.getLexema());
-               casaToken(tabela.HEXA); //HEXA
-               constvSimbolo.setTipo("tipo_caracter");
-            }
-         } else if (s.getToken() == tabela.CHAR) {
-            casaToken(tabela.CHAR);
+         if(s.getToken() == tabela.VALORCONST) {
+            casaToken(tabela.VALORCONST);
+            constvSimbolo.setTipo(simboloParaAnalise.getTipo());
          } else{
             E();
          }
@@ -582,6 +577,13 @@ public class Parser {
    // void acaoSemantica40(Simbolo id, Simbolo D1) {
    //    D1.setTipo(id.getTipo());  
    // }
+
+   void acaoSemantica42(Simbolo simbolo1, Simbolo simbolo2) {
+      if(!simbolo1.getTipo().equals(simbolo2.getTipo())) {
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
 
    void acaoSemantica50(Simbolo simbolo, boolean condicao) {
       if(condicao) {

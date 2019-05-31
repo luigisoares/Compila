@@ -311,7 +311,7 @@ public class AnalisadorLexico {
                      if (lexema.length() == 4) {
                         // Verifica se os 2 ultimos digitos sao hexadecimais
                         if (Character.digit(lexema.charAt(2), 16) >= 0 && Character.digit(lexema.charAt(3), 16) >= 0) {
-                           simb = simbolos.inserirHexa(lexema, "tipo_caracter");
+                           simb = simbolos.inserirConst(lexema, "tipo_caracter");
                         } else {
                            printError();
                         }
@@ -339,7 +339,7 @@ public class AnalisadorLexico {
                simb = simbolos.inserirConst(lexema, "tipo_inteiro");
             }
          } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
-            simb = simbolos.inserirConst(lexema, "tipo_string");
+            simb = simbolos.inserirConst(lexema, "tipo_caracter");
          } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
             simb = simbolos.inserirConst(lexema, "tipo_string");
          } else {

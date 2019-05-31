@@ -47,7 +47,6 @@ public class TabelaSimbolo {
 	
    public final byte ID = 41;
    public final byte VALORCONST = 42; 
-   public final byte HEXA = 43;
 	
    public TabelaSimbolo() {
       tabela.put("if", new Simbolo(IF,"if", ++index));
@@ -115,13 +114,6 @@ public class TabelaSimbolo {
    public Simbolo inserirConst(String lexema, String tipo){
       lexema = lexema.toLowerCase();
       Simbolo simbolo = new Simbolo(VALORCONST, lexema, tipo, ++index);
-      tabela.put(lexema, simbolo);
-      return tabela.get(lexema);
-   }   
-
-   public Simbolo inserirHexa(String lexema, String tipo) {
-      lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(HEXA, lexema, tipo, ++index);
       tabela.put(lexema, simbolo);
       return tabela.get(lexema);
    }

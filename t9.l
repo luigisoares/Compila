@@ -1,13 +1,15 @@
 /* Exemplo de Programa na linguagem L */
 
 Var integer n,y=3,o[3];
-Var char nome;
-const l= 0x50;
+Var char nome='x';
+Var char nomw=0x44;
+Var integer luigi="ABC";
+const l=45;
 Var char k;
 Var char qw,q,e;
 Integer wi[40];
 char yi[40];
-Const MAXITER=0;
+Const MAXITER="abc";
 
 /* Programa Principal */
 
