@@ -3,7 +3,7 @@ import java.io.BufferedReader;
 public class Parser {
    AnalisadorLexico lexico;
    TabelaSimbolo tabela;
-   Simbolo s;
+   Simbolo s, simboloParaAnalise;
    BufferedReader arquivo;
 
    Parser(BufferedReader arquivo) {
@@ -80,12 +80,14 @@ public class Parser {
             } else {
                casaToken(tabela.CHAR);
             }         
+            acaoSemantica1(s);
             casaToken(tabela.ID);
             D1();
             casaToken(tabela.PV);
             // }
          } else if(s.getToken() == tabela.CONST){
             casaToken(tabela.CONST);
+            acaoSemantica2(s);
             casaToken(tabela.ID);
             if(s.getToken() == tabela.ATT){
                if(s.getToken() == tabela.ATT){
@@ -109,6 +111,7 @@ public class Parser {
             } else {
                casaToken(tabela.CHAR);
             }         
+            acaoSemantica1(s);
             casaToken(tabela.ID);
             D1();
             casaToken(tabela.PV);
@@ -130,6 +133,7 @@ public class Parser {
                if (s.getToken() == tabela.VIR) {
                   while (s.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
+                     acaoSemantica1(s);
                      casaToken(tabela.ID);
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                         if (s.getToken() == tabela.ACOL){
@@ -146,6 +150,7 @@ public class Parser {
             } else if (s.getToken() == tabela.VIR) {
                while (s.getToken() != tabela.PV) {
                   casaToken(tabela.VIR);
+                  acaoSemantica1(s);
                   casaToken(tabela.ID);
                   if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                      if (s.getToken() == tabela.ACOL){
@@ -165,6 +170,7 @@ public class Parser {
                if (s.getToken() == tabela.VIR) {
                   while (s.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
+                     acaoSemantica1(s);
                      casaToken(tabela.ID);
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                         if (s.getToken() == tabela.ACOL){
@@ -519,6 +525,24 @@ public class Parser {
       return (s != null && (s.getToken() == tabela.ID || s.getToken() == tabela.FOR || s.getToken() == tabela.IF
          	|| s.getToken() == tabela.PV || s.getToken() == tabela.READLN || s.getToken() == tabela.WRITELN
          	|| s.getToken() == tabela.WRITE));
+   }
+
+   void acaoSemantica1(Simbolo simbolo) {
+      if(!simbolo.getClasse().equals("")) {
+         System.out.println((lexico.linha + 1) + ":identificador ja declarado " + s.getLexema());
+         System.exit(0);
+      }
+
+      simbolo.setClasse("classe_variavel");
+   }
+
+   void acaoSemantica2(Simbolo simbolo) {
+      if(!simbolo.getClasse().equals("")) {
+         System.out.println((lexico.linha + 1) + ":identificador ja declarado " + s.getLexema());
+         System.exit(0);
+      }
+
+      simbolo.setClasse("classe_constante");
    }
 
 }

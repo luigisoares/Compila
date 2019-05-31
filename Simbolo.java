@@ -14,11 +14,10 @@ public class Simbolo {
    }
 	
    public Simbolo(byte token, String lexema, String tipo, int endereco){
-      this.lexema = lexema;
       this.token = token;
+      this.lexema = lexema;
       this.tipo = tipo;
       this.endereco = endereco;
-      //this.tamanho = tamanho;
    }
    
    public Simbolo(String lexema, byte token, String classe, String tipo, int endereco, int tamanho) {

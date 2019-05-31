@@ -4,8 +4,10 @@ Var integer n,y=3,o[3];
 const w=6;
 const l="abc";
 Var char k;
+const ou=3; 
 Var char c,q,e;
-Integer nome[40];
+/* Integer w[40];
+char y[40]; */
 Const MAXITER=0;
 
 /* Programa Principal */
