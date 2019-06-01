@@ -10,7 +10,7 @@ Integer wi[40];
 char yi[40];
 Const MAXITER = 'b';
 
-k = yi = 0x00;
+k = -n + y;
 
 /* Programa Principal */
 

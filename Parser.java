@@ -144,6 +144,7 @@ public class Parser {
                      casaToken(tabela.VIR);
                      casaToken(tabela.ID);
                      acaoSemantica1(simboloParaAnalise);
+                     acaoSemantica51(id,simboloParaAnalise);
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                         if (s.getToken() == tabela.ACOL){
                            casaToken(tabela.ACOL);
@@ -162,6 +163,7 @@ public class Parser {
                   casaToken(tabela.VIR);
                   casaToken(tabela.ID);
                   acaoSemantica1(simboloParaAnalise);
+                  acaoSemantica51(id,simboloParaAnalise);
                   if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                      if (s.getToken() == tabela.ACOL){
                         casaToken(tabela.ACOL);
@@ -183,6 +185,7 @@ public class Parser {
                      casaToken(tabela.VIR);
                      casaToken(tabela.ID);
                      acaoSemantica1(simboloParaAnalise);
+                     acaoSemantica51(id,simboloParaAnalise);
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                         if (s.getToken() == tabela.ACOL){
                            casaToken(tabela.ACOL);
@@ -444,7 +447,7 @@ public class Parser {
             simboloE2 = E1();
             acaoSemantica11(simboloE,simboloE2);
             acaoSemantica12(simboloE,condicao);
-         
+            simboloE.setTipo("tipo_logico"); //acaosemantica47
          }
       
       } catch (Exception e) {
@@ -460,26 +463,35 @@ public class Parser {
    Simbolo E1() {
       Simbolo simboloE1 = new Simbolo();
       Simbolo simboloE1_2 = new Simbolo();
+      boolean condicao;
+      int operacao = 0; /* 1 para add , 2 para sub , 3 para or, 0 default */
       try {
          checkEOF();
-      
+         condicao = acaoSemantica9();
          if (s.getToken() == tabela.ADD) {
             casaToken(tabela.ADD);
+            condicao = acaoSemantica10();
          } else if (s.getToken() == tabela.SUB) {
             casaToken(tabela.SUB);
+            condicao = acaoSemantica10();
          }
-      
          simboloE1 = E2(); // acaoSemantica14
+         acaoSemantica13(simboloE1,condicao);
          while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
          //if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
             if (s.getToken() == tabela.ADD) {
                casaToken(tabela.ADD);
+               operacao=acaoSemantica15(simboloE1);
             } else if (s.getToken() == tabela.SUB) {
                casaToken(tabela.SUB);
+               operacao=acaoSemantica16(simboloE1);
             } else {
                casaToken(tabela.OR);
+               operacao=acaoSemantica17(simboloE1);
             }
             simboloE1_2 = E2();
+            acaoSemantica18(simboloE1,simboloE1_2);
+            acaoSemantica19(simboloE1_2,operacao);
          }
          
       } catch (Exception e) {
@@ -622,6 +634,12 @@ public class Parser {
    // void acaoSemantica40(Simbolo id, Simbolo D1) {
    //    D1.setTipo(id.getTipo());  
    // }
+   
+   // Implementada por passagem de parametros do metodo A
+   // void acaoSemantica4(Simbolo id, Simbolo A) {
+   //    D1.setTipo(id.getTipo());  
+   // }
+
 
    void acaoSemantica42(Simbolo simbolo1, Simbolo simbolo2) {
       if(!simbolo1.getTipo().equals(simbolo2.getTipo())) {
@@ -664,6 +682,64 @@ public class Parser {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
+   }
+   
+   void acaoSemantica13(Simbolo expt1,boolean condicao){
+      if(expt1.getTipo() != "tipo_inteiro" && condicao == true){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   int acaoSemantica15(Simbolo expt1){
+      if(expt1.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      } else {
+         return 1;
+      }
+      return 0;
+   }
+   
+   int acaoSemantica16(Simbolo expt1){
+      if(expt1.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }else {
+         return 2;
+      }
+      return 0;
+   }
+   
+   int acaoSemantica17(Simbolo expt1){
+      if(expt1.getTipo() != "tipo_logico"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }else {
+         return 3;
+      }
+      return 0;
+   }
+   
+   void acaoSemantica18(Simbolo expt1,Simbolo expt2){
+      if(expt1.getTipo() != expt2.getTipo()){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica19(Simbolo expt2,int operacao){
+   /* 1 para add , 2 para sub , 3 para or, 0 default */
+      if(expt2.getTipo() != "tipo_logico" && operacao == 3 ||
+      expt2.getTipo() != "tipo_inteiro" && operacao == 2 ||
+      expt2.getTipo() != "tipo_inteiro" && operacao == 1 ){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica51(Simbolo pai, Simbolo filhoID ) {
+      filhoID.setTipo(pai.getTipo());
    }
 
 }
