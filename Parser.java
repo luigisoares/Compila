@@ -507,6 +507,7 @@ public class Parser {
    Simbolo E2() {
       Simbolo simboloE2 = new Simbolo();
       Simbolo simboloE2_1 = new Simbolo();
+      int operador = 0;
       try {
          checkEOF();
       
@@ -515,14 +516,20 @@ public class Parser {
          //if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
             if(s.getToken() == tabela.MUL){
                casaToken(tabela.MUL);
+               operador = acaoSemantica21(simboloE2);
             }else if(s.getToken() == tabela.DIV){
                casaToken(tabela.DIV);
+               operador = acaoSemantica22(simboloE2);
             }else if(s.getToken() == tabela.MOD){
                casaToken(tabela.MOD);
+               operador = acaoSemantica23(simboloE2);
             }else{
                casaToken(tabela.AND);
+               operador = acaoSemantica24(simboloE2);
             }
             simboloE2_1 = F();
+            acaoSemantica25(simboloE2,simboloE2_1);
+            acaoSemantica26(simboloE2_1,operador);
          }
       
       } catch (Exception e) {
@@ -740,6 +747,64 @@ public class Parser {
    
    void acaoSemantica51(Simbolo pai, Simbolo filhoID ) {
       filhoID.setTipo(pai.getTipo());
+   }
+   
+   int acaoSemantica21(Simbolo f1){
+      if(f1.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }else {
+         return 1;
+      }
+      return 0;
+   }
+   
+   int acaoSemantica22(Simbolo f1){
+      if(f1.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }else {
+         return 2;
+      }
+      return 0;
+   }
+   
+   int acaoSemantica23(Simbolo f1){
+      if(f1.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }else {
+         return 3;
+      }
+      return 0;
+   }
+   
+   int acaoSemantica24(Simbolo f1){
+      if(f1.getTipo() != "tipo_logico"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }else {
+         return 4;
+      }
+      return 0;
+   }
+   
+   void acaoSemantica25(Simbolo f1,Simbolo f2){
+      if(f1.getTipo() != f2.getTipo()){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica26(Simbolo f2,int operacao){
+   /* 1 para mul , 2 para div , 3 para mod, 4 para and,  0 default */
+      if(f2.getTipo() != "tipo_logico" && operacao == 4 ||
+      f2.getTipo() != "tipo_inteiro" && operacao == 3 ||
+      f2.getTipo() != "tipo_inteiro" && operacao == 2 ||
+      f2.getTipo() != "tipo_inteiro" && operacao == 1 ){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
    }
 
 }
