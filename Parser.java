@@ -261,6 +261,7 @@ public class Parser {
             casaToken(tabela.FOR);
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
+            acaoSemantica6(simboloParaAnalise);
             casaToken(tabela.ATT);
             E();
             //casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
@@ -292,6 +293,7 @@ public class Parser {
             casaToken(tabela.APAR);
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
+            acaoSemantica6(simboloParaAnalise);
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.WRITELN) {
@@ -551,11 +553,12 @@ public class Parser {
       
          if (s.getToken() == tabela.APAR) {
             casaToken(tabela.APAR);
-            E();
+            simboloF = E(); // acaoSemantica27
             casaToken(tabela.FPAR);
          } else if (s.getToken() == tabela.NOT) {
             casaToken(tabela.NOT);
-            F();
+            simboloF1 = F();
+            acaoSemantica28(simboloF1);
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
             // \/ acaoSemantica29
@@ -802,6 +805,20 @@ public class Parser {
       f2.getTipo() != "tipo_inteiro" && operacao == 3 ||
       f2.getTipo() != "tipo_inteiro" && operacao == 2 ||
       f2.getTipo() != "tipo_inteiro" && operacao == 1 ){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica28(Simbolo f1){
+      if(f1.getTipo() != "tipo_logico"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica6(Simbolo id){
+      if(id.getClasse() == "classe_constante"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }

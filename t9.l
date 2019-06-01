@@ -7,15 +7,16 @@ const l=45;
 Var char k;
 Var char qw,q,e;
 Integer wi[40];
+Integer nomw3 = 3, nom2;
 char yi[40];
 Const MAXITER = 'b';
 
-k = k * 'b';
+k = -n * y + 3 % nomw3;
 
 /* Programa Principal */
 
   write("Digite seu nome: ");
   readln(nome);
-  For n=1 to MAXITER do {
+  For nMAXITER=1 to MAXITER do {
       writeln("Ola' ",nome);
 	}
