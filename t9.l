@@ -6,9 +6,9 @@ Var char nomw=0x44;
 /*const l=45;*/
 Var char k;
 Var char qw,q,e;
-Integer wi[40];
+Integer wi[2048];
 Integer nomw3 = 3, nom2;
-char yi[40];
+char yi[4096];
 Const MAXITER[3] = "asd";
 
 k = -n * y + 3 % nomw3;

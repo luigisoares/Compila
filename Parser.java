@@ -203,7 +203,7 @@ public class Parser {
                simboloEvet = E();
                acaoSemantica33(simboloEvet);
                acaoSemantica54(simboloEvet,id);
-                           //acaoSemantica41(id,simboloEvet);
+               acaoSemantica41(id,simboloEvet);
                casaToken(tabela.FCOL);
                if (s.getToken() == tabela.VIR) {
                   while (s.getToken() != tabela.PV) {
