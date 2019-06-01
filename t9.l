@@ -17,6 +17,6 @@ k = -n * y + 3 % nomw3;
 
   write("Digite seu nome: ");
   readln(nome);
-  For nMAXITER=1 to MAXITER do {
+  For nom2= n to 1 do {
       writeln("Ola' ",nome);
 	}
