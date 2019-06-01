@@ -547,6 +547,7 @@ public class Parser {
    Simbolo F() {
       Simbolo simboloF = new Simbolo();
       Simbolo simboloF1 = new Simbolo();
+      Simbolo simboloE = new Simbolo();
       try {
       
          checkEOF();
@@ -570,8 +571,10 @@ public class Parser {
             simboloF = lexico.simbolos.buscaSimbolo(simboloParaAnalise.getLexema());
             if (s.getToken() == tabela.ACOL){
                casaToken(tabela.ACOL);
+               acaoSemantica38(simboloF);
                //casaToken(tabela.VALORCONST); @TODO VITAO
-               E();
+               simboloE = E();
+               acaoSemantica39(simboloF,simboloE);
                casaToken(tabela.FCOL);
             }
          } 
@@ -821,6 +824,25 @@ public class Parser {
       if(id.getClasse() == "classe_constante"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
+      }
+   }
+   
+   void acaoSemantica38(Simbolo id){
+      if(id.getTamanho() <= 0){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica39(Simbolo id, Simbolo E){
+      if(E.getTipo() != "tipo_inteiro"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      } else {
+         if(Integer.parseInt(E.getLexema()) > id.getTamanho()){
+         System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
+         System.exit(0);
+         }
       }
    }
 
