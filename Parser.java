@@ -104,21 +104,22 @@ public class Parser {
                   casaToken(tabela.ATT);
                   simboloConst = CONSTV();
                   c = lexico.simbolos.buscaSimbolo(simboloId.getLexema());
-                  c.setTipo(simboloConst.getTipo());// acaoSemantica53
-                  
+                  c.setTipo(simboloConst.getTipo());// acaoSemantica53                   
                }  
             } else{
                casaToken(tabela.ACOL);
                //casaToken(tabela.VALORCONST); //@TODO NUM
                simboloEconst = E();
                acaoSemantica33(simboloEconst);
+               acaoSemantica54(simboloEconst, simboloId);
                casaToken(tabela.FCOL);
                casaToken(tabela.ATT);
-               casaToken(tabela.ASPAS);
+               //casaToken(tabela.ASPAS);
                casaToken(tabela.VALORCONST); //@TODO STRING
                simboloString = simboloParaAnalise;
                acaoSemantica48(simboloEconst,simboloString);
-               casaToken(tabela.ASPAS);
+               acaoSemantica55(simboloString,simboloId);
+               //casaToken(tabela.ASPAS);
             }    
             casaToken(tabela.PV);  
          } 
@@ -166,6 +167,7 @@ public class Parser {
                            simboloEvet = E();
                            acaoSemantica33(simboloEvet);
                            acaoSemantica41(id,simboloEvet);
+                           acaoSemantica54(simboloEvet,id);
                            casaToken(tabela.FCOL);
                         } else {
                            casaToken(tabela.ATT);
@@ -187,6 +189,7 @@ public class Parser {
                         simboloEvet = E();
                         acaoSemantica33(simboloEvet);
                         acaoSemantica41(id,simboloEvet);
+                        acaoSemantica54(simboloEvet,id);
                         casaToken(tabela.FCOL);
                      } else {
                         casaToken(tabela.ATT);
@@ -199,6 +202,7 @@ public class Parser {
                casaToken(tabela.ACOL);
                simboloEvet = E();
                acaoSemantica33(simboloEvet);
+               acaoSemantica54(simboloEvet,id);
                            //acaoSemantica41(id,simboloEvet);
                casaToken(tabela.FCOL);
                if (s.getToken() == tabela.VIR) {
@@ -213,6 +217,7 @@ public class Parser {
                            simboloEvet = E();
                            acaoSemantica33(simboloEvet);
                            acaoSemantica41(id,simboloEvet);
+                           acaoSemantica54(simboloEvet,id);
                            casaToken(tabela.FCOL);
                         } else {
                            casaToken(tabela.ATT);
@@ -351,7 +356,7 @@ public class Parser {
             while(s.getToken() == tabela.VIR) {
                casaToken(tabela.VIR);
                simboloEwr = E();
-                  acaoSemantica52(simboloEwr);
+               acaoSemantica52(simboloEwr);
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
@@ -359,11 +364,11 @@ public class Parser {
             casaToken(tabela.WRITE);
             casaToken(tabela.APAR);
             simboloEwr = E();
-               acaoSemantica52(simboloEwr);
+            acaoSemantica52(simboloEwr);
             while(s.getToken() == tabela.VIR) {
                casaToken(tabela.VIR);
                simboloEwr = E();
-                  acaoSemantica52(simboloEwr);
+               acaoSemantica52(simboloEwr);
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
@@ -891,7 +896,7 @@ public class Parser {
          System.exit(0);
       } else {
          if(Integer.parseInt(E.getLexema()) > id.getTamanho()){
-            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
+            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
             System.exit(0);
          }
       }
@@ -935,12 +940,12 @@ public class Parser {
    void acaoSemantica41(Simbolo D, Simbolo E){
       if(D.getTipo() == "tipo_inteiro"){
          if(Integer.parseInt(E.getLexema()) > 2048){
-            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
+            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
             System.exit(0);
          }
       } else if(D.getTipo() == "tipo_caracter"){
          if(Integer.parseInt(E.getLexema()) > 4096){
-            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
+            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
             System.exit(0);
          }
       } else {
@@ -950,8 +955,8 @@ public class Parser {
    }
    
    void acaoSemantica48(Simbolo E, Simbolo string){
-      if(Integer.parseInt(E.getLexema()) < string.getLexema().length()){
-         System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
+      if((string.getLexema().length()-2) > Integer.parseInt(E.getLexema())  ){
+         System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
          System.exit(0);
       }
    }
@@ -962,6 +967,19 @@ public class Parser {
          System.exit(0);
       } 
    }
+   
+   void acaoSemantica54(Simbolo E, Simbolo id){ 
+      if(E.getTipo() == "tipo_inteiro"){
+         id = lexico.simbolos.buscaSimbolo(id.getLexema());
+         id.setTamanho(Integer.parseInt(E.getLexema()));
+      } else {
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
   
-
+   void acaoSemantica55(Simbolo E, Simbolo id){ 
+      id = lexico.simbolos.buscaSimbolo(id.getLexema());
+      id.setTipo(E.getTipo());
+   }
 }

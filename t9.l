@@ -9,7 +9,7 @@ Var char qw,q,e;
 Integer wi[40];
 Integer nomw3 = 3, nom2;
 char yi[40];
-Const MAXITER = "asd";
+Const MAXITER[3] = "asd";
 
 k = -n * y + 3 % nomw3;
 write(MAXITER);
