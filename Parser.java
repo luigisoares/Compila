@@ -73,6 +73,9 @@ public class Parser {
    void D() {
       Simbolo simboloEconst = new Simbolo();
       Simbolo simboloString = new Simbolo();
+      Simbolo simboloId = new Simbolo();
+      Simbolo simboloConst = new Simbolo();
+      Simbolo c = new Simbolo();
       boolean condicao;
       try {
          checkEOF();
@@ -95,10 +98,14 @@ public class Parser {
             casaToken(tabela.CONST);
             casaToken(tabela.ID);
             acaoSemantica2(simboloParaAnalise);
+            simboloId = simboloParaAnalise;
             if(s.getToken() == tabela.ATT){
                if(s.getToken() == tabela.ATT){
                   casaToken(tabela.ATT);
-                  CONSTV();
+                  simboloConst = CONSTV();
+                  c = lexico.simbolos.buscaSimbolo(simboloId.getLexema());
+                  c.setTipo(simboloConst.getTipo());// acaoSemantica53
+                  
                }  
             } else{
                casaToken(tabela.ACOL);
@@ -272,6 +279,7 @@ public class Parser {
       Simbolo simboloId = new Simbolo();
       Simbolo simboloEif = new Simbolo();
       Simbolo simboloEvet = new Simbolo();
+      Simbolo simboloEwr = new Simbolo();
       try {
          checkEOF();
          if (s.getToken() == tabela.ID) {
@@ -338,20 +346,24 @@ public class Parser {
          } else if (s.getToken() == tabela.WRITELN) {
             casaToken(tabela.WRITELN);
             casaToken(tabela.APAR);
-            E();
+            simboloEwr = E();
+            acaoSemantica52(simboloEwr);
             while(s.getToken() == tabela.VIR) {
                casaToken(tabela.VIR);
-               E();
+               simboloEwr = E();
+                  acaoSemantica52(simboloEwr);
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.WRITE) {
             casaToken(tabela.WRITE);
             casaToken(tabela.APAR);
-            E();
+            simboloEwr = E();
+               acaoSemantica52(simboloEwr);
             while(s.getToken() == tabela.VIR) {
                casaToken(tabela.VIR);
-               E();
+               simboloEwr = E();
+                  acaoSemantica52(simboloEwr);
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
@@ -900,7 +912,7 @@ public class Parser {
    }
    
    void acaoSemantica33(Simbolo E){
-      if(E.getTipo() == "tipo_caractere" && E.getClasse() != "classe_variavel"){
+      if(E.getTipo() == "tipo_caracter" && E.getClasse() != "classe_variavel"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } 
@@ -926,7 +938,7 @@ public class Parser {
             System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
             System.exit(0);
          }
-      } else if(D.getTipo() == "tipo_caractere"){
+      } else if(D.getTipo() == "tipo_caracter"){
          if(Integer.parseInt(E.getLexema()) > 4096){
             System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o máximo permitido.");
             System.exit(0);
@@ -943,5 +955,13 @@ public class Parser {
          System.exit(0);
       }
    }
+   
+   void acaoSemantica52(Simbolo E){
+      if(E.getTipo() != "tipo_inteiro" && E.getTipo() != "tipo_caracter" && E.getTipo() != "tipo_string"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      } 
+   }
+  
 
 }
