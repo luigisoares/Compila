@@ -216,7 +216,7 @@ public class Parser {
             casaToken(tabela.VALORCONST);
             constvSimbolo.setTipo(simboloParaAnalise.getTipo());
          } else{
-            constvSimbolo = E();
+            constvSimbolo = E(); //acaoSemantica43
          }
       } catch (Exception e) {
          checkEOF();
