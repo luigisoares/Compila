@@ -21,7 +21,7 @@ public class Principal {
             // file = "t4.l"; // ! no lugar do ]
             // file = "t5.l"; // esqueceu o ;
             // file = "t6.l"; // no +- printa o -
-            // file = "t7.l"; // no step do for n�o tem valor pra saber os steps
+            // file = "t7.l"; // no step do for nao tem valor pra saber os steps
             // file = "t8.l"; // EOF esqueceu de por } no final do for
          
             if(file.length() > 2){

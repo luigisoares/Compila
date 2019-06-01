@@ -323,9 +323,9 @@ public class Parser {
 
    //A		-> = E | '['E']' = E
    void A(Simbolo id) {
-   Simbolo simboloA = new Simbolo();
-   Simbolo simboloA1 = new Simbolo();
-   Simbolo simboloA2 = new Simbolo();
+      Simbolo simboloA = new Simbolo();
+      Simbolo simboloA1 = new Simbolo();
+      Simbolo simboloA2 = new Simbolo();
    
       try {
          checkEOF();
@@ -420,7 +420,7 @@ public class Parser {
          simboloE = E1(); // acaoSemantica7
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
          		|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
-               condicao = acaoSemantica9();
+            condicao = acaoSemantica9();
             if(s.getToken() == tabela.MAIOR){
                casaToken(tabela.MAIOR);              
                acaoSemantica8(simboloE);
@@ -442,6 +442,9 @@ public class Parser {
             }
                
             simboloE2 = E1();
+            acaoSemantica11(simboloE,simboloE2);
+            acaoSemantica12(simboloE,condicao);
+         
          }
       
       } catch (Exception e) {
@@ -450,7 +453,7 @@ public class Parser {
       }
       
          
-         return simboloE;
+      return simboloE;
    }
 
    //E'		-> [+ | -] E'' {('+' | '-' | or ) E''}
@@ -484,7 +487,7 @@ public class Parser {
          System.err.println(e.toString());
       }
       
-         return simboloE1;
+      return simboloE1;
       
    }
 
@@ -515,7 +518,7 @@ public class Parser {
          System.err.println(e.toString());
       }
          
-         return simboloE2;
+      return simboloE2;
       
    }
 
@@ -556,7 +559,7 @@ public class Parser {
          System.err.println(e.toString());
       }
          
-         return simboloF;
+      return simboloF;
       
    }
 
@@ -645,6 +648,20 @@ public class Parser {
    void acaoSemantica5(Simbolo simbolo){
       if(simbolo.getClasse() == "classe_constante"){
          System.out.println((lexico.linha + 1) + ":classe de identificador incompativel "+simbolo.getLexema());
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica11(Simbolo exps1,Simbolo exps2){
+      if(exps1.getTipo() != exps2.getTipo()){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
+   }
+   
+   void acaoSemantica12(Simbolo exps1,boolean condicao){
+      if(exps1.getTipo() == "tipo_string" && condicao == false){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
    }
