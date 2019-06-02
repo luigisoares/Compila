@@ -322,7 +322,7 @@ public class Parser {
                casaToken(tabela.STEP);
                casaToken(tabela.ID); // @TODO Como pegar o num ? 
                acaoSemantica3(simboloParaAnalise);
-               acaoSemantica33(simboloParaAnalise);
+               acaoSemantica36(simboloParaAnalise);
                //acaoSemantica34(); // não implementada a 34
             }
             casaToken(tabela.DO);
@@ -928,7 +928,7 @@ public class Parser {
    }
    
    void acaoSemantica33(Simbolo E){
-      if(E.getTipo() == "tipo_caracter" && E.getClasse() != "classe_variavel"){
+      if(E.getTipo() != "tipo_inteiro" && E.getClasse() != "classe_variavel"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } 
@@ -943,6 +943,13 @@ public class Parser {
    
    void acaoSemantica35(Simbolo E){
       if(E.getTipo() != "tipo_logico"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      } 
+   }
+   
+   void acaoSemantica36(Simbolo E){
+      if(E.getTipo() != "tipo_inteiro" || E.getClasse() != "classe_constante"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } 

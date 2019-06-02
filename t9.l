@@ -3,7 +3,7 @@
 Var integer n,y=3,o=65;
 Var char nome='x',vitor=0x4A;
 Var char nomw=0x44;
-/*const l=45;*/
+const l=45;
 Var char k;
 Var char qw,q,e;
 Integer wi[2048];
@@ -20,6 +20,6 @@ writeln(k);
   write("Digite seu nome: ");
   readln(nome);
   n = n + 1;
-  For nom2= n to 1 do {
+  For nom2= n to 1 step l do {
       writeln("Ola' ",nome);
 	}
