@@ -512,9 +512,9 @@ public class Parser {
             }
                
             simboloE2 = E1();
-            simboloCloneE2 = simboloE2;
-            acaoSemantica11(simboloE,simboloE2);
-            acaoSemantica12(simboloE,condicao);
+            simboloCloneE2 = new Simbolo(simboloE2.getToken(),simboloE2.getLexema(),simboloE2.getEndereco(),simboloE2.getTipo(),simboloE2.getClasse(),simboloE2.getTamanho());
+            acaoSemantica11(simboloCloneE,simboloCloneE2);
+            acaoSemantica12(simboloCloneE,condicao);
             simboloCloneE.setTipo("tipo_logico"); //acaosemantica47
             return simboloCloneE;
          }
@@ -532,6 +532,8 @@ public class Parser {
    Simbolo E1() {
       Simbolo simboloE1 = new Simbolo();
       Simbolo simboloE1_2 = new Simbolo();
+      Simbolo simboloCloneE1 = new Simbolo();
+      Simbolo simboloCloneE1_2 = new Simbolo();
       boolean condicao;
       int operacao = 0; /* 1 para add , 2 para sub , 3 para or, 0 default */
       try {
@@ -545,6 +547,7 @@ public class Parser {
             condicao = acaoSemantica10();
          }
          simboloE1 = E2(); // acaoSemantica14
+         simboloCloneE1 = new Simbolo(simboloE1.getToken(),simboloE1.getLexema(),simboloE1.getEndereco(),simboloE1.getTipo(),simboloE1.getClasse(),simboloE1.getTamanho());
          acaoSemantica13(simboloE1,condicao);
          while (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR || s.getToken() == tabela.MUL) {
          //if (s.getToken() == tabela.ADD || s.getToken() == tabela.SUB || s.getToken() == tabela.OR) {
@@ -559,8 +562,9 @@ public class Parser {
                operacao=acaoSemantica17(simboloE1);
             }
             simboloE1_2 = E2();
-            acaoSemantica18(simboloE1,simboloE1_2);
-            acaoSemantica19(simboloE1_2,operacao);
+            simboloCloneE1_2 = new Simbolo(simboloE1_2.getToken(),simboloE1_2.getLexema(),simboloE1_2.getEndereco(),simboloE1_2.getTipo(),simboloE1_2.getClasse(),simboloE1_2.getTamanho());
+            acaoSemantica18(simboloCloneE1,simboloCloneE1_2);
+            acaoSemantica19(simboloCloneE1_2,operacao);
          }
          
       } catch (Exception e) {
@@ -576,11 +580,14 @@ public class Parser {
    Simbolo E2() {
       Simbolo simboloE2 = new Simbolo();
       Simbolo simboloE2_1 = new Simbolo();
+      Simbolo simboloCloneE2 = new Simbolo();
+      Simbolo simboloCloneE2_1 = new Simbolo();
       int operador = 0;
       try {
          checkEOF();
       
          simboloE2 = F(); // acaoSemantica20
+         simboloCloneE2 = new Simbolo(simboloE2.getToken(),simboloE2.getLexema(),simboloE2.getEndereco(),simboloE2.getTipo(),simboloE2.getClasse(),simboloE2.getTamanho());
          while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
          //if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD || s.getToken() == tabela.AND) {
             if(s.getToken() == tabela.MUL){
@@ -597,8 +604,9 @@ public class Parser {
                operador = acaoSemantica24(simboloE2);
             }
             simboloE2_1 = F();
-            acaoSemantica25(simboloE2,simboloE2_1);
-            acaoSemantica26(simboloE2_1,operador);
+            simboloCloneE2_1 = new Simbolo(simboloE2_1.getToken(),simboloE2_1.getLexema(),simboloE2_1.getEndereco(),simboloE2_1.getTipo(),simboloE2_1.getClasse(),simboloE2_1.getTamanho());
+            acaoSemantica25(simboloCloneE2,simboloCloneE2_1);
+            acaoSemantica26(simboloCloneE2_1,operador);
          }
       
       } catch (Exception e) {
@@ -758,7 +766,7 @@ public class Parser {
    }
    
    void acaoSemantica12(Simbolo exps1,boolean condicao){
-      if(exps1.getTipo() == "tipo_string" && condicao == false){
+      if((exps1.getTipo() == "tipo_string" && condicao == false)){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
