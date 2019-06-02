@@ -1019,10 +1019,22 @@ public class Parser {
    void acaoSemantica57(Simbolo id, Simbolo string){
       if(id.getTipo() == "tipo_caracter" && string.getTipo() == "tipo_string"){
          if((string.getLexema().length()-2) > id.getTamanho()){
-         System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
-         System.exit(0);
+            System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
+            System.exit(0);
          }
          
+      } else if (id.getTipo() != string.getTipo()){
+         if(string.getTipo() == "tipo_logico"){
+            Simbolo x = lexico.simbolos.buscaSimbolo(string.getLexema());
+            if(x.getTipo() == string.getTipo() && x.getTipo() == "tipo_logico"){
+               System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+               System.exit(0);
+            } else {
+               return;
+            }
+         }
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
       }
    }
 }

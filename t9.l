@@ -12,8 +12,8 @@ Integer nomw3 = 3, nom2;
 char yi[2];
 Const MAXITER[3] = "asd";
 
-k = n + nom2; /* arrumar */
-o = (wi = wj);
+o = ((n < 1) or (1 = 1));
+n = n + n;
 yi = "bc";
 write((3 + 2));
 write(3);
