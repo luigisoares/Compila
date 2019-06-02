@@ -400,7 +400,7 @@ public class Parser {
             casaToken(tabela.ATT);
             acaoSemantica5(id);
             simboloA = E(); //acaoSemantica49
-            int a = 0;
+            acaoSemantica57(id,simboloA);
          } else {
             casaToken(tabela.ACOL);
             simboloA1 = E();
@@ -1013,6 +1013,16 @@ public class Parser {
       if(id.getTamanho() <= 0 && string.getTipo() == "tipo_string"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
+      }
+   }
+   
+   void acaoSemantica57(Simbolo id, Simbolo string){
+      if(id.getTipo() == "tipo_caracter" && string.getTipo() == "tipo_string"){
+         if((string.getLexema().length()-2) > id.getTamanho()){
+         System.out.println((lexico.linha + 1) + ":tamanho do vetor excede o maximo permitido.");
+         System.exit(0);
+         }
+         
       }
    }
 }

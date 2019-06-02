@@ -9,11 +9,12 @@ Var char qw,q,e;
 Integer wi[2048];
 Integer wj[2048];
 Integer nomw3 = 3, nom2;
-char yi[4096];
+char yi[2];
 Const MAXITER[3] = "asd";
 
 k = n + nom2; /* arrumar */
 o = (wi = wj);
+yi = "bc";
 write((3 + 2));
 write(3);
 writeln(k);
