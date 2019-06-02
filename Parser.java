@@ -104,7 +104,8 @@ public class Parser {
                   casaToken(tabela.ATT);
                   simboloConst = CONSTV();
                   c = lexico.simbolos.buscaSimbolo(simboloId.getLexema());
-                  c.setTipo(simboloConst.getTipo());// acaoSemantica53                   
+                  c.setTipo(simboloConst.getTipo());// acaoSemantica53  
+                  acaoSemantica56(c,simboloConst);                 
                }  
             } else{
                casaToken(tabela.ACOL);
@@ -147,6 +148,7 @@ public class Parser {
    void D1(Simbolo id) {
       Simbolo temp;
       Simbolo simboloEvet = new Simbolo();
+      Simbolo simboloId = new Simbolo();
       try {
          checkEOF();
          if(s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL || s.getToken() == tabela.VIR){
@@ -160,6 +162,7 @@ public class Parser {
                      casaToken(tabela.ID);
                      acaoSemantica1(simboloParaAnalise);
                      acaoSemantica51(id,simboloParaAnalise);
+                     simboloId = simboloParaAnalise;
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                         if (s.getToken() == tabela.ACOL){
                            casaToken(tabela.ACOL);
@@ -167,7 +170,7 @@ public class Parser {
                            simboloEvet = E();
                            acaoSemantica33(simboloEvet);
                            acaoSemantica41(id,simboloEvet);
-                           acaoSemantica54(simboloEvet,id);
+                           acaoSemantica54(simboloEvet,simboloId);
                            casaToken(tabela.FCOL);
                         } else {
                            casaToken(tabela.ATT);
@@ -183,13 +186,14 @@ public class Parser {
                   casaToken(tabela.ID);
                   acaoSemantica1(simboloParaAnalise);
                   acaoSemantica51(id,simboloParaAnalise);
+                  simboloId = simboloParaAnalise;
                   if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                      if (s.getToken() == tabela.ACOL){
                         casaToken(tabela.ACOL);
                         simboloEvet = E();
                         acaoSemantica33(simboloEvet);
                         acaoSemantica41(id,simboloEvet);
-                        acaoSemantica54(simboloEvet,id);
+                        acaoSemantica54(simboloEvet,simboloId);
                         casaToken(tabela.FCOL);
                      } else {
                         casaToken(tabela.ATT);
@@ -211,13 +215,14 @@ public class Parser {
                      casaToken(tabela.ID);
                      acaoSemantica1(simboloParaAnalise);
                      acaoSemantica51(id,simboloParaAnalise);
+                     simboloId = simboloParaAnalise;
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
                         if (s.getToken() == tabela.ACOL){
                            casaToken(tabela.ACOL);
                            simboloEvet = E();
                            acaoSemantica33(simboloEvet);
                            acaoSemantica41(id,simboloEvet);
-                           acaoSemantica54(simboloEvet,id);
+                           acaoSemantica54(simboloEvet,simboloId);
                            casaToken(tabela.FCOL);
                         } else {
                            casaToken(tabela.ATT);
@@ -395,6 +400,7 @@ public class Parser {
             casaToken(tabela.ATT);
             acaoSemantica5(id);
             simboloA = E(); //acaoSemantica49
+            int a = 0;
          } else {
             casaToken(tabela.ACOL);
             simboloA1 = E();
@@ -474,11 +480,14 @@ public class Parser {
    Simbolo E() {
       Simbolo simboloE = new Simbolo();
       Simbolo simboloE2 = new Simbolo();
+      Simbolo simboloCloneE = new Simbolo();
+      Simbolo simboloCloneE2 = new Simbolo();
       boolean condicao;
       try {
          checkEOF();
          
          simboloE = E1(); // acaoSemantica7
+         simboloCloneE = new Simbolo(simboloE.getToken(),simboloE.getLexema(),simboloE.getEndereco(),simboloE.getTipo(),simboloE.getClasse(),simboloE.getTamanho());
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
          		|| s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
             condicao = acaoSemantica9();
@@ -503,9 +512,11 @@ public class Parser {
             }
                
             simboloE2 = E1();
+            simboloCloneE2 = simboloE2;
             acaoSemantica11(simboloE,simboloE2);
             acaoSemantica12(simboloE,condicao);
-            simboloE.setTipo("tipo_logico"); //acaosemantica47
+            simboloCloneE.setTipo("tipo_logico"); //acaosemantica47
+            return simboloCloneE;
          }
       
       } catch (Exception e) {
@@ -726,7 +737,7 @@ public class Parser {
    }
 
    void acaoSemantica8(Simbolo simbolo){
-      if(simbolo.getTipo() != "tipo_inteiro"){
+      if(simbolo.getTipo() != "tipo_inteiro" && simbolo.getTipo() != "tipo_caracter"){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
@@ -885,7 +896,7 @@ public class Parser {
    
    void acaoSemantica38(Simbolo id){
       if(id.getTamanho() <= 0){
-         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis [tamanho] ");
          System.exit(0);
       }
    }
@@ -981,5 +992,12 @@ public class Parser {
    void acaoSemantica55(Simbolo E, Simbolo id){ 
       id = lexico.simbolos.buscaSimbolo(id.getLexema());
       id.setTipo(E.getTipo());
+   }
+   
+   void acaoSemantica56(Simbolo id, Simbolo string){
+      if(id.getTamanho() <= 0 && string.getTipo() == "tipo_string"){
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis");
+         System.exit(0);
+      }
    }
 }

@@ -6,8 +6,8 @@ integer nome[100];
 Char n4 = 'x';
 char nome2[2047], nome3[20];
 integer fed = 1000000;
-Const n5=0;
-Const n8 = "federico o lindo";
+Const n5[2]="bc";
+Const n8[22] = "federico o lindo";
 Const oi = 'f';
 var integer n9 = -9+n*3;
 char n3 = 0x00;
@@ -48,7 +48,7 @@ nome2 = "c";
 
   }
   
-  if (n4 = nome2[0]) or (nome2 = nome3) or (nome2 = n8) then{
+  if (n4 = nome2[0]) or (n4 = n3) or (n5 = n8) then{
 n4 = 'j';
   nome2 = "n";
 
