@@ -26,7 +26,7 @@ if 1 >= 0 then i = 5;
 if 1 < (1 and 1) then i = 5;
 if 1 > (not 1) then i = 5;
 if 1 = (0 or 1) or (0 or 1) then i = 5;
-if 1 < (1 and 1) and (0 or 1) then i = 5;
+if 1 < (n and n) and (n or n) then i = 5;
 if 1 > not (not 1) then i = 5;*/
 if j = 's' then i = 5;
 /*if j < "sadasda" then i = 5;*/

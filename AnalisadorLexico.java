@@ -4,9 +4,9 @@ import java.util.List;
 
 public class AnalisadorLexico {
    public TabelaSimbolo simbolos;
-  public AnalisadorLexico(TabelaSimbolo tabela){
-   this.simbolos = tabela;
-  }
+   public AnalisadorLexico(TabelaSimbolo tabela){
+      this.simbolos = tabela;
+   }
 
    String lexema = "";
    public boolean devolve = false;
@@ -285,8 +285,9 @@ public class AnalisadorLexico {
             case 16:
                c = (char) arquivo.read();
                //checkEOF(c);
-            
-               if (c == '/') {
+               if (c == '*'){
+                  stateI = 16;
+               } else if (c == '/') {
                   stateI = 0;
                   lexema = "";
                   ehComentario = false;
@@ -345,6 +346,7 @@ public class AnalisadorLexico {
          } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
             simb = simbolos.inserirConst(lexema, "tipo_caracter");
          } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
+            lexema += "$";
             simb = simbolos.inserirConst(lexema, "tipo_string");
          } else {
             printError();
