@@ -5,10 +5,12 @@ public class Parser {
    TabelaSimbolo tabela;
    Simbolo s, simboloParaAnalise;
    BufferedReader arquivo;
+   GeracaoMemoria doismil;
 
    Parser(BufferedReader arquivo) {
       try {
          this.arquivo = arquivo;
+         doismil = new GeracaoMemoria();
          tabela = new TabelaSimbolo();
          lexico = new AnalisadorLexico(tabela);
          s = lexico.analisarLexema(lexico.devolve, arquivo);
@@ -48,6 +50,11 @@ public class Parser {
    void S() {
       try {
          if (s != null) {
+            doismil.linhasCF.add("sseg SEGMENT STACK ;início seg. pilha");
+            doismil.linhasCF.add("byte 4000h DUP(?) ;dimensiona pilha");
+            doismil.linhasCF.add("sseg ENDS ;fim seg. pilha");
+            doismil.linhasCF.add("dseg SEGMENT PUBLIC ;início seg. dados");
+            doismil.linhasCF.add("byte 4000h DUP(?) ;temporários");
             do {
                checkEOF();
                D();
@@ -56,6 +63,8 @@ public class Parser {
                checkEOF();
                C();
             } while (ehComando());
+            
+            doismil.criarArquivoASM();
          }
       } catch (Exception e) {
          checkEOF();
@@ -79,7 +88,7 @@ public class Parser {
             if (s.getToken() == tabela.INTEGER) {
                casaToken(tabela.INTEGER);
                condicao = acaoSemantica9();
-
+            
             } else {
                casaToken(tabela.CHAR);
                condicao = acaoSemantica10();
@@ -380,7 +389,7 @@ public class Parser {
          } else {
             tokenInesperado();
          }
-
+      
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
@@ -392,10 +401,10 @@ public class Parser {
       Simbolo simboloA = new Simbolo();
       Simbolo simboloA1 = new Simbolo();
       Simbolo simboloA2 = new Simbolo();
-
+   
       try {
          checkEOF();
-
+      
          if (s.getToken() == tabela.ATT) {
             casaToken(tabela.ATT);
             acaoSemantica5(id);
@@ -423,7 +432,7 @@ public class Parser {
    void H() {
       try {
          checkEOF();
-
+      
          if (s.getToken() == tabela.ACHAVE) {
             casaToken(tabela.ACHAVE);
             while (ehComando()) {
@@ -443,7 +452,7 @@ public class Parser {
    void J() {
       try {
          checkEOF();
-
+      
          if (s.getToken() == tabela.ACHAVE) {
             casaToken(tabela.ACHAVE);
             do {
@@ -490,7 +499,7 @@ public class Parser {
       boolean condicao;
       try {
          checkEOF();
-
+      
          simboloE = E1(); // acaoSemantica7
          simboloCloneE = new Simbolo(simboloE.getToken(), simboloE.getLexema(), simboloE.getEndereco(),
                simboloE.getTipo(), simboloE.getClasse(), simboloE.getTamanho());
@@ -516,7 +525,7 @@ public class Parser {
                casaToken(tabela.ATT);
                condicao = acaoSemantica10();
             }
-
+         
             simboloE2 = E1();
             simboloCloneE2 = new Simbolo(simboloE2.getToken(), simboloE2.getLexema(), simboloE2.getEndereco(),
                   simboloE2.getTipo(), simboloE2.getClasse(), simboloE2.getTamanho());
@@ -526,12 +535,12 @@ public class Parser {
             simboloCloneE.setTipo("tipo_logico"); // acaoSemantica47
             return simboloCloneE;
          }
-
+      
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-
+   
       return simboloE;
    }
 
@@ -577,14 +586,14 @@ public class Parser {
             acaoSemantica18(simboloCloneE1, simboloCloneE1_2);
             acaoSemantica19(simboloCloneE1_2, operacao);
          }
-
+      
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-
+   
       return simboloE1;
-
+   
    }
 
    // E'' -> F {('*' | '/' | '%' | and) F}
@@ -596,7 +605,7 @@ public class Parser {
       int operador = 0;
       try {
          checkEOF();
-
+      
          simboloE2 = F(); // acaoSemantica20
          simboloCloneE2 = new Simbolo(simboloE2.getToken(), simboloE2.getLexema(), simboloE2.getEndereco(),
                simboloE2.getTipo(), simboloE2.getClasse(), simboloE2.getTamanho());
@@ -623,26 +632,26 @@ public class Parser {
             acaoSemantica25(simboloCloneE2, simboloCloneE2_1);
             acaoSemantica26(simboloCloneE2_1, operador);
          }
-
+      
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-
+   
       return simboloE2;
-
+   
    }
 
    // F -> '(' E ')' | not F | id ['[' E ']']| num
    Simbolo F() {
-      Simbolo simboloF = new Simbolo();
+      Simbolo simboloF = new Simbolo(); // simbolo que vai ser retornado
       Simbolo simboloCloneF = new Simbolo();
       Simbolo simboloF1 = new Simbolo();
       Simbolo simboloE = new Simbolo();
       try {
-
+      
          checkEOF();
-
+      
          if (s.getToken() == tabela.APAR) {
             casaToken(tabela.APAR);
             simboloF = E(); // acaoSemantica27
@@ -674,14 +683,14 @@ public class Parser {
                return simboloCloneF;
             }
          }
-
+      
       } catch (Exception e) {
          checkEOF();
          System.err.println(e.toString());
       }
-
+   
       return simboloF;
-
+   
    }
 
    void checkEOF() {
@@ -712,7 +721,7 @@ public class Parser {
          System.out.println((lexico.linha + 1) + ":identificador ja declarado " + simbolo.getLexema());
          System.exit(0);
       }
-
+   
       simbolo.setClasse("classe_variavel");
    }
 
@@ -721,7 +730,7 @@ public class Parser {
          System.out.println((lexico.linha + 1) + ":identificador ja declarado " + simbolo.getLexema());
          System.exit(0);
       }
-
+   
       simbolo.setClasse("classe_constante");
    }
 
@@ -1045,7 +1054,7 @@ public class Parser {
                System.exit(0);
             }
          }
-
+      
       } else if (id.getTipo() != string.getTipo()) {
          if (string.getTipo() == "tipo_logico") {
             Simbolo x = lexico.simbolos.buscaSimbolo(string.getLexema());

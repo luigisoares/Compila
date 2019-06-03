@@ -11,10 +11,10 @@ public class Principal {
       String file = "";
       try{
          do{
-         	System.out.print("Digite o nome do arquivo: ");
-         	file = in.readLine();
+         	//System.out.print("Digite o nome do arquivo: ");
+         	//file = in.readLine();
             // file = "exemplo1.l";
-            //file = "t9.l"; // HEXA
+            file = "t9.l"; // HEXA
             // file = "t1.l"; // HEXA
             // file = "t2.l"; // $ no meio da string
             // file = "t3.l"; // comentario sem fechar
