@@ -323,9 +323,9 @@ public class Parser {
             //}
             if (s.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
-               casaToken(tabela.ID); // @TODO Como pegar o num ? 
-               acaoSemantica3(simboloParaAnalise);
-               acaoSemantica36(simboloParaAnalise);
+               casaToken(tabela.VALORCONST); // @TODO Como pegar o num ? 
+               //acaoSemantica3(simboloParaAnalise);
+               //acaoSemantica36(simboloParaAnalise);
                //acaoSemantica34(); // não implementada a 34
             }
             casaToken(tabela.DO);
@@ -352,10 +352,10 @@ public class Parser {
                condicao = acaoSemantica10();
                simboloEvet = E();
                acaoSemantica33(simboloEvet);
-               acaoSemantica41(simboloId,simboloEvet);
+               //acaoSemantica41(simboloId,simboloEvet); nao eh mais necessaria
                casaToken(tabela.FCOL);
             }
-            //acaoSemantica62(simboloId,condicao); ESCREVER EM UM VETOR POR COMPLETO
+            acaoSemantica62(simboloId,condicao); //ESCREVER EM UM VETOR POR COMPLETO
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.WRITELN) {
@@ -408,9 +408,12 @@ public class Parser {
             acaoSemantica57(id,simboloA);
             acaoSemantica59(id,simboloA);
          } else {
+			acaoSemantica65(id);
             casaToken(tabela.ACOL);
             simboloA1 = E();
-            casaToken(tabela.FCOL);
+			acaoSemantica5(id);
+			acaoSemantica64(id,simboloA1);
+			casaToken(tabela.FCOL);
             casaToken(tabela.ATT);
             simboloA2 = E(); //acaoSemantica49
             acaoSemantica60(id,simboloA2);
@@ -1073,7 +1076,7 @@ public class Parser {
       if((id.getTipo() == "tipo_caracter" && string.getTipo() == "tipo_string") || 
         (id.getTipo() == "tipo_inteiro" && string.getTipo() == "tipo_string") ||
          (id.getTipo() == "tipo_caracter" && string.getTipo() != "tipo_caracter") ||
-         (id.getTipo() == "tipo_inteiro" && string.getTipo() == "tipo_inteiro")){
+         ((id.getTipo() == "tipo_inteiro" && string.getTipo() == "tipo_inteiro" && string.getTamanho() > 0))){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
@@ -1087,7 +1090,7 @@ public class Parser {
    }
    
    void acaoSemantica62(Simbolo id,boolean condicao){
-      if(condicao == false && id.getTamanho() > 0){
+      if(condicao == false && id.getTamanho() > 0 && id.getTipo().equals("tipo_inteiro")){
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
@@ -1100,5 +1103,19 @@ public class Parser {
             System.exit(0);
          }
       }
+   }
+   
+   void acaoSemantica64(Simbolo id, Simbolo E){
+      if(E.getTipo().equals("tipo_inteiro") && E.getTamanho() > 0) {
+         System.out.println((lexico.linha + 1) + ":tipos incompativeis.");
+         System.exit(0);
+	}
+   }
+   
+   void acaoSemantica65(Simbolo id) {
+	if(id.getTamanho() == 0) {
+		System.out.println((lexico.linha + 1) + ":tipos incompativeis.");
+		System.exit(0);
+	}
    }
 }

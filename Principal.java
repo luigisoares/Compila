@@ -11,10 +11,10 @@ public class Principal {
       String file = "";
       try{
          do{
-         	// System.out.print("Digite o nome do arquivo: ");
-         	// file = in.readLine();
+         	System.out.print("Digite o nome do arquivo: ");
+         	file = in.readLine();
             // file = "exemplo1.l";
-            file = "t9.l"; // HEXA
+            //file = "t9.l"; // HEXA
             // file = "t1.l"; // HEXA
             // file = "t2.l"; // $ no meio da string
             // file = "t3.l"; // comentario sem fechar
@@ -24,12 +24,12 @@ public class Principal {
             // file = "t7.l"; // no step do for nao tem valor pra saber os steps
             // file = "t8.l"; // EOF esqueceu de por } no final do for
          
-            if(file.length() > 2){
+            /*if(file.length() > 2){
                if(file.charAt(file.length()-2) != '.' && file.charAt(file.length() - 1) != 'l' && file.charAt(file.length() - 1) != 'L'){
                   System.out.print("Digite o nome do arquivo: ");
                   file = in.readLine();
                }
-            }
+            }*/
          	
          }while(file.length() == 0);
       	

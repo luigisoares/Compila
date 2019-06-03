@@ -1,7 +1,7 @@
 import java.util.HashMap;
 public class TabelaSimbolo {
    public HashMap<String, Simbolo> tabela = new HashMap<>();
-   public static int index = -1;
+   public static int endrecoTS = -1;
    
    public final byte IF = 0;
    public final byte INTEGER = 1;
@@ -49,46 +49,46 @@ public class TabelaSimbolo {
    public final byte VALORCONST = 42; 
 	
    public TabelaSimbolo() {
-      tabela.put("if", new Simbolo(IF,"if", ++index));
-      tabela.put("integer", new Simbolo(INTEGER,"integer", ++index));
-      tabela.put("char", new Simbolo(CHAR,"char", ++index));
-      tabela.put("writeln", new Simbolo(WRITELN,"writeln", ++index));
-      tabela.put("write", new Simbolo(WRITE,"write", ++index));
-      tabela.put("readln", new Simbolo(READLN,"readln", ++index));
-      tabela.put("for", new Simbolo(FOR,"for", ++index));
-      tabela.put("else", new Simbolo(ELSE,"else", ++index));
-      tabela.put("and", new Simbolo(AND,"and", ++index));
-      tabela.put("or", new Simbolo(OR,"or", ++index));
-      tabela.put("not", new Simbolo(NOT,"not", ++index));
-      tabela.put("{", new Simbolo(ACHAVE,"{", ++index));
-      tabela.put("}", new Simbolo(FCHAVE,"}", ++index));
-      tabela.put("[", new Simbolo(ACOL,"[", ++index));
-      tabela.put("]", new Simbolo(FCOL,"]", ++index));
-      tabela.put("(", new Simbolo(APAR,"(", ++index));
-      tabela.put(")", new Simbolo(FPAR,")", ++index));
-      tabela.put("do", new Simbolo(DO,"do", ++index));
-      tabela.put("then", new Simbolo(THEN,"then", ++index));
-      tabela.put(";", new Simbolo(PV,";", ++index));
-      tabela.put("=", new Simbolo(ATT,"=", ++index));
-      tabela.put("to", new Simbolo(TO,"to", ++index));
-      tabela.put("step", new Simbolo(STEP,"step", ++index));
-      tabela.put("const", new Simbolo(CONST,"const", ++index));
-      tabela.put("var", new Simbolo(VAR,"var", ++index));
-      tabela.put(">", new Simbolo(MAIOR,">", ++index));
-      tabela.put("<", new Simbolo(MENOR,"<", ++index));
-      tabela.put(">=", new Simbolo(MAIORIG,">=", ++index));
-      tabela.put("<=", new Simbolo(MENORIG,"<=", ++index));
-      tabela.put("<>", new Simbolo(DIFF,"<>", ++index));
-      //tabela.put("==", new Simbolo(IGUALIGUAL,"==", ++index));
-      tabela.put(",", new Simbolo(VIR,",", ++index));
-      tabela.put("+", new Simbolo(ADD,"+", ++index));
-      tabela.put("-", new Simbolo(SUB,"-", ++index));
-      tabela.put("/", new Simbolo(DIV,"/", ++index));
-      tabela.put("*", new Simbolo(MUL,"*", ++index));
-      tabela.put("%", new Simbolo(MOD,"%", ++index));
-      tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++index));   
-      tabela.put("'", new Simbolo(APOST,"'", ++index));   
-      tabela.put("\"", new Simbolo(ASPAS,"\"", ++index));   
+      tabela.put("if", new Simbolo(IF,"if", ++endrecoTS));
+      tabela.put("integer", new Simbolo(INTEGER,"integer", ++endrecoTS));
+      tabela.put("char", new Simbolo(CHAR,"char", ++endrecoTS));
+      tabela.put("writeln", new Simbolo(WRITELN,"writeln", ++endrecoTS));
+      tabela.put("write", new Simbolo(WRITE,"write", ++endrecoTS));
+      tabela.put("readln", new Simbolo(READLN,"readln", ++endrecoTS));
+      tabela.put("for", new Simbolo(FOR,"for", ++endrecoTS));
+      tabela.put("else", new Simbolo(ELSE,"else", ++endrecoTS));
+      tabela.put("and", new Simbolo(AND,"and", ++endrecoTS));
+      tabela.put("or", new Simbolo(OR,"or", ++endrecoTS));
+      tabela.put("not", new Simbolo(NOT,"not", ++endrecoTS));
+      tabela.put("{", new Simbolo(ACHAVE,"{", ++endrecoTS));
+      tabela.put("}", new Simbolo(FCHAVE,"}", ++endrecoTS));
+      tabela.put("[", new Simbolo(ACOL,"[", ++endrecoTS));
+      tabela.put("]", new Simbolo(FCOL,"]", ++endrecoTS));
+      tabela.put("(", new Simbolo(APAR,"(", ++endrecoTS));
+      tabela.put(")", new Simbolo(FPAR,")", ++endrecoTS));
+      tabela.put("do", new Simbolo(DO,"do", ++endrecoTS));
+      tabela.put("then", new Simbolo(THEN,"then", ++endrecoTS));
+      tabela.put(";", new Simbolo(PV,";", ++endrecoTS));
+      tabela.put("=", new Simbolo(ATT,"=", ++endrecoTS));
+      tabela.put("to", new Simbolo(TO,"to", ++endrecoTS));
+      tabela.put("step", new Simbolo(STEP,"step", ++endrecoTS));
+      tabela.put("const", new Simbolo(CONST,"const", ++endrecoTS));
+      tabela.put("var", new Simbolo(VAR,"var", ++endrecoTS));
+      tabela.put(">", new Simbolo(MAIOR,">", ++endrecoTS));
+      tabela.put("<", new Simbolo(MENOR,"<", ++endrecoTS));
+      tabela.put(">=", new Simbolo(MAIORIG,">=", ++endrecoTS));
+      tabela.put("<=", new Simbolo(MENORIG,"<=", ++endrecoTS));
+      tabela.put("<>", new Simbolo(DIFF,"<>", ++endrecoTS));
+      //tabela.put("==", new Simbolo(IGUALIGUAL,"==", ++endrecoTS));
+      tabela.put(",", new Simbolo(VIR,",", ++endrecoTS));
+      tabela.put("+", new Simbolo(ADD,"+", ++endrecoTS));
+      tabela.put("-", new Simbolo(SUB,"-", ++endrecoTS));
+      tabela.put("/", new Simbolo(DIV,"/", ++endrecoTS));
+      tabela.put("*", new Simbolo(MUL,"*", ++endrecoTS));
+      tabela.put("%", new Simbolo(MOD,"%", ++endrecoTS));
+      tabela.put("boolean", new Simbolo(BOOLEAN,"boolean", ++endrecoTS));   
+      tabela.put("'", new Simbolo(APOST,"'", ++endrecoTS));   
+      tabela.put("\"", new Simbolo(ASPAS,"\"", ++endrecoTS));   
    }
 	
    public String pesquisa(String lexema){
@@ -106,14 +106,14 @@ public class TabelaSimbolo {
 	
    public Simbolo inserirID(String lexema){
       lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(ID,lexema, ++index);
+      Simbolo simbolo = new Simbolo(ID,lexema, ++endrecoTS);
       tabela.put(lexema, simbolo);
       return tabela.get(lexema);
    }
 	
    public Simbolo inserirConst(String lexema, String tipo){
       lexema = lexema.toLowerCase();
-      Simbolo simbolo = new Simbolo(VALORCONST, lexema, ++index, tipo);
+      Simbolo simbolo = new Simbolo(VALORCONST, lexema, ++endrecoTS, tipo);
       tabela.put(lexema, simbolo);
       return tabela.get(lexema);
    }
