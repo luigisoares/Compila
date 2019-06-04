@@ -56,6 +56,9 @@ cseg SEGMENT PUBLIC ;início seg. código
 strt:
   mov ax, dseg
   mov ds, ax
+mov AX, DS:[80] ;
+not AX
+mov DS:[0], AX
 mov ah, 4Ch
 int 21h
 cseg ENDS ;fim seg. código

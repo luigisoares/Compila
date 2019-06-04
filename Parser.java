@@ -207,7 +207,7 @@ public class Parser {
                      simboloId = simboloParaAnalise;
                      condGC = acaoSemantica10();
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
-                     condGC = acaoSemantica9();
+                        condGC = acaoSemantica9();
                         if (s.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
                            // casaToken(tabela.VALORCONST);
@@ -241,7 +241,7 @@ public class Parser {
                   simboloId = simboloParaAnalise;
                   condGC = acaoSemantica10();
                   if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
-                  condGC = acaoSemantica9();
+                     condGC = acaoSemantica9();
                      if (s.getToken() == tabela.ACOL) {
                         casaToken(tabela.ACOL);
                         simboloEvet = E();
@@ -722,6 +722,7 @@ public class Parser {
             casaToken(tabela.NOT);
             simboloF1 = F();
             acaoSemantica28(simboloF1);
+            geracaoCodigo13(simboloF1);
             return simboloF1;
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
@@ -731,7 +732,7 @@ public class Parser {
          } else {
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
-            // acaoSemantica30
+            // acaoSemantica30 geracaoCodigo9
             simboloF = lexico.simbolos.buscaSimbolo(simboloParaAnalise.getLexema());
             if (s.getToken() == tabela.ACOL) {
                casaToken(tabela.ACOL);
@@ -866,14 +867,14 @@ public class Parser {
    }
 
    void acaoSemantica13(Simbolo expt1, boolean condicao) {
-      if (expt1.getTipo() != "tipo_inteiro" && condicao == true /* || expt1.getTamanho() > 0 */) {
+      if (expt1.getTipo() != "tipo_inteiro" && expt1.getTipo() != "tipo_caracter" && condicao == true /* || expt1.getTamanho() > 0 */) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
    }
 
    int acaoSemantica15(Simbolo expt1) {
-      if (expt1.getTipo() != "tipo_inteiro" || expt1.getTamanho() > 0) {
+      if (expt1.getTipo() != "tipo_inteiro" && expt1.getTipo() != "tipo_caracter" || expt1.getTamanho() > 0) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } else {
@@ -883,7 +884,7 @@ public class Parser {
    }
 
    int acaoSemantica16(Simbolo expt1) {
-      if (expt1.getTipo() != "tipo_inteiro" || expt1.getTamanho() > 0) {
+      if (expt1.getTipo() != "tipo_inteiro" && expt1.getTipo() != "tipo_caracter" || expt1.getTamanho() > 0) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } else {
@@ -911,8 +912,8 @@ public class Parser {
 
    void acaoSemantica19(Simbolo expt2, int operacao) {
       /* 1 para add , 2 para sub , 3 para or, 0 default */
-      if (expt2.getTipo() != "tipo_logico" && operacao == 3 || expt2.getTipo() != "tipo_inteiro" && operacao == 2
-            || expt2.getTipo() != "tipo_inteiro" && operacao == 1) {
+      if (expt2.getTipo() != "tipo_logico" && operacao == 3 || expt2.getTipo() != "tipo_inteiro" && expt2.getTipo() != "tipo_caracter" && operacao == 2
+            || expt2.getTipo() != "tipo_inteiro" && expt2.getTipo() != "tipo_caracter" && operacao == 1) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
@@ -923,7 +924,7 @@ public class Parser {
    }
 
    int acaoSemantica21(Simbolo f1) {
-      if (f1.getTipo() != "tipo_inteiro" || f1.getTamanho() > 0) {
+      if (f1.getTipo() != "tipo_inteiro" && f1.getTipo() != "tipo_caracter" || f1.getTamanho() > 0) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } else {
@@ -933,7 +934,7 @@ public class Parser {
    }
 
    int acaoSemantica22(Simbolo f1) {
-      if (f1.getTipo() != "tipo_inteiro" || f1.getTamanho() > 0) {
+      if (f1.getTipo() != "tipo_inteiro" && f1.getTipo() != "tipo_caracter" || f1.getTamanho() > 0) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } else {
@@ -943,7 +944,7 @@ public class Parser {
    }
 
    int acaoSemantica23(Simbolo f1) {
-      if (f1.getTipo() != "tipo_inteiro" || f1.getTamanho() > 0) {
+      if (f1.getTipo() != "tipo_inteiro" && f1.getTipo() != "tipo_caracter" || f1.getTamanho() > 0) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       } else {
@@ -971,8 +972,8 @@ public class Parser {
 
    void acaoSemantica26(Simbolo f2, int operacao) {
       /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
-      if (f2.getTipo() != "tipo_logico" && operacao == 4 || f2.getTipo() != "tipo_inteiro" && operacao == 3
-            || f2.getTipo() != "tipo_inteiro" && operacao == 2 || f2.getTipo() != "tipo_inteiro" && operacao == 1) {
+      if (f2.getTipo() != "tipo_logico" && operacao == 4 || f2.getTipo() != "tipo_caracter" &&  f2.getTipo() != "tipo_inteiro" && operacao == 3
+            || f2.getTipo() != "tipo_caracter" && f2.getTipo() != "tipo_inteiro" && operacao == 2 || f2.getTipo() != "tipo_caracter" && f2.getTipo() != "tipo_inteiro" && operacao == 1) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
       }
@@ -1244,5 +1245,13 @@ public class Parser {
             doismil.linhasCF.add("  byte ?      ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
          }
       }
+   }
+   
+   void geracaoCodigo13(Simbolo nF){
+      int Fend = endereco;
+      Fend = doismil.novoTemp();
+      doismil.linhasCF.add("mov AX, DS:[" + nF.getEndereco() + "] ;"); // TEM O DS?
+      doismil.linhasCF.add("not AX"); // neg???
+      doismil.linhasCF.add("mov DS:[" + Fend + "], AX");
    }
 }

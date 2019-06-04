@@ -28,3 +28,5 @@ var integer n9 = 9;
 char x23 = 0xFF;
 const p = 3;
 ;  
+a = ('b' - n4) + a * n4 + vet[2];
+a = (not(3=3));
