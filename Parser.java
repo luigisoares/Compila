@@ -6,6 +6,7 @@ public class Parser {
    Simbolo s, simboloParaAnalise;
    BufferedReader arquivo;
    GeracaoMemoria doismil;
+   Rotulo rotuloPJ;
    int endereco = doismil.contador;
    
    private int procFend = 0;
@@ -19,6 +20,7 @@ public class Parser {
          doismil = new GeracaoMemoria();
          tabela = new TabelaSimbolo();
          lexico = new AnalisadorLexico(tabela);
+         rotuloPJ = new Rotulo();
          
          s = lexico.analisarLexema(lexico.devolve, arquivo);
          if (s == null) { // comentario
@@ -482,6 +484,8 @@ public class Parser {
             simboloA = E(); // acaoSemantica49
             acaoSemantica57(id, simboloA);
             acaoSemantica59(id, simboloA);
+            doismil.linhasCF.add("mov AX, DS:[" + procExpend + "] ; peguei o end do exp talvez"+simboloA.getEndereco()+" << end do simboloA");
+            doismil.linhasCF.add("mov DS:[" + id.getEndereco() + "], AX; salvando o valor no endereco correto");
          } else {
             acaoSemantica65(id);
             casaToken(tabela.ACOL);
@@ -568,33 +572,42 @@ public class Parser {
       Simbolo simboloCloneE = new Simbolo();
       Simbolo simboloCloneE2 = new Simbolo();
       boolean condicao;
+      int operacao = 0; /* 1 > / 2 < / 3 >=  / 4 <= / 5 <> / 6 = */
       try {
          checkEOF();
       
          simboloE = E1(); // acaoSemantica7
+         procExpend = procExpsend;
          simboloCloneE = new Simbolo(simboloE.getToken(), simboloE.getLexema(), simboloE.getEndereco(),
                simboloE.getTipo(), simboloE.getClasse(), simboloE.getTamanho());
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
                || s.getToken() == tabela.MENORIG || s.getToken() == tabela.DIFF || s.getToken() == tabela.ATT) {
             condicao = acaoSemantica9();
+            /* 1 > / 2 < / 3 >=  / 4 <= / 5 <> / 6 = */
             if (s.getToken() == tabela.MAIOR) {
                casaToken(tabela.MAIOR);
                acaoSemantica8(simboloE);
+               operacao = 1;
             } else if (s.getToken() == tabela.MENOR) {
                casaToken(tabela.MENOR);
                acaoSemantica8(simboloE);
+               operacao = 2;
             } else if (s.getToken() == tabela.MAIORIG) {
                casaToken(tabela.MAIORIG);
                acaoSemantica8(simboloE);
+               operacao = 3;
             } else if (s.getToken() == tabela.MENORIG) {
                casaToken(tabela.MENORIG);
                acaoSemantica8(simboloE);
+               operacao = 4;
             } else if (s.getToken() == tabela.DIFF) {
                casaToken(tabela.DIFF);
                acaoSemantica8(simboloE);
+               operacao = 5;
             } else if (s.getToken() == tabela.ATT) {
                casaToken(tabela.ATT);
                condicao = acaoSemantica10();
+               operacao = 6;
             }
          
             simboloE2 = E1();
@@ -603,7 +616,56 @@ public class Parser {
             acaoSemantica11(simboloCloneE, simboloCloneE2);
             acaoSemantica12(simboloCloneE, condicao);
             acaoSemantica63(simboloCloneE, simboloCloneE2, condicao);
+            
+            doismil.linhasCF.add("mov AX, DS:[" + procExpend + "]");
+            doismil.linhasCF.add("mov bx, DS:[" + procExpsend + "]"); // precisa ver se esse cara eh logico?
+            
+            doismil.linhasCF.add("cmp AX, BX");
+            
+            String Nrotulo = rotuloPJ.novoRotulo();
+            
+            switch(operacao){
+               case 1:
+                  doismil.linhasCF.add("jg " + Nrotulo);
+               
+                  break;
+               case 2:
+                  doismil.linhasCF.add("jl " + Nrotulo);
+               
+                  break;
+               case 3:
+                  doismil.linhasCF.add("jge " + Nrotulo);
+               
+                  break;
+               case 4:
+                  doismil.linhasCF.add("jle " + Nrotulo);
+               
+                  break;
+               case 5:
+                  doismil.linhasCF.add("je " + Nrotulo);
+               
+                  break;
+               case 6:
+                  doismil.linhasCF.add("jne " + Nrotulo);
+               
+                  break;
+            }
+            
+            doismil.linhasCF.add("mov AX, 0");
+         
+         
+            String rotFalso = rotuloPJ.novoRotulo();
+            doismil.linhasCF.add("jmp " + rotFalso);
+         
+         
+            doismil.linhasCF.add(Nrotulo + ":");
+         
+            doismil.linhasCF.add("mov AX, 0FFh");
+         
+            doismil.linhasCF.add(rotFalso + ":");
+            procExpend = doismil.novoTemp();
             simboloCloneE.setTipo("tipo_logico"); // acaoSemantica47
+            doismil.linhasCF.add("mov DS:[" + procExpend + "], AX");
             return simboloCloneE;
          }
       
@@ -654,11 +716,34 @@ public class Parser {
                casaToken(tabela.OR);
                operacao = acaoSemantica17(simboloE1);
             }
+            int Tend = procTend;
             simboloE1_2 = E2();
+            doismil.linhasCF.add("mov AX, DS:[" + procExpsend + "]");
+         
+            doismil.linhasCF.add("mov BX, DS:[" + procTend + "]");
             simboloCloneE1_2 = new Simbolo(simboloE1_2.getToken(), simboloE1_2.getLexema(), simboloE1_2.getEndereco(),
                   simboloE1_2.getTipo(), simboloE1_2.getClasse(), simboloE1_2.getTamanho());
             acaoSemantica18(simboloCloneE1, simboloCloneE1_2);
             acaoSemantica19(simboloCloneE1_2, operacao);
+            /* 1 para add , 2 para sub , 3 para or, 0 default */
+            switch(operacao){
+               case 1:
+                  doismil.linhasCF.add("add AX, BX ; add de AX e BX");
+                  break;
+                  
+               case 2:
+                  doismil.linhasCF.add("sub AX, BX ; sub de AX e BX");
+                  break;
+                  
+               case 3:
+                  doismil.linhasCF.add("or AX, BX ; or");
+                  break;             
+            }
+            
+            procExpsend = doismil.novoTemp();
+                         
+            doismil.linhasCF.add("mov DS:[" + procExpsend + "], AX ; ");;
+            
          }
       
       } catch (Exception e) {
@@ -766,9 +851,6 @@ public class Parser {
                casaToken(tabela.FCOL);
                return simboloCloneF;
             }
-            
-            
-            
          }
       
       } catch (Exception e) {
@@ -1223,15 +1305,15 @@ public class Parser {
       if(constV.getTipo().equals("tipo_inteiro")){
          endereco = doismil.alocarTipoInteiro();
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  sword " + constV.getLexema() + "       ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
+         doismil.linhasCF.add("  sword " + constV.getLexema() + "       ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
       } else if(constV.getTipo().equals("tipo_caracter")){
          endereco = doismil.alocarTipoChar();
          id.setEndereco(endereco);
          if(constV.getLexema().contains("0x")){
             int value = Integer.parseInt(constV.getLexema().substring(2,4), 16);  
-            doismil.linhasCF.add("  byte " + value + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+            doismil.linhasCF.add("  byte " + value + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
          } else {
-            doismil.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+            doismil.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
          }
       }
    }
@@ -1240,7 +1322,7 @@ public class Parser {
       if(constV.getTipo().equals("tipo_string")){
          endereco = doismil.alocarTipoString(constV.getLexema().length());
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  byte " + Evet.getLexema() + "h DUP("+constV.getLexema()+")     ;"+id.getClasse()+" string " + id.getLexema()+" em "+id.getEndereco()+"h");
+         doismil.linhasCF.add("  byte " + Evet.getLexema() + " DUP("+constV.getLexema()+")     ;"+id.getClasse()+" string " + id.getLexema()+" em "+id.getEndereco()+"");
       }
    }
    
@@ -1248,11 +1330,11 @@ public class Parser {
       if(id.getTipo().equals("tipo_inteiro")){
          endereco = doismil.alocarTipoInteiro(Integer.parseInt(E.getLexema()));
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  sword " + E.getLexema() + " DUP(?)      ;"+id.getClasse()+" vet inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
+         doismil.linhasCF.add("  sword " + E.getLexema() + " DUP(?)      ;"+id.getClasse()+" vet inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
       } else if(id.getTipo().equals("tipo_caracter")){
          endereco = doismil.alocarTipoChar(Integer.parseInt(E.getLexema()));
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  byte " + E.getLexema() + " DUP(?)       ;"+id.getClasse()+" vet char " + id.getLexema()+" em "+id.getEndereco()+"h");
+         doismil.linhasCF.add("  byte " + E.getLexema() + " DUP(?)       ;"+id.getClasse()+" vet char " + id.getLexema()+" em "+id.getEndereco()+"");
       } 
    }
    
