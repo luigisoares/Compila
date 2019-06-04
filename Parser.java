@@ -7,6 +7,11 @@ public class Parser {
    BufferedReader arquivo;
    GeracaoMemoria doismil;
    int endereco = doismil.contador;
+   
+   private int procFend = 0;
+   private int procTend = 0;
+   private int procExpsend = 0;
+   private int procExpend = 0;
 
    Parser(BufferedReader arquivo) {
       try {
@@ -67,8 +72,8 @@ public class Parser {
             doismil.linhasCF.add("cseg SEGMENT PUBLIC ;início seg. código");
             doismil.linhasCF.add("  ASSUME CS:cseg, DS:dseg");
             doismil.linhasCF.add("strt:");
-            doismil.linhasCF.add("  mov ax, dseg");
-            doismil.linhasCF.add("  mov ds, ax");
+            doismil.linhasCF.add("  mov AX, dseg");
+            doismil.linhasCF.add("  mov ds, AX");
             
             do {
                checkEOF();
@@ -722,7 +727,7 @@ public class Parser {
             casaToken(tabela.NOT);
             simboloF1 = F();
             acaoSemantica28(simboloF1);
-            geracaoCodigo13(simboloF1);
+            geracaoCodigo13();
             return simboloF1;
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
@@ -1198,11 +1203,11 @@ public class Parser {
    
    void geracaoCodigo1(Simbolo id, Simbolo constV){
       if(constV.getTipo().equals("tipo_inteiro")){
-         endereco = doismil.alocarInteiro();
+         endereco = doismil.alocarTipoInteiro();
          id.setEndereco(endereco);
          doismil.linhasCF.add("  sword " + constV.getLexema() + "       ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
       } else if(constV.getTipo().equals("tipo_caracter")){
-         endereco = doismil.alocarChar();
+         endereco = doismil.alocarTipoChar();
          id.setEndereco(endereco);
          if(constV.getLexema().contains("0x")){
             int value = Integer.parseInt(constV.getLexema().substring(2,4), 16);  
@@ -1215,7 +1220,7 @@ public class Parser {
    
    void geracaoCodigo2(Simbolo id, Simbolo constV, Simbolo Evet){
       if(constV.getTipo().equals("tipo_string")){
-         endereco = doismil.alocarString(constV.getLexema().length());
+         endereco = doismil.alocarTipoString(constV.getLexema().length());
          id.setEndereco(endereco);
          doismil.linhasCF.add("  byte " + Evet.getLexema() + "h DUP("+constV.getLexema()+")     ;"+id.getClasse()+" string " + id.getLexema()+" em "+id.getEndereco()+"h");
       }
@@ -1223,11 +1228,11 @@ public class Parser {
    
    void geracaoCodigo3(Simbolo id, Simbolo E){
       if(id.getTipo().equals("tipo_inteiro")){
-         endereco = doismil.alocarInteiro(Integer.parseInt(E.getLexema()));
+         endereco = doismil.alocarTipoInteiro(Integer.parseInt(E.getLexema()));
          id.setEndereco(endereco);
          doismil.linhasCF.add("  sword " + E.getLexema() + " DUP(?)      ;"+id.getClasse()+" vet inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
       } else if(id.getTipo().equals("tipo_caracter")){
-         endereco = doismil.alocarChar(Integer.parseInt(E.getLexema()));
+         endereco = doismil.alocarTipoChar(Integer.parseInt(E.getLexema()));
          id.setEndereco(endereco);
          doismil.linhasCF.add("  byte " + E.getLexema() + " DUP(?)       ;"+id.getClasse()+" vet char " + id.getLexema()+" em "+id.getEndereco()+"h");
       } 
@@ -1236,22 +1241,23 @@ public class Parser {
    void geracaoCodigo4(boolean condGC, Simbolo id){
       if(condGC){ // como se fosse flag, ou seja não entrou no D1
          if(id.getTipo().equals("tipo_inteiro")){
-            endereco = doismil.alocarInteiro();
+            endereco = doismil.alocarTipoInteiro();
             id.setEndereco(endereco);
             doismil.linhasCF.add("  sword ?     ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
          } else if(id.getTipo().equals("tipo_caracter")){
-            endereco = doismil.alocarChar();
+            endereco = doismil.alocarTipoChar();
             id.setEndereco(endereco);
             doismil.linhasCF.add("  byte ?      ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
          }
       }
    }
    
-   void geracaoCodigo13(Simbolo nF){
-      int Fend = endereco;
+   void geracaoCodigo13(){
+      int Fend = procFend;
       Fend = doismil.novoTemp();
-      doismil.linhasCF.add("mov AX, DS:[" + nF.getEndereco() + "] ;"); // TEM O DS?
+      doismil.linhasCF.add("mov AX, DS:[" + procFend + "] ;"); // TEM O DS?
       doismil.linhasCF.add("not AX"); // neg???
       doismil.linhasCF.add("mov DS:[" + Fend + "], AX");
+      procFend = Fend;
    }
 }
