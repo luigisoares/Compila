@@ -22,8 +22,8 @@ public class GeracaoMemoria{
 	
    public int alocarTemp(){
       int tmp = contador;
-   	//contador += 4000;
-      contador += 16384;
+   	contador += 4000;
+      //contador += 16384;
       return tmp;
    }
 	
@@ -94,6 +94,12 @@ public class GeracaoMemoria{
    public int alocarTempTipoString(){
       int tmp = contTemp;
       contTemp += 256;
+      return tmp;
+   }
+   
+   public int alocarTempTipoString(int tam){
+      int tmp = contTemp;
+      contTemp += tam;
       return tmp;
    }
    

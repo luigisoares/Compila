@@ -143,8 +143,8 @@ public class Parser {
                }
             } else {
                casaToken(tabela.ACOL);
-               // casaToken(tabela.VALORCONST); //@TODO NUM
-               simboloEconst = E();
+               casaToken(tabela.VALORCONST); //@TODO NUM
+               simboloEconst = simboloParaAnalise;
                acaoSemantica33(simboloEconst);
                acaoSemantica54(simboloEconst, simboloId);
                casaToken(tabela.FCOL);
@@ -215,8 +215,8 @@ public class Parser {
                         condGC = acaoSemantica9();
                         if (s.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
-                           // casaToken(tabela.VALORCONST);
-                           simboloEvet = E();
+                           casaToken(tabela.VALORCONST);
+                           simboloEvet = simboloParaAnalise;
                            acaoSemantica33(simboloEvet);
                            acaoSemantica41(id, simboloEvet);
                            acaoSemantica54(simboloEvet, simboloId);
@@ -249,7 +249,8 @@ public class Parser {
                      condGC = acaoSemantica9();
                      if (s.getToken() == tabela.ACOL) {
                         casaToken(tabela.ACOL);
-                        simboloEvet = E();
+                        casaToken(tabela.VALORCONST);
+                        simboloEvet = simboloParaAnalise;
                         acaoSemantica33(simboloEvet);
                         acaoSemantica41(id, simboloEvet);
                         acaoSemantica54(simboloEvet, simboloId);
@@ -266,7 +267,8 @@ public class Parser {
                }
             } else if (s.getToken() == tabela.ACOL) {
                casaToken(tabela.ACOL);
-               simboloEvet = E();
+               casaToken(tabela.VALORCONST);
+               simboloEvet = simboloParaAnalise;
                D1 = simboloEvet;
                acaoSemantica33(simboloEvet);
                acaoSemantica54(simboloEvet, id);
@@ -285,7 +287,9 @@ public class Parser {
                         condGC = acaoSemantica9();
                         if (s.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
-                           simboloEvet = E();
+                           casaToken(tabela.VALORCONST);
+                           simboloEvet = simboloParaAnalise;
+                           //simboloEvet = E();
                            acaoSemantica33(simboloEvet);
                            acaoSemantica41(id, simboloEvet);
                            acaoSemantica54(simboloEvet, simboloId);
@@ -722,23 +726,28 @@ public class Parser {
          if (s.getToken() == tabela.APAR) {
             casaToken(tabela.APAR);
             simboloF = E(); // acaoSemantica27
+            procFend = simboloF.getEndereco();
             casaToken(tabela.FPAR);
          } else if (s.getToken() == tabela.NOT) {
             casaToken(tabela.NOT);
             simboloF1 = F();
             acaoSemantica28(simboloF1);
-            geracaoCodigo13();
+            geracaoCodigo13(simboloF1);
             return simboloF1;
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
             // \/ acaoSemantica29
             simboloF = new Simbolo(simboloParaAnalise.getToken(), simboloParaAnalise.getLexema(),
                   simboloParaAnalise.getEndereco(), simboloParaAnalise.getTipo(), "classe_variavel", 0);
+                 
+            geracaoCodigo11(simboloF);
+            
          } else {
             casaToken(tabela.ID);
             acaoSemantica3(simboloParaAnalise);
-            // acaoSemantica30 geracaoCodigo9
+            // acaoSemantica30 
             simboloF = lexico.simbolos.buscaSimbolo(simboloParaAnalise.getLexema());
+            procFend = simboloF.getEndereco(); // geracaoCodigo9
             if (s.getToken() == tabela.ACOL) {
                casaToken(tabela.ACOL);
                acaoSemantica38(simboloF);
@@ -751,6 +760,9 @@ public class Parser {
                casaToken(tabela.FCOL);
                return simboloCloneF;
             }
+            
+            
+            
          }
       
       } catch (Exception e) {
@@ -1252,11 +1264,48 @@ public class Parser {
       }
    }
    
-   void geracaoCodigo13(){
+   void geracaoCodigo11(Simbolo f1){
+      int value = -999;
+      if(f1.getLexema().contains("0x")){
+         value = Integer.parseInt(f1.getLexema().substring(2,4), 16); 
+         endereco = doismil.alocarTempTipoChar();
+      } else if(f1.getLexema().contains("'")){
+               //int value = simboloF.getLexema().substring(1,2); 
+         value = f1.getLexema().charAt(1);
+         endereco = doismil.alocarTempTipoChar();
+      } else if(f1.getTipo().equals("tipo_string")){
+         value = -999;
+      } else {
+         value = Integer.parseInt(f1.getLexema()); 
+         endereco = doismil.alocarTempTipoInteiro();
+      }
+            
+      if(f1.getTipo().equals("tipo_string")){
+         endereco = doismil.alocarTempTipoString(f1.getLexema().length());
+         procFend = doismil.novoTemp();
+         
+         doismil.linhasCF.add("dseg SEGMENT PUBLIC");
+      		
+         doismil.linhasCF.add("byte " + f1.getLexema()+"; constante string");
+      		
+         doismil.linhasCF.add("dseg ENDS");       
+         //doismil.linhasCF.add("mov AX, "+f1.getLexema()+" ; movi para AX um VALORCONST");
+         //doismil.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
+      } else {
+         procFend = doismil.novoTemp();
+         doismil.linhasCF.add("mov AX, "+value+" ; movi para AX um VALORCONST");
+         doismil.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
+      }
+      
+      f1.setEndereco(endereco);
+   }
+   
+   void geracaoCodigo13(Simbolo simboloF1){
       int Fend = procFend;
       Fend = doismil.novoTemp();
-      doismil.linhasCF.add("mov AX, DS:[" + procFend + "] ;"); // TEM O DS?
-      doismil.linhasCF.add("not AX"); // neg???
+      doismil.linhasCF.add("mov AX, DS:[" + procFend + "] ;"+simboloF1.getLexema()+" em "+simboloF1.getEndereco());
+      doismil.linhasCF.add("neg AX");
+      doismil.linhasCF.add("add AX,1");
       doismil.linhasCF.add("mov DS:[" + Fend + "], AX");
       procFend = Fend;
    }
