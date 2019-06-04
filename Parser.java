@@ -1203,7 +1203,12 @@ public class Parser {
       } else if(constV.getTipo().equals("tipo_caracter")){
          endereco = doismil.alocarChar();
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+         if(constV.getLexema().contains("0x")){
+            int value = Integer.parseInt(constV.getLexema().substring(2,4), 16);  
+            doismil.linhasCF.add("  byte " + value + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+         } else {
+            doismil.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+         }
       }
    }
    

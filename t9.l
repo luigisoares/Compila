@@ -24,6 +24,7 @@ integer fed = 31333;
 Const n5[3]="bc";
 Const n8[17] = "federico";
 Const oi = 'f';
-var integer n9 = -9+n*3;
+var integer n9 = 9;
+char x23 = 0xFF;
 const p = 3;
 ;  
