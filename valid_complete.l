@@ -15,7 +15,7 @@ Const e = 'C';
 teste = "Tails e Sonic";
 for n = 1 to 10 step 2 do{
 	if(a <> 'D') then {
-		n = 1 + 1;
+		a = 'A' + 'B';
 	} else{
 		n = n + 1;
 		;
@@ -23,19 +23,19 @@ for n = 1 to 10 step 2 do{
 }
 
 if((n > 1) or (n < b)) then {
-	n = 1 + 1;
+	a = 'A' + 'B';
 }
 
 if((n > 1) and (n >= b)) then {
-	n = 1 + 1;
+	a = 'A' + 'B';
 }
 
 if(n <= 1) then {
-	n = 1 + 1;
+	a = 'A' + 'B';
 }
 
 if(n >= 1) then {
-	n = 1 + 1;
+	a = 'A' + 'B';
 }
 
 for n = 1 to 10 do{
