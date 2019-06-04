@@ -634,6 +634,9 @@ public class Parser {
             condicao = acaoSemantica10();
          }
          simboloE1 = E2(); // acaoSemantica14
+         geracaoCodigo15(condicao);
+         
+         procExpsend = procTend;
          simboloCloneE1 = new Simbolo(simboloE1.getToken(), simboloE1.getLexema(), simboloE1.getEndereco(),
                simboloE1.getTipo(), simboloE1.getClasse(), simboloE1.getTamanho());
          acaoSemantica13(simboloE1, condicao);
@@ -674,12 +677,14 @@ public class Parser {
       Simbolo simboloCloneE2 = new Simbolo();
       Simbolo simboloCloneE2_1 = new Simbolo();
       int operador = 0;
+      
       try {
          checkEOF();
       
          simboloE2 = F(); // acaoSemantica20
          simboloCloneE2 = new Simbolo(simboloE2.getToken(), simboloE2.getLexema(), simboloE2.getEndereco(),
                simboloE2.getTipo(), simboloE2.getClasse(), simboloE2.getTamanho());
+         procTend = procFend;
          while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
                || s.getToken() == tabela.AND) {
             // if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken()
@@ -698,6 +703,7 @@ public class Parser {
                operador = acaoSemantica24(simboloE2);
             }
             simboloE2_1 = F();
+            procTend = doismil.novoTemp();
             simboloCloneE2_1 = new Simbolo(simboloE2_1.getToken(), simboloE2_1.getLexema(), simboloE2_1.getEndereco(),
                   simboloE2_1.getTipo(), simboloE2_1.getClasse(), simboloE2_1.getTamanho());
             acaoSemantica25(simboloCloneE2, simboloCloneE2_1);
@@ -1308,5 +1314,14 @@ public class Parser {
       doismil.linhasCF.add("add AX,1");
       doismil.linhasCF.add("mov DS:[" + Fend + "], AX");
       procFend = Fend;
+   }
+   
+   void geracaoCodigo15(boolean condicao){
+      if(condicao){
+         procExpsend = doismil.novoTemp();
+         doismil.linhasCF.add("mov AX, DS:[" + procTend + "] ;");
+         doismil.linhasCF.add("neg AX");
+         doismil.linhasCF.add("mov DS:[" + procTend + "], AX");
+      }
    }
 }

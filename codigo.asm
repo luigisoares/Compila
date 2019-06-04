@@ -65,14 +65,8 @@ mov DS:[4], AX ;MOVI PARA END o CONTEUDO DE AX
 dseg SEGMENT PUBLIC
 byte "abc$"; constante string
 dseg ENDS
-mov AX, 3 ; movi para AX um VALORCONST
+mov AX, 4 ; movi para AX um VALORCONST
 mov DS:[12], AX ;MOVI PARA END o CONTEUDO DE AX
-mov AX, 3 ; movi para AX um VALORCONST
-mov DS:[14], AX ;MOVI PARA END o CONTEUDO DE AX
-mov AX, DS:[10] ;3 em 10
-neg AX
-add AX,1
-mov DS:[14], AX
 mov ah, 4Ch
 int 21h
 cseg ENDS ;fim seg. código

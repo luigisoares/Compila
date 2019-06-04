@@ -32,4 +32,4 @@ mm3 = 3;
 a = 'b';
 a = 0xFF;
 vet = "abc";
-a = (not(3=3));
+mm4 = 4;
