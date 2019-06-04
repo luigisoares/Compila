@@ -1,17 +1,31 @@
-/* Exemplo de Programa na linguagem L */
+Var char x;
+Const E2[5] = "abcd";
+Const E = 1;Const E3 = 34;
+Const E1 = 'b';
+Var integer x1;
 
-Var integer n[3], max;
-var integer i;
-var char abc[2];
-var char abc2[3];
-/* Programa Principal */
 
-  For I=0 to 2 do {
-    write("Digite um numero: ");
-    readln(n[i]);
-  }
-  If abc = abc2 then {
-    If n[0] > n[2] then max=n[0]; else max=n[2];
-  } else If n[1] > n[2] then max=n[1]; else max=n[2]; 
-  /*writeln("O maior numero e' ",max);*/
-  
+Var integer eita, n1[100], n = 50, n7 = 10, teste[45], beicola[24];
+integer MAXITER = 0, n2;
+integer nome[100];
+Char n4 = 'x',a;
+char mm,nn,ab = '3';
+char mm2,nn2 = 'n',ab2;
+char bebe = 0xAA;
+integer mm3 = 23,nn3,ab3 = 3;
+integer mm4,nn4 = 55,ab4;
+char vet[256];
+integer vet2[33];
+integer veeet;
+char slaus;
+var char nome2[2047], nome31[110], nomezin = 'J';
+integer nome433[2047], integer32[20];
+char nome24[2047], nome3[20];
+integer fed = 31333;
+Const n5[3]="bc";
+Const n8[17] = "federico";
+Const oi = 'f';
+var integer n9 = -9+n*3;
+char n3 = 0x00;
+const p = 3;
+;  

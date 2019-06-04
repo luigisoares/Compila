@@ -7,7 +7,7 @@ public class Simbolo {
    private int endereco;
    
    public Simbolo(){
-      
+      this.token = -1;
    }
       
    public Simbolo(byte token, String lexema, int endereco){
@@ -50,6 +50,10 @@ public class Simbolo {
 
    public void setTipo(String tipo) {
       this.tipo = tipo;
+   }
+   
+   public void setToken(byte token) {
+      this.token = token;
    }
    
    public String getClasse() {

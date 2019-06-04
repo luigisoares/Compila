@@ -234,7 +234,7 @@ public class AnalisadorLexico {
                c = (char) arquivo.read();
                //checkEOF(c);
             
-               if (isDigito(c) || isLetra(c)) {
+               if (isDigito(c) || isLetra(c) || isValido(c)) {
                   lexema += c;
                   stateI = 4;
                } 
@@ -346,7 +346,10 @@ public class AnalisadorLexico {
          } else if (lexema.charAt(0) == '\'' && lexema.charAt(lexema.length() - 1) == '\'') {
             simb = simbolos.inserirConst(lexema, "tipo_caracter");
          } else if (lexema.charAt(0) == '"' && lexema.charAt(lexema.length() - 1) == '"') {
-            lexema += "$";
+            String x = lexema.substring(0,lexema.length()-1);
+            x += "$";
+            x += '"';
+            lexema = x;
             simb = simbolos.inserirConst(lexema, "tipo_string");
          } else {
             printError();

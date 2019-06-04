@@ -6,6 +6,7 @@ public class Parser {
    Simbolo s, simboloParaAnalise;
    BufferedReader arquivo;
    GeracaoMemoria doismil;
+   int endereco = doismil.contador;
 
    Parser(BufferedReader arquivo) {
       try {
@@ -13,6 +14,7 @@ public class Parser {
          doismil = new GeracaoMemoria();
          tabela = new TabelaSimbolo();
          lexico = new AnalisadorLexico(tabela);
+         
          s = lexico.analisarLexema(lexico.devolve, arquivo);
          if (s == null) { // comentario
             s = lexico.analisarLexema(lexico.devolve, arquivo);
@@ -51,18 +53,32 @@ public class Parser {
       try {
          if (s != null) {
             doismil.linhasCF.add("sseg SEGMENT STACK ;início seg. pilha");
-            doismil.linhasCF.add("byte 4000h DUP(?) ;dimensiona pilha");
+            doismil.linhasCF.add("  byte 4000h DUP(?) ;dimensiona pilha");
             doismil.linhasCF.add("sseg ENDS ;fim seg. pilha");
             doismil.linhasCF.add("dseg SEGMENT PUBLIC ;início seg. dados");
-            doismil.linhasCF.add("byte 4000h DUP(?) ;temporários");
+            doismil.linhasCF.add("  byte 4000h DUP(?) ;temporários");
+            endereco = doismil.alocarTemp();
             do {
                checkEOF();
                D();
             } while (ehDeclaracao());
+            
+            doismil.linhasCF.add("dseg ENDS ;fim seg. dados");
+            doismil.linhasCF.add("cseg SEGMENT PUBLIC ;início seg. código");
+            doismil.linhasCF.add("  ASSUME CS:cseg, DS:dseg");
+            doismil.linhasCF.add("strt:");
+            doismil.linhasCF.add("  mov ax, dseg");
+            doismil.linhasCF.add("  mov ds, ax");
+            
             do {
                checkEOF();
                C();
             } while (ehComando());
+            
+            doismil.linhasCF.add("mov ah, 4Ch");
+            doismil.linhasCF.add("int 21h");
+            doismil.linhasCF.add("cseg ENDS ;fim seg. código");
+            doismil.linhasCF.add("END strt ;fim programa");
             
             doismil.criarArquivoASM();
          }
@@ -72,8 +88,7 @@ public class Parser {
       }
    }
 
-   // D -> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' =
-   // '"' string '"') ';'
+   // D -> VAR {(integer | char) id [D'] ';'}+ | CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
    void D() {
       Simbolo simboloEconst = new Simbolo();
       Simbolo simboloString = new Simbolo();
@@ -81,6 +96,7 @@ public class Parser {
       Simbolo simboloConst = new Simbolo();
       Simbolo c = new Simbolo();
       boolean condicao;
+      boolean condGC;
       try {
          checkEOF();
          if (s.getToken() == tabela.VAR) {
@@ -96,9 +112,17 @@ public class Parser {
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
             acaoSemantica50(simboloParaAnalise, condicao);
-            D1(simboloParaAnalise);
+            Simbolo id = simboloParaAnalise;
+            Simbolo retornoD1 = D1(simboloParaAnalise);
             casaToken(tabela.PV);
-         } else if (s.getToken() == tabela.CONST) {
+            if(retornoD1.getToken() == -1){
+               condGC=true;
+            } else {
+               condGC=false;
+            }
+            
+            geracaoCodigo4(condGC,id);
+         } else if (s.getToken() == tabela.CONST) { //CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
             casaToken(tabela.CONST);
             casaToken(tabela.ID);
             acaoSemantica2(simboloParaAnalise);
@@ -110,6 +134,7 @@ public class Parser {
                   c = lexico.simbolos.buscaSimbolo(simboloId.getLexema());
                   c.setTipo(simboloConst.getTipo());// acaoSemantica53
                   acaoSemantica56(c, simboloConst);
+                  geracaoCodigo1(simboloId,simboloConst);
                }
             } else {
                casaToken(tabela.ACOL);
@@ -125,6 +150,8 @@ public class Parser {
                acaoSemantica48(simboloEconst, simboloString);
                acaoSemantica55(simboloString, simboloId);
                // casaToken(tabela.ASPAS);
+               geracaoCodigo2(simboloId,simboloString,simboloEconst);
+               
             }
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR) {
@@ -138,8 +165,15 @@ public class Parser {
             casaToken(tabela.ID);
             acaoSemantica1(simboloParaAnalise);
             acaoSemantica50(simboloParaAnalise, condicao);
-            D1(simboloParaAnalise);
+            Simbolo id = simboloParaAnalise;
+            Simbolo retornoD1 = D1(simboloParaAnalise);
             casaToken(tabela.PV);
+            if(retornoD1.getToken() == -1){
+               condGC=true;
+            } else {
+               condGC=false;
+            }
+            geracaoCodigo4(condGC,id);
          }
       } catch (Exception e) {
          checkEOF();
@@ -149,17 +183,21 @@ public class Parser {
 
    // D' -> [= CONSTV]{,id[ = CONSTV | '['num']']} | '['num']'{,id[ = CONSTV |
    // '['num']']}
-   void D1(Simbolo id) {
+   Simbolo D1(Simbolo id) {
+      Simbolo D1 = new Simbolo();
       Simbolo temp;
       Simbolo simboloEvet = new Simbolo();
       Simbolo simboloId = new Simbolo();
+      boolean condGC = false;
       try {
          checkEOF();
          if (s.getToken() == tabela.ATT || s.getToken() == tabela.ACOL || s.getToken() == tabela.VIR) {
             if (s.getToken() == tabela.ATT) {
                casaToken(tabela.ATT);
                temp = CONSTV();
+               D1 = temp;
                acaoSemantica42(id, temp);
+               geracaoCodigo1(id,temp);
                if (s.getToken() == tabela.VIR) {
                   while (s.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
@@ -167,7 +205,9 @@ public class Parser {
                      acaoSemantica1(simboloParaAnalise);
                      acaoSemantica51(id, simboloParaAnalise);
                      simboloId = simboloParaAnalise;
+                     condGC = acaoSemantica10();
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+                     condGC = acaoSemantica9();
                         if (s.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
                            // casaToken(tabela.VALORCONST);
@@ -176,22 +216,32 @@ public class Parser {
                            acaoSemantica41(id, simboloEvet);
                            acaoSemantica54(simboloEvet, simboloId);
                            casaToken(tabela.FCOL);
+                           geracaoCodigo3(simboloId,simboloEvet);
                         } else {
                            casaToken(tabela.ATT);
                            temp = CONSTV();
                            acaoSemantica42(id, temp);
+                           geracaoCodigo1(simboloId,temp);
                         }
                      }
+                     geracaoCodigo4(condGC,simboloId);
                   }
                }
+               /*if(condGC == false){
+                  geracaoCodigo4(retornoD1, id);
+               }*/
             } else if (s.getToken() == tabela.VIR) {
+               geracaoCodigo4(true,id);
+               D1.setToken((byte)999); // pois assim numa concatenacao retorna algo <> de -1 
                while (s.getToken() != tabela.PV) {
                   casaToken(tabela.VIR);
                   casaToken(tabela.ID);
                   acaoSemantica1(simboloParaAnalise);
                   acaoSemantica51(id, simboloParaAnalise);
                   simboloId = simboloParaAnalise;
+                  condGC = acaoSemantica10();
                   if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+                  condGC = acaoSemantica9();
                      if (s.getToken() == tabela.ACOL) {
                         casaToken(tabela.ACOL);
                         simboloEvet = E();
@@ -199,20 +249,25 @@ public class Parser {
                         acaoSemantica41(id, simboloEvet);
                         acaoSemantica54(simboloEvet, simboloId);
                         casaToken(tabela.FCOL);
+                        geracaoCodigo3(simboloId,simboloEvet);
                      } else {
                         casaToken(tabela.ATT);
                         temp = CONSTV();
                         acaoSemantica42(id, temp);
+                        geracaoCodigo1(simboloId,temp);
                      }
                   }
+                  geracaoCodigo4(condGC,simboloId);
                }
             } else if (s.getToken() == tabela.ACOL) {
                casaToken(tabela.ACOL);
                simboloEvet = E();
+               D1 = simboloEvet;
                acaoSemantica33(simboloEvet);
                acaoSemantica54(simboloEvet, id);
                acaoSemantica41(id, simboloEvet);
                casaToken(tabela.FCOL);
+               geracaoCodigo3(id,D1);
                if (s.getToken() == tabela.VIR) {
                   while (s.getToken() != tabela.PV) {
                      casaToken(tabela.VIR);
@@ -220,7 +275,9 @@ public class Parser {
                      acaoSemantica1(simboloParaAnalise);
                      acaoSemantica51(id, simboloParaAnalise);
                      simboloId = simboloParaAnalise;
+                     condGC = acaoSemantica10();
                      if (s.getToken() == tabela.ACOL || s.getToken() == tabela.ATT) {
+                        condGC = acaoSemantica9();
                         if (s.getToken() == tabela.ACOL) {
                            casaToken(tabela.ACOL);
                            simboloEvet = E();
@@ -228,12 +285,15 @@ public class Parser {
                            acaoSemantica41(id, simboloEvet);
                            acaoSemantica54(simboloEvet, simboloId);
                            casaToken(tabela.FCOL);
+                           geracaoCodigo3(simboloId,simboloEvet);
                         } else {
                            casaToken(tabela.ATT);
                            temp = CONSTV();
                            acaoSemantica42(id, temp);
+                           geracaoCodigo1(simboloId,temp);
                         }
                      }
+                     geracaoCodigo4(condGC,simboloId);
                   }
                }
             }
@@ -242,6 +302,7 @@ public class Parser {
          checkEOF();
          System.err.println(e.toString());
       }
+      return D1;
    }
 
    // CONSTV -> 0x(hexa)(hexa) | char | E
@@ -251,7 +312,8 @@ public class Parser {
          checkEOF();
          if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
-            constvSimbolo.setTipo(simboloParaAnalise.getTipo()); // acaoSemantica44 e //acaoSemantica45
+            constvSimbolo = simboloParaAnalise; // NOVA acaoSemantica44 e //acaoSemantica45 sera que da certo?
+            //constvSimbolo.setTipo(simboloParaAnalise.getTipo()); // acaoSemantica44 e //acaoSemantica45
          } else {
             constvSimbolo = E(); // acaoSemantica43
          }
@@ -660,6 +722,7 @@ public class Parser {
             casaToken(tabela.NOT);
             simboloF1 = F();
             acaoSemantica28(simboloF1);
+            return simboloF1;
          } else if (s.getToken() == tabela.VALORCONST) {
             casaToken(tabela.VALORCONST);
             // \/ acaoSemantica29
@@ -1129,6 +1192,52 @@ public class Parser {
       if (id.getTamanho() == 0) {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis.");
          System.exit(0);
+      }
+   }
+   
+   void geracaoCodigo1(Simbolo id, Simbolo constV){
+      if(constV.getTipo().equals("tipo_inteiro")){
+         endereco = doismil.alocarInteiro();
+         id.setEndereco(endereco);
+         doismil.linhasCF.add("  sword " + constV.getLexema() + "       ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
+      } else if(constV.getTipo().equals("tipo_caracter")){
+         endereco = doismil.alocarChar();
+         id.setEndereco(endereco);
+         doismil.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+      }
+   }
+   
+   void geracaoCodigo2(Simbolo id, Simbolo constV, Simbolo Evet){
+      if(constV.getTipo().equals("tipo_string")){
+         endereco = doismil.alocarString(constV.getLexema().length());
+         id.setEndereco(endereco);
+         doismil.linhasCF.add("  byte " + Evet.getLexema() + "h DUP("+constV.getLexema()+")     ;"+id.getClasse()+" string " + id.getLexema()+" em "+id.getEndereco()+"h");
+      }
+   }
+   
+   void geracaoCodigo3(Simbolo id, Simbolo E){
+      if(id.getTipo().equals("tipo_inteiro")){
+         endereco = doismil.alocarInteiro(Integer.parseInt(E.getLexema()));
+         id.setEndereco(endereco);
+         doismil.linhasCF.add("  sword " + E.getLexema() + " DUP(?)      ;"+id.getClasse()+" vet inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
+      } else if(id.getTipo().equals("tipo_caracter")){
+         endereco = doismil.alocarChar(Integer.parseInt(E.getLexema()));
+         id.setEndereco(endereco);
+         doismil.linhasCF.add("  byte " + E.getLexema() + " DUP(?)       ;"+id.getClasse()+" vet char " + id.getLexema()+" em "+id.getEndereco()+"h");
+      } 
+   }
+   
+   void geracaoCodigo4(boolean condGC, Simbolo id){
+      if(condGC){ // como se fosse flag, ou seja não entrou no D1
+         if(id.getTipo().equals("tipo_inteiro")){
+            endereco = doismil.alocarInteiro();
+            id.setEndereco(endereco);
+            doismil.linhasCF.add("  sword ?     ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
+         } else if(id.getTipo().equals("tipo_caracter")){
+            endereco = doismil.alocarChar();
+            id.setEndereco(endereco);
+            doismil.linhasCF.add("  byte ?      ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+         }
       }
    }
 }

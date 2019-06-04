@@ -1,6 +1,6 @@
 /* Exemplo de Programa na linguagem L */
 
-Const n = "abc";
+Const n[4] = "abc";
 Var integer n[3], x, z;
 Var integer n = 'x';
 var char y[2], x, z[2], rt, zyyyy, uy[9];
