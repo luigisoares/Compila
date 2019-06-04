@@ -22,7 +22,8 @@ public class GeracaoMemoria{
 	
 	public int alocarTemp(){
 		int tmp = contador;
-		contador += 4000;
+		//contador += 4000;
+      contador += 16384;
 		return tmp;
 	}
 	

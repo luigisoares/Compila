@@ -14,7 +14,7 @@ public class Principal {
          	//System.out.print("Digite o nome do arquivo: ");
          	//file = in.readLine();
             // file = "exemplo1.l";
-            file = "valid_complete.l"; // HEXA
+            file = "clone.l"; // HEXA
             // file = "t1.l"; // HEXA
             // file = "t2.l"; // $ no meio da string
             // file = "t3.l"; // comentario sem fechar
