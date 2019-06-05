@@ -13,7 +13,7 @@ public class GeracaoMemoria{
 	
    public GeracaoMemoria() throws Exception{
       linhasCF = new ArrayList<>();
-      arquivo = new BufferedWriter(new FileWriter("C:/Users/Luigi S/Desktop/Puc/CC7/Compila/Compiladores/codigo.asm"));
+      arquivo = new BufferedWriter(new FileWriter("./codigo.asm"));
    }
     
    public void zerarTemp(){
