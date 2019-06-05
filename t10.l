@@ -1,5 +1,5 @@
 /* Exemplo de Programa na linguagem L */
-
+Const n223= 3;
 Var integer eita, n1[100], n = 50, n7 = 10, teste[45], beicola[24];
 integer MAXITER = 0, n2;
 integer nome[100];

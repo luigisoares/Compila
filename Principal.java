@@ -15,7 +15,7 @@ public class Principal {
          	//file = in.readLine();
             // file = "exemplo1.l";
             // file = "exemplosExp.l"; // HEXA
-            file = "Exemplo_if.l"; // HEXA
+            file = "t10.l"; // HEXA
             // file = "t1.l"; // HEXA
             // file = "t2.l"; // $ no meio da string
             // file = "t3.l"; // comentario sem fechar

@@ -108,27 +108,29 @@ public class Parser {
          checkEOF();
          if (s.getToken() == tabela.VAR) {
             casaToken(tabela.VAR);
-            if (s.getToken() == tabela.INTEGER) {
-               casaToken(tabela.INTEGER);
-               condicao = acaoSemantica9();
+            while(s.getToken() == tabela.INTEGER ||s.getToken() == tabela.CHAR){
+               if (s.getToken() == tabela.INTEGER) {
+                  casaToken(tabela.INTEGER);
+                  condicao = acaoSemantica9();
+               
+               } else {
+                  casaToken(tabela.CHAR);
+                  condicao = acaoSemantica10();
+               }
+               casaToken(tabela.ID);
+               acaoSemantica1(simboloParaAnalise);
+               acaoSemantica50(simboloParaAnalise, condicao);
+               Simbolo id = simboloParaAnalise;
+               Simbolo retornoD1 = D1(simboloParaAnalise);
+               casaToken(tabela.PV);
+               if(retornoD1.getToken() == -1){
+                  condGC=true;
+               } else {
+                  condGC=false;
+               }
             
-            } else {
-               casaToken(tabela.CHAR);
-               condicao = acaoSemantica10();
+               geracaoCodigo4(condGC,id);
             }
-            casaToken(tabela.ID);
-            acaoSemantica1(simboloParaAnalise);
-            acaoSemantica50(simboloParaAnalise, condicao);
-            Simbolo id = simboloParaAnalise;
-            Simbolo retornoD1 = D1(simboloParaAnalise);
-            casaToken(tabela.PV);
-            if(retornoD1.getToken() == -1){
-               condGC=true;
-            } else {
-               condGC=false;
-            }
-            
-            geracaoCodigo4(condGC,id);
          } else if (s.getToken() == tabela.CONST) { //CONST id( = CONSTV' | '['num']' = '"' string '"') ';'
             casaToken(tabela.CONST);
             casaToken(tabela.ID);
@@ -161,26 +163,8 @@ public class Parser {
                
             }
             casaToken(tabela.PV);
-         } else if (s.getToken() == tabela.INTEGER || s.getToken() == tabela.CHAR) {
-            if (s.getToken() == tabela.INTEGER) {
-               casaToken(tabela.INTEGER);
-               condicao = acaoSemantica9();
-            } else {
-               casaToken(tabela.CHAR);
-               condicao = acaoSemantica10();
-            }
-            casaToken(tabela.ID);
-            acaoSemantica1(simboloParaAnalise);
-            acaoSemantica50(simboloParaAnalise, condicao);
-            Simbolo id = simboloParaAnalise;
-            Simbolo retornoD1 = D1(simboloParaAnalise);
-            casaToken(tabela.PV);
-            if(retornoD1.getToken() == -1){
-               condGC=true;
-            } else {
-               condGC=false;
-            }
-            geracaoCodigo4(condGC,id);
+         }else {
+            tokenInesperado();
          }
       } catch (Exception e) {
          checkEOF();
@@ -569,7 +553,7 @@ public class Parser {
             casaToken(tabela.ACHAVE);
             do {
                C();
-
+            
             } while (ehComando());
             geracaoCodigo27(rotuloFim);
             casaToken(tabela.FCHAVE);
