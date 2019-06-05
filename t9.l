@@ -3,3 +3,5 @@ var char a[10];
 
 mm3 = 3+2*5;
 write(mm3);
+
+

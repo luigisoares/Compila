@@ -769,7 +769,7 @@ public class Parser {
          simboloE2 = F(); // acaoSemantica20
          simboloCloneE2 = new Simbolo(simboloE2.getToken(), simboloE2.getLexema(), simboloE2.getEndereco(),
                simboloE2.getTipo(), simboloE2.getClasse(), simboloE2.getTamanho());
-         procTend = procFend;
+         procTend = procFend; // geracaoCodigo14
          while (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken() == tabela.MOD
                || s.getToken() == tabela.AND) {
             // if (s.getToken() == tabela.MUL || s.getToken() == tabela.DIV || s.getToken()
@@ -788,35 +788,11 @@ public class Parser {
                operador = acaoSemantica24(simboloE2);
             }
             simboloE2_1 = F();
-            
-            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procTend + "]");
-         
-            geracaoMemoria.linhasCF.add("mov BX, DS:[" + procFend + "]");
-            
             simboloCloneE2_1 = new Simbolo(simboloE2_1.getToken(), simboloE2_1.getLexema(), simboloE2_1.getEndereco(),
                   simboloE2_1.getTipo(), simboloE2_1.getClasse(), simboloE2_1.getTamanho());
             acaoSemantica25(simboloCloneE2, simboloCloneE2_1);
             acaoSemantica26(simboloCloneE2_1, operador);
-            
-            switch(operador){   /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
-               case 1:
-                  geracaoMemoria.linhasCF.add("imul bx ; multiplicacao");
-                  break;
-                  
-               case 2:
-                  geracaoMemoria.linhasCF.add("idiv bx ; divisao");
-                  break;
-                  
-               case 3:
-                  geracaoMemoria.linhasCF.add("and ax, bx ; and");
-                  break;             
-            }
-            
-            
-            procTend = geracaoMemoria.novoTemp();
-            
-            
-            geracaoMemoria.linhasCF.add("mov DS:[" + procTend + "], ax");
+            geracaoCodigo19(operador);
          }
       
       } catch (Exception e) {
@@ -845,6 +821,7 @@ public class Parser {
             casaToken(tabela.FPAR);
          } else if (s.getToken() == tabela.NOT) {
             casaToken(tabela.NOT);
+            int Fend = procFend;
             simboloF1 = F();
             acaoSemantica28(simboloF1);
             geracaoCodigo13(simboloF1);
@@ -1380,16 +1357,16 @@ public class Parser {
       int value = -999;
       if(f1.getLexema().contains("0x")){
          value = Integer.parseInt(f1.getLexema().substring(2,4), 16); 
-         endereco = geracaoMemoria.alocarTempTipoChar();
+         //endereco = geracaoMemoria.alocarTempTipoChar();
       } else if(f1.getLexema().contains("'")){
                //int value = simboloF.getLexema().substring(1,2); 
          value = f1.getLexema().charAt(1);
-         endereco = geracaoMemoria.alocarTempTipoChar();
+         //endereco = geracaoMemoria.alocarTempTipoChar();
       } else if(f1.getTipo().equals("tipo_string")){
          value = -999;
       } else {
          value = Integer.parseInt(f1.getLexema()); 
-         endereco = geracaoMemoria.alocarTempTipoInteiro();
+         //endereco = geracaoMemoria.alocarTempTipoInteiro();
       }
             
       if(f1.getTipo().equals("tipo_string")){
@@ -1409,17 +1386,30 @@ public class Parser {
          geracaoMemoria.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
       }
       
+      if(f1.getLexema().contains("0x")){
+         value = Integer.parseInt(f1.getLexema().substring(2,4), 16); 
+         endereco = geracaoMemoria.alocarTempTipoChar();
+      } else if(f1.getLexema().contains("'")){
+               //int value = simboloF.getLexema().substring(1,2); 
+         value = f1.getLexema().charAt(1);
+         endereco = geracaoMemoria.alocarTempTipoChar();
+      } else if(f1.getTipo().equals("tipo_string")){
+         value = -999;
+      } else {
+         value = Integer.parseInt(f1.getLexema()); 
+         endereco = geracaoMemoria.alocarTempTipoInteiro();
+      }
+      
       f1.setEndereco(endereco);
    }
    
    void geracaoCodigo13(Simbolo simboloF1){
-      int Fend = procFend;
-      Fend = geracaoMemoria.novoTemp();
+      int Fend = geracaoMemoria.novoTemp();
       geracaoMemoria.linhasCF.add("mov AX, DS:[" + procFend + "] ;"+simboloF1.getLexema()+" em "+simboloF1.getEndereco());
       geracaoMemoria.linhasCF.add("neg AX");
       geracaoMemoria.linhasCF.add("add AX,1");
       geracaoMemoria.linhasCF.add("mov DS:[" + Fend + "], AX");
-      procFend = Fend;
+      procFend = Fend; //conferir
    }
    
    void geracaoCodigo15(boolean condicao){
@@ -1429,5 +1419,26 @@ public class Parser {
          geracaoMemoria.linhasCF.add("neg AX");
          geracaoMemoria.linhasCF.add("mov DS:[" + procTend + "], AX");
       }
+   }
+   
+   void geracaoCodigo19(int operador){
+      geracaoMemoria.linhasCF.add("mov AX, DS:[" + procTend + "]");
+      geracaoMemoria.linhasCF.add("mov BX, DS:[" + procFend + "]");
+      switch(operador){   /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
+         case 1:
+            geracaoMemoria.linhasCF.add("imul bx ; multiplicacao");
+            break;
+                  
+         case 2:
+            geracaoMemoria.linhasCF.add("idiv bx ; divisao");
+            break;
+                  
+         case 3:
+            geracaoMemoria.linhasCF.add("and ax, bx ; and");
+            break;             
+      }
+   
+      procTend = geracaoMemoria.novoTemp();
+      geracaoMemoria.linhasCF.add("mov DS:[" + procTend + "], ax");
    }
 }

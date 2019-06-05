@@ -14,16 +14,16 @@ strt:
   mov AX, dseg
   mov ds, AX
 mov AX, 3 ; movi para AX um VALORCONST
-mov DS:[2], AX ;MOVI PARA END o CONTEUDO DE AX
+mov DS:[0], AX ;MOVI PARA END o CONTEUDO DE AX
 mov AX, 2 ; movi para AX um VALORCONST
-mov DS:[4], AX ;MOVI PARA END o CONTEUDO DE AX
+mov DS:[2], AX ;MOVI PARA END o CONTEUDO DE AX
 mov AX, 5 ; movi para AX um VALORCONST
-mov DS:[6], AX ;MOVI PARA END o CONTEUDO DE AX
-mov AX, DS:[4]
-mov BX, DS:[6]
+mov DS:[4], AX ;MOVI PARA END o CONTEUDO DE AX
+mov AX, DS:[2]
+mov BX, DS:[4]
 imul bx ; multiplicacao
 mov DS:[6], ax
-mov AX, DS:[2]
+mov AX, DS:[0]
 mov BX, DS:[6]
 add AX, BX ; add de AX e BX
 mov DS:[6], AX ; 
