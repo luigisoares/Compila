@@ -5,9 +5,9 @@ public class Parser {
    TabelaSimbolo tabela;
    Simbolo s, simboloParaAnalise;
    BufferedReader arquivo;
-   GeracaoMemoria doismil;
+   GeracaoMemoria geracaoMemoria;
    Rotulo rotuloPJ;
-   int endereco = doismil.contador;
+   int endereco = geracaoMemoria.contador;
    
    private int procFend = 0;
    private int procTend = 0;
@@ -17,7 +17,7 @@ public class Parser {
    Parser(BufferedReader arquivo) {
       try {
          this.arquivo = arquivo;
-         doismil = new GeracaoMemoria();
+         geracaoMemoria = new GeracaoMemoria();
          tabela = new TabelaSimbolo();
          lexico = new AnalisadorLexico(tabela);
          rotuloPJ = new Rotulo();
@@ -59,35 +59,35 @@ public class Parser {
    void S() {
       try {
          if (s != null) {
-            doismil.linhasCF.add("sseg SEGMENT STACK ;início seg. pilha");
-            doismil.linhasCF.add("  byte 4000h DUP(?) ;dimensiona pilha");
-            doismil.linhasCF.add("sseg ENDS ;fim seg. pilha");
-            doismil.linhasCF.add("dseg SEGMENT PUBLIC ;início seg. dados");
-            doismil.linhasCF.add("  byte 4000h DUP(?) ;temporários");
-            endereco = doismil.alocarTemp();
+            geracaoMemoria.linhasCF.add("sseg SEGMENT STACK ;início seg. pilha");
+            geracaoMemoria.linhasCF.add("  byte 4000h DUP(?) ;dimensiona pilha");
+            geracaoMemoria.linhasCF.add("sseg ENDS ;fim seg. pilha");
+            geracaoMemoria.linhasCF.add("dseg SEGMENT PUBLIC ;início seg. dados");
+            geracaoMemoria.linhasCF.add("  byte 4000h DUP(?) ;temporários");
+            endereco = geracaoMemoria.alocarTemp();
             do {
                checkEOF();
                D();
             } while (ehDeclaracao());
             
-            doismil.linhasCF.add("dseg ENDS ;fim seg. dados");
-            doismil.linhasCF.add("cseg SEGMENT PUBLIC ;início seg. código");
-            doismil.linhasCF.add("  ASSUME CS:cseg, DS:dseg");
-            doismil.linhasCF.add("strt:");
-            doismil.linhasCF.add("  mov AX, dseg");
-            doismil.linhasCF.add("  mov ds, AX");
+            geracaoMemoria.linhasCF.add("dseg ENDS ;fim seg. dados");
+            geracaoMemoria.linhasCF.add("cseg SEGMENT PUBLIC ;início seg. código");
+            geracaoMemoria.linhasCF.add("  ASSUME CS:cseg, DS:dseg");
+            geracaoMemoria.linhasCF.add("strt:");
+            geracaoMemoria.linhasCF.add("  mov AX, dseg");
+            geracaoMemoria.linhasCF.add("  mov ds, AX");
             
             do {
                checkEOF();
                C();
             } while (ehComando());
             
-            doismil.linhasCF.add("mov ah, 4Ch");
-            doismil.linhasCF.add("int 21h");
-            doismil.linhasCF.add("cseg ENDS ;fim seg. código");
-            doismil.linhasCF.add("END strt ;fim programa");
+            geracaoMemoria.linhasCF.add("mov ah, 4Ch");
+            geracaoMemoria.linhasCF.add("int 21h");
+            geracaoMemoria.linhasCF.add("cseg ENDS ;fim seg. código");
+            geracaoMemoria.linhasCF.add("END strt ;fim programa");
             
-            doismil.criarArquivoASM();
+            geracaoMemoria.criarArquivoASM();
          }
       } catch (Exception e) {
          checkEOF();
@@ -484,8 +484,8 @@ public class Parser {
             simboloA = E(); // acaoSemantica49
             acaoSemantica57(id, simboloA);
             acaoSemantica59(id, simboloA);
-            doismil.linhasCF.add("mov AX, DS:[" + procExpend + "] ; peguei o end do exp talvez"+simboloA.getEndereco()+" << end do simboloA");
-            doismil.linhasCF.add("mov DS:[" + id.getEndereco() + "], AX; salvando o valor no endereco correto");
+            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpend + "] ; peguei o end do exp talvez"+simboloA.getEndereco()+" << end do simboloA");
+            geracaoMemoria.linhasCF.add("mov DS:[" + id.getEndereco() + "], AX; salvando o valor no endereco correto");
          } else {
             acaoSemantica65(id);
             casaToken(tabela.ACOL);
@@ -617,55 +617,55 @@ public class Parser {
             acaoSemantica12(simboloCloneE, condicao);
             acaoSemantica63(simboloCloneE, simboloCloneE2, condicao);
             
-            doismil.linhasCF.add("mov AX, DS:[" + procExpend + "]");
-            doismil.linhasCF.add("mov bx, DS:[" + procExpsend + "]"); // precisa ver se esse cara eh logico?
+            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpend + "]");
+            geracaoMemoria.linhasCF.add("mov bx, DS:[" + procExpsend + "]"); // precisa ver se esse cara eh logico?
             
-            doismil.linhasCF.add("cmp AX, BX");
+            geracaoMemoria.linhasCF.add("cmp AX, BX");
             
             String Nrotulo = rotuloPJ.novoRotulo();
             
             switch(operacao){
                case 1:
-                  doismil.linhasCF.add("jg " + Nrotulo);
+                  geracaoMemoria.linhasCF.add("jg " + Nrotulo);
                
                   break;
                case 2:
-                  doismil.linhasCF.add("jl " + Nrotulo);
+                  geracaoMemoria.linhasCF.add("jl " + Nrotulo);
                
                   break;
                case 3:
-                  doismil.linhasCF.add("jge " + Nrotulo);
+                  geracaoMemoria.linhasCF.add("jge " + Nrotulo);
                
                   break;
                case 4:
-                  doismil.linhasCF.add("jle " + Nrotulo);
+                  geracaoMemoria.linhasCF.add("jle " + Nrotulo);
                
                   break;
                case 5:
-                  doismil.linhasCF.add("je " + Nrotulo);
+                  geracaoMemoria.linhasCF.add("je " + Nrotulo);
                
                   break;
                case 6:
-                  doismil.linhasCF.add("jne " + Nrotulo);
+                  geracaoMemoria.linhasCF.add("jne " + Nrotulo);
                
                   break;
             }
             
-            doismil.linhasCF.add("mov AX, 0");
+            geracaoMemoria.linhasCF.add("mov AX, 0");
          
          
             String rotFalso = rotuloPJ.novoRotulo();
-            doismil.linhasCF.add("jmp " + rotFalso);
+            geracaoMemoria.linhasCF.add("jmp " + rotFalso);
          
          
-            doismil.linhasCF.add(Nrotulo + ":");
+            geracaoMemoria.linhasCF.add(Nrotulo + ":");
          
-            doismil.linhasCF.add("mov AX, 0FFh");
+            geracaoMemoria.linhasCF.add("mov AX, 0FFh");
          
-            doismil.linhasCF.add(rotFalso + ":");
-            procExpend = doismil.novoTemp();
+            geracaoMemoria.linhasCF.add(rotFalso + ":");
+            procExpend = geracaoMemoria.novoTemp();
             simboloCloneE.setTipo("tipo_logico"); // acaoSemantica47
-            doismil.linhasCF.add("mov DS:[" + procExpend + "], AX");
+            geracaoMemoria.linhasCF.add("mov DS:[" + procExpend + "], AX");
             return simboloCloneE;
          }
       
@@ -718,9 +718,9 @@ public class Parser {
             }
             int Tend = procTend;
             simboloE1_2 = E2();
-            doismil.linhasCF.add("mov AX, DS:[" + procExpsend + "]");
+            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpsend + "]");
          
-            doismil.linhasCF.add("mov BX, DS:[" + procTend + "]");
+            geracaoMemoria.linhasCF.add("mov BX, DS:[" + procTend + "]");
             simboloCloneE1_2 = new Simbolo(simboloE1_2.getToken(), simboloE1_2.getLexema(), simboloE1_2.getEndereco(),
                   simboloE1_2.getTipo(), simboloE1_2.getClasse(), simboloE1_2.getTamanho());
             acaoSemantica18(simboloCloneE1, simboloCloneE1_2);
@@ -728,21 +728,21 @@ public class Parser {
             /* 1 para add , 2 para sub , 3 para or, 0 default */
             switch(operacao){
                case 1:
-                  doismil.linhasCF.add("add AX, BX ; add de AX e BX");
+                  geracaoMemoria.linhasCF.add("add AX, BX ; add de AX e BX");
                   break;
                   
                case 2:
-                  doismil.linhasCF.add("sub AX, BX ; sub de AX e BX");
+                  geracaoMemoria.linhasCF.add("sub AX, BX ; sub de AX e BX");
                   break;
                   
                case 3:
-                  doismil.linhasCF.add("or AX, BX ; or");
+                  geracaoMemoria.linhasCF.add("or AX, BX ; or");
                   break;             
             }
             
-            procExpsend = doismil.novoTemp();
+            procExpsend = geracaoMemoria.novoTemp();
                          
-            doismil.linhasCF.add("mov DS:[" + procExpsend + "], AX ; ");;
+            geracaoMemoria.linhasCF.add("mov DS:[" + procExpsend + "], AX ; ");;
             
          }
       
@@ -788,11 +788,35 @@ public class Parser {
                operador = acaoSemantica24(simboloE2);
             }
             simboloE2_1 = F();
-            procTend = doismil.novoTemp();
+            
+            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procTend + "]");
+         
+            geracaoMemoria.linhasCF.add("mov BX, DS:[" + procFend + "]");
+            
             simboloCloneE2_1 = new Simbolo(simboloE2_1.getToken(), simboloE2_1.getLexema(), simboloE2_1.getEndereco(),
                   simboloE2_1.getTipo(), simboloE2_1.getClasse(), simboloE2_1.getTamanho());
             acaoSemantica25(simboloCloneE2, simboloCloneE2_1);
             acaoSemantica26(simboloCloneE2_1, operador);
+            
+            switch(operador){   /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
+               case 1:
+                  geracaoMemoria.linhasCF.add("imul bx ; multiplicacao");
+                  break;
+                  
+               case 2:
+                  geracaoMemoria.linhasCF.add("idiv bx ; divisao");
+                  break;
+                  
+               case 3:
+                  geracaoMemoria.linhasCF.add("and ax, bx ; and");
+                  break;             
+            }
+            
+            
+            procTend = geracaoMemoria.novoTemp();
+            
+            
+            geracaoMemoria.linhasCF.add("mov DS:[" + procTend + "], ax");
          }
       
       } catch (Exception e) {
@@ -1303,51 +1327,51 @@ public class Parser {
    
    void geracaoCodigo1(Simbolo id, Simbolo constV){
       if(constV.getTipo().equals("tipo_inteiro")){
-         endereco = doismil.alocarTipoInteiro();
+         endereco = geracaoMemoria.alocarTipoInteiro();
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  sword " + constV.getLexema() + "       ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
+         geracaoMemoria.linhasCF.add("  sword " + constV.getLexema() + "       ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
       } else if(constV.getTipo().equals("tipo_caracter")){
-         endereco = doismil.alocarTipoChar();
+         endereco = geracaoMemoria.alocarTipoChar();
          id.setEndereco(endereco);
          if(constV.getLexema().contains("0x")){
             int value = Integer.parseInt(constV.getLexema().substring(2,4), 16);  
-            doismil.linhasCF.add("  byte " + value + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
+            geracaoMemoria.linhasCF.add("  byte " + value + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
          } else {
-            doismil.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
+            geracaoMemoria.linhasCF.add("  byte " + constV.getLexema() + "     ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
          }
       }
    }
    
    void geracaoCodigo2(Simbolo id, Simbolo constV, Simbolo Evet){
       if(constV.getTipo().equals("tipo_string")){
-         endereco = doismil.alocarTipoString(constV.getLexema().length());
+         endereco = geracaoMemoria.alocarTipoString(constV.getLexema().length());
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  byte " + Evet.getLexema() + " DUP("+constV.getLexema()+")     ;"+id.getClasse()+" string " + id.getLexema()+" em "+id.getEndereco()+"");
+         geracaoMemoria.linhasCF.add("  byte " + Evet.getLexema() + " DUP("+constV.getLexema()+")     ;"+id.getClasse()+" string " + id.getLexema()+" em "+id.getEndereco()+"");
       }
    }
    
    void geracaoCodigo3(Simbolo id, Simbolo E){
       if(id.getTipo().equals("tipo_inteiro")){
-         endereco = doismil.alocarTipoInteiro(Integer.parseInt(E.getLexema()));
+         endereco = geracaoMemoria.alocarTipoInteiro(Integer.parseInt(E.getLexema()));
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  sword " + E.getLexema() + " DUP(?)      ;"+id.getClasse()+" vet inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
+         geracaoMemoria.linhasCF.add("  sword " + E.getLexema() + " DUP(?)      ;"+id.getClasse()+" vet inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
       } else if(id.getTipo().equals("tipo_caracter")){
-         endereco = doismil.alocarTipoChar(Integer.parseInt(E.getLexema()));
+         endereco = geracaoMemoria.alocarTipoChar(Integer.parseInt(E.getLexema()));
          id.setEndereco(endereco);
-         doismil.linhasCF.add("  byte " + E.getLexema() + " DUP(?)       ;"+id.getClasse()+" vet char " + id.getLexema()+" em "+id.getEndereco()+"");
+         geracaoMemoria.linhasCF.add("  byte " + E.getLexema() + " DUP(?)       ;"+id.getClasse()+" vet char " + id.getLexema()+" em "+id.getEndereco()+"");
       } 
    }
    
    void geracaoCodigo4(boolean condGC, Simbolo id){
       if(condGC){ // como se fosse flag, ou seja não entrou no D1
          if(id.getTipo().equals("tipo_inteiro")){
-            endereco = doismil.alocarTipoInteiro();
+            endereco = geracaoMemoria.alocarTipoInteiro();
             id.setEndereco(endereco);
-            doismil.linhasCF.add("  sword ?     ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"h");
+            geracaoMemoria.linhasCF.add("  sword ?     ;"+id.getClasse()+" inteiro " + id.getLexema()+" em "+id.getEndereco()+"");
          } else if(id.getTipo().equals("tipo_caracter")){
-            endereco = doismil.alocarTipoChar();
+            endereco = geracaoMemoria.alocarTipoChar();
             id.setEndereco(endereco);
-            doismil.linhasCF.add("  byte ?      ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"h");
+            geracaoMemoria.linhasCF.add("  byte ?      ;"+id.getClasse()+" char " + id.getLexema()+" em "+id.getEndereco()+"");
          }
       }
    }
@@ -1356,33 +1380,33 @@ public class Parser {
       int value = -999;
       if(f1.getLexema().contains("0x")){
          value = Integer.parseInt(f1.getLexema().substring(2,4), 16); 
-         endereco = doismil.alocarTempTipoChar();
+         endereco = geracaoMemoria.alocarTempTipoChar();
       } else if(f1.getLexema().contains("'")){
                //int value = simboloF.getLexema().substring(1,2); 
          value = f1.getLexema().charAt(1);
-         endereco = doismil.alocarTempTipoChar();
+         endereco = geracaoMemoria.alocarTempTipoChar();
       } else if(f1.getTipo().equals("tipo_string")){
          value = -999;
       } else {
          value = Integer.parseInt(f1.getLexema()); 
-         endereco = doismil.alocarTempTipoInteiro();
+         endereco = geracaoMemoria.alocarTempTipoInteiro();
       }
             
       if(f1.getTipo().equals("tipo_string")){
-         endereco = doismil.alocarTempTipoString(f1.getLexema().length());
-         procFend = doismil.novoTemp();
+         endereco = geracaoMemoria.alocarTempTipoString(f1.getLexema().length());
+         procFend = geracaoMemoria.novoTemp();
          
-         doismil.linhasCF.add("dseg SEGMENT PUBLIC");
+         geracaoMemoria.linhasCF.add("dseg SEGMENT PUBLIC");
       		
-         doismil.linhasCF.add("byte " + f1.getLexema()+"; constante string");
+         geracaoMemoria.linhasCF.add("byte " + f1.getLexema()+"; constante string");
       		
-         doismil.linhasCF.add("dseg ENDS");       
-         //doismil.linhasCF.add("mov AX, "+f1.getLexema()+" ; movi para AX um VALORCONST");
-         //doismil.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
+         geracaoMemoria.linhasCF.add("dseg ENDS");       
+         //geracaoMemoria.linhasCF.add("mov AX, "+f1.getLexema()+" ; movi para AX um VALORCONST");
+         //geracaoMemoria.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
       } else {
-         procFend = doismil.novoTemp();
-         doismil.linhasCF.add("mov AX, "+value+" ; movi para AX um VALORCONST");
-         doismil.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
+         procFend = geracaoMemoria.novoTemp();
+         geracaoMemoria.linhasCF.add("mov AX, "+value+" ; movi para AX um VALORCONST");
+         geracaoMemoria.linhasCF.add("mov DS:[" + procFend + "], AX ;MOVI PARA END o CONTEUDO DE AX");
       }
       
       f1.setEndereco(endereco);
@@ -1390,20 +1414,20 @@ public class Parser {
    
    void geracaoCodigo13(Simbolo simboloF1){
       int Fend = procFend;
-      Fend = doismil.novoTemp();
-      doismil.linhasCF.add("mov AX, DS:[" + procFend + "] ;"+simboloF1.getLexema()+" em "+simboloF1.getEndereco());
-      doismil.linhasCF.add("neg AX");
-      doismil.linhasCF.add("add AX,1");
-      doismil.linhasCF.add("mov DS:[" + Fend + "], AX");
+      Fend = geracaoMemoria.novoTemp();
+      geracaoMemoria.linhasCF.add("mov AX, DS:[" + procFend + "] ;"+simboloF1.getLexema()+" em "+simboloF1.getEndereco());
+      geracaoMemoria.linhasCF.add("neg AX");
+      geracaoMemoria.linhasCF.add("add AX,1");
+      geracaoMemoria.linhasCF.add("mov DS:[" + Fend + "], AX");
       procFend = Fend;
    }
    
    void geracaoCodigo15(boolean condicao){
       if(condicao){
-         procExpsend = doismil.novoTemp();
-         doismil.linhasCF.add("mov AX, DS:[" + procTend + "] ;");
-         doismil.linhasCF.add("neg AX");
-         doismil.linhasCF.add("mov DS:[" + procTend + "], AX");
+         procExpsend = geracaoMemoria.novoTemp();
+         geracaoMemoria.linhasCF.add("mov AX, DS:[" + procTend + "] ;");
+         geracaoMemoria.linhasCF.add("neg AX");
+         geracaoMemoria.linhasCF.add("mov DS:[" + procTend + "], AX");
       }
    }
 }
