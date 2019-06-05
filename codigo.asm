@@ -19,16 +19,22 @@ mov AX, 2 ; movi para AX um VALORCONST
 mov DS:[2], AX ;MOVI PARA END o CONTEUDO DE AX
 mov AX, 5 ; movi para AX um VALORCONST
 mov DS:[4], AX ;MOVI PARA END o CONTEUDO DE AX
-mov AX, DS:[2]
+mov AX, DS:[4] ;
+neg AX
+mov DS:[4], AX
+mov AX, DS:[4]
 mov BX, DS:[4]
-imul bx ; multiplicacao
+imul BX ; multiplicacao
 mov DS:[6], ax
-mov AX, DS:[0]
+mov AX, DS:[4]
 mov BX, DS:[6]
 add AX, BX ; add de AX e BX
 mov DS:[6], AX ; 
 mov AX, DS:[6] ; peguei o end do exp talvez0 << end do simboloA
 mov DS:[16384], AX; salvando o valor no endereco correto
+dseg SEGMENT PUBLIC
+byte "n$"; constante string
+dseg ENDS
 mov ah, 4Ch
 int 21h
 cseg ENDS ;fim seg. código

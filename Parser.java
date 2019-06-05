@@ -577,7 +577,7 @@ public class Parser {
          checkEOF();
       
          simboloE = E1(); // acaoSemantica7
-         procExpend = procExpsend;
+         procExpend = procExpsend; // geracaoCodigo17
          simboloCloneE = new Simbolo(simboloE.getToken(), simboloE.getLexema(), simboloE.getEndereco(),
                simboloE.getTipo(), simboloE.getClasse(), simboloE.getTamanho());
          if (s.getToken() == tabela.MAIOR || s.getToken() == tabela.MENOR || s.getToken() == tabela.MAIORIG
@@ -616,56 +616,8 @@ public class Parser {
             acaoSemantica11(simboloCloneE, simboloCloneE2);
             acaoSemantica12(simboloCloneE, condicao);
             acaoSemantica63(simboloCloneE, simboloCloneE2, condicao);
-            
-            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpend + "]");
-            geracaoMemoria.linhasCF.add("mov bx, DS:[" + procExpsend + "]"); // precisa ver se esse cara eh logico?
-            
-            geracaoMemoria.linhasCF.add("cmp AX, BX");
-            
-            String Nrotulo = rotuloPJ.novoRotulo();
-            
-            switch(operacao){
-               case 1:
-                  geracaoMemoria.linhasCF.add("jg " + Nrotulo);
-               
-                  break;
-               case 2:
-                  geracaoMemoria.linhasCF.add("jl " + Nrotulo);
-               
-                  break;
-               case 3:
-                  geracaoMemoria.linhasCF.add("jge " + Nrotulo);
-               
-                  break;
-               case 4:
-                  geracaoMemoria.linhasCF.add("jle " + Nrotulo);
-               
-                  break;
-               case 5:
-                  geracaoMemoria.linhasCF.add("je " + Nrotulo);
-               
-                  break;
-               case 6:
-                  geracaoMemoria.linhasCF.add("jne " + Nrotulo);
-               
-                  break;
-            }
-            
-            geracaoMemoria.linhasCF.add("mov AX, 0");
-         
-         
-            String rotFalso = rotuloPJ.novoRotulo();
-            geracaoMemoria.linhasCF.add("jmp " + rotFalso);
-         
-         
-            geracaoMemoria.linhasCF.add(Nrotulo + ":");
-         
-            geracaoMemoria.linhasCF.add("mov AX, 0FFh");
-         
-            geracaoMemoria.linhasCF.add(rotFalso + ":");
-            procExpend = geracaoMemoria.novoTemp();
+            geracaoCodigo18(operacao);
             simboloCloneE.setTipo("tipo_logico"); // acaoSemantica47
-            geracaoMemoria.linhasCF.add("mov DS:[" + procExpend + "], AX");
             return simboloCloneE;
          }
       
@@ -718,32 +670,11 @@ public class Parser {
             }
             int Tend = procTend;
             simboloE1_2 = E2();
-            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpsend + "]");
-         
-            geracaoMemoria.linhasCF.add("mov BX, DS:[" + procTend + "]");
             simboloCloneE1_2 = new Simbolo(simboloE1_2.getToken(), simboloE1_2.getLexema(), simboloE1_2.getEndereco(),
                   simboloE1_2.getTipo(), simboloE1_2.getClasse(), simboloE1_2.getTamanho());
             acaoSemantica18(simboloCloneE1, simboloCloneE1_2);
             acaoSemantica19(simboloCloneE1_2, operacao);
-            /* 1 para add , 2 para sub , 3 para or, 0 default */
-            switch(operacao){
-               case 1:
-                  geracaoMemoria.linhasCF.add("add AX, BX ; add de AX e BX");
-                  break;
-                  
-               case 2:
-                  geracaoMemoria.linhasCF.add("sub AX, BX ; sub de AX e BX");
-                  break;
-                  
-               case 3:
-                  geracaoMemoria.linhasCF.add("or AX, BX ; or");
-                  break;             
-            }
-            
-            procExpsend = geracaoMemoria.novoTemp();
-                         
-            geracaoMemoria.linhasCF.add("mov DS:[" + procExpsend + "], AX ; ");;
-            
+            geracaoCodigo16(operacao);
          }
       
       } catch (Exception e) {
@@ -850,6 +781,26 @@ public class Parser {
                      simboloF.getTipo(), simboloF.getClasse(), simboloF.getTamanho());
                acaoSemantica58(simboloCloneF);
                casaToken(tabela.FCOL);
+               
+               
+               
+                  
+               
+               procFend = geracaoMemoria.novoTemp();
+               geracaoMemoria.linhasCF.add("mov AX, DS:["+simboloF.getEndereco()+"];"); // Endereco inicial do vetor
+               geracaoMemoria.linhasCF.add("mov BX, DS:["+procExpend+"];"); // Endereco da expressao
+               if(simboloF.getTipo().equals("tipo_inteiro")){
+                  geracaoMemoria.linhasCF.add("add BX,BX;"); // Inteiros ocupam 2 bytes
+                  geracaoMemoria.linhasCF.add("add AX, BX;"); // Posicao inicial do vetor + posicao desejada
+                  geracaoMemoria.linhasCF.add("mov DS:["+procFend+"], AX;");
+               }
+               
+               
+               
+               
+               
+               
+               
                return simboloCloneF;
             }
          }
@@ -1426,19 +1377,101 @@ public class Parser {
       geracaoMemoria.linhasCF.add("mov BX, DS:[" + procFend + "]");
       switch(operador){   /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
          case 1:
-            geracaoMemoria.linhasCF.add("imul bx ; multiplicacao");
+            geracaoMemoria.linhasCF.add("imul BX ; multiplicacao");
             break;
                   
          case 2:
-            geracaoMemoria.linhasCF.add("idiv bx ; divisao");
+            geracaoMemoria.linhasCF.add("idiv BX ; divisao");
             break;
                   
          case 3:
-            geracaoMemoria.linhasCF.add("and ax, bx ; and");
-            break;             
+            geracaoMemoria.linhasCF.add("idiv BX ; mod");
+            geracaoMemoria.linhasCF.add("mov AX, DX  ; mod");
+            break;  
+            
+         case 4:
+            geracaoMemoria.linhasCF.add("and AX, BX ; and");
+            break;            
       }
    
       procTend = geracaoMemoria.novoTemp();
       geracaoMemoria.linhasCF.add("mov DS:[" + procTend + "], ax");
+   }
+   
+   void geracaoCodigo16(int operacao){
+      geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpsend + "]");
+      geracaoMemoria.linhasCF.add("mov BX, DS:[" + procTend + "]");
+            
+      /* 1 para add , 2 para sub , 3 para or, 0 default */
+      switch(operacao){
+         case 1:
+            geracaoMemoria.linhasCF.add("add AX, BX ; add de AX e BX");
+            break;
+                  
+         case 2:
+            geracaoMemoria.linhasCF.add("sub AX, BX ; sub de AX e BX");
+            break;
+                  
+         case 3:
+            geracaoMemoria.linhasCF.add("or AX, BX ; or");
+            break;             
+      }
+            
+      procExpsend = geracaoMemoria.novoTemp();
+      geracaoMemoria.linhasCF.add("mov DS:[" + procExpsend + "], AX ; ");;
+            
+   }
+   
+   void geracaoCodigo18(int operacao){
+      geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpend + "]");
+      geracaoMemoria.linhasCF.add("mov bx, DS:[" + procExpsend + "]"); // precisa ver se esse cara eh logico?
+            
+      geracaoMemoria.linhasCF.add("cmp AX, BX");
+            
+      String Nrotulo = rotuloPJ.novoRotulo();
+            
+      switch(operacao){ /* 1 > / 2 < / 3 >=  / 4 <= / 5 <> / 6 = */
+         case 1:
+            geracaoMemoria.linhasCF.add("jg " + Nrotulo);
+               
+            break;
+         case 2:
+            geracaoMemoria.linhasCF.add("jl " + Nrotulo);
+               
+            break;
+         case 3:
+            geracaoMemoria.linhasCF.add("jge " + Nrotulo);
+               
+            break;
+         case 4:
+            geracaoMemoria.linhasCF.add("jle " + Nrotulo);
+               
+            break;
+         case 5:
+            geracaoMemoria.linhasCF.add("je " + Nrotulo);
+               
+            break;
+         case 6:
+            geracaoMemoria.linhasCF.add("jne " + Nrotulo);
+               
+            break;
+      }
+            
+      geracaoMemoria.linhasCF.add("mov AX, 0");
+         
+         
+      String rotFalso = rotuloPJ.novoRotulo();
+      geracaoMemoria.linhasCF.add("jmp " + rotFalso);
+         
+         
+      geracaoMemoria.linhasCF.add(Nrotulo + ":");
+         
+      geracaoMemoria.linhasCF.add("mov AX, 0FFh");
+         
+      geracaoMemoria.linhasCF.add(rotFalso + ":");
+      procExpend = geracaoMemoria.novoTemp();
+            
+      geracaoMemoria.linhasCF.add("mov DS:[" + procExpend + "], AX");
+            
    }
 }
