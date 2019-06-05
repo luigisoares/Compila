@@ -1385,15 +1385,15 @@ public class Parser {
       if(operador == 2 || operador == 4){
       
          geracaoMemoria.linhasCF.add("cwd");
-         geracaoMemoria.linhasCF.add("mov cx, ax ; salvar o que tinha em al");
+         geracaoMemoria.linhasCF.add("mov cx, ax ; para realizar divs e mods ");
       			
-         geracaoMemoria.linhasCF.add("mov ax, DS:[" + procFend + "] ; mover F1.end para al");
+         geracaoMemoria.linhasCF.add("mov ax, DS:[" + procFend + "] ;");
       			
          geracaoMemoria.linhasCF.add("cwd");
       			
-         geracaoMemoria.linhasCF.add("mov bx, ax ; voltar F1.end para bx");
+         geracaoMemoria.linhasCF.add("mov bx, ax ;");
       			
-         geracaoMemoria.linhasCF.add("mov ax, cx ;voltar valor anterior de ax");
+         geracaoMemoria.linhasCF.add("mov ax, cx ;");
       }
       switch(operador){   /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
          case 1:
