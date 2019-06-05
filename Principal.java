@@ -6,16 +6,16 @@ public class Principal {
    static Parser p;
    static BufferedReader arquivo;
 	
-   static void lerCaminho(){
+   static String lerCaminho(){
       BufferedReader in = new BufferedReader(new InputStreamReader(System.in));  	
       String file = "";
       try{
          do{
-         	//System.out.print("Digite o nome do arquivo: ");
-         	//file = in.readLine();
+         	System.out.print("Digite o nome do arquivo: ");
+         	file = in.readLine();
             // file = "exemplo1.l";
             // file = "exemplosExp.l"; // HEXA
-            file = "t10.l"; // HEXA
+            //file = "t10.l"; // HEXA
             // file = "t1.l"; // HEXA
             // file = "t2.l"; // $ no meio da string
             // file = "t3.l"; // comentario sem fechar
@@ -38,13 +38,16 @@ public class Principal {
       }catch (Exception e) {
          lerCaminho();
       }
+      return file;
    }
 	
    public static void main(String[] args) throws Exception{
       try{
-         lerCaminho();
-         p = new Parser(arquivo);
+         String arq = lerCaminho();
+         p = new Parser(arquivo,arq);
          p.S();
+         String x =arq.substring(0,arq.length()-2);
+         System.out.println("Gerado o arquivo "+ x + ".asm");
          System.out.println("Finalizado - sem erros.");
       }catch (Exception e) {
          System.err.println("Erro: " + e.getMessage());

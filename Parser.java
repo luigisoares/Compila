@@ -14,10 +14,10 @@ public class Parser {
    private int procExpsend = 0;
    private int procExpend = 0;
 
-   Parser(BufferedReader arquivo) {
+   Parser(BufferedReader arquivo,String arq) {
       try {
          this.arquivo = arquivo;
-         geracaoMemoria = new GeracaoMemoria();
+         geracaoMemoria = new GeracaoMemoria(arq);
          tabela = new TabelaSimbolo();
          lexico = new AnalisadorLexico(tabela);
          rotuloPJ = new Rotulo();

@@ -3,6 +3,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 
 public class GeracaoMemoria{
    public static List<String> linhasCF;
@@ -11,9 +14,10 @@ public class GeracaoMemoria{
    public static int contador = 0;
    public static int contTemp = 0;
 	
-   public GeracaoMemoria() throws Exception{
+   public GeracaoMemoria(String arquivoASM) throws Exception{
       linhasCF = new ArrayList<>();
-      arquivo = new BufferedWriter(new FileWriter("./codigo.asm"));
+      String x = arquivoASM.substring(0,arquivoASM.length()-2);
+      arquivo = new BufferedWriter(new FileWriter("./"+x+".asm"));
    }
     
    public void zerarTemp(){
