@@ -59,11 +59,11 @@ public class Parser {
    void S() {
       try {
          if (s != null) {
-            geracaoMemoria.linhasCF.add("sseg SEGMENT STACK ;início seg. pilha");
+            geracaoMemoria.linhasCF.add("sseg SEGMENT STACK ;inï¿½cio seg. pilha");
             geracaoMemoria.linhasCF.add("  byte 4000h DUP(?) ;dimensiona pilha");
             geracaoMemoria.linhasCF.add("sseg ENDS ;fim seg. pilha");
-            geracaoMemoria.linhasCF.add("dseg SEGMENT PUBLIC ;início seg. dados");
-            geracaoMemoria.linhasCF.add("  byte 4000h DUP(?) ;temporários");
+            geracaoMemoria.linhasCF.add("dseg SEGMENT PUBLIC ;inï¿½cio seg. dados");
+            geracaoMemoria.linhasCF.add("  byte 4000h DUP(?) ;temporï¿½rios");
             endereco = geracaoMemoria.alocarTemp();
             do {
                checkEOF();
@@ -71,7 +71,7 @@ public class Parser {
             } while (ehDeclaracao());
             
             geracaoMemoria.linhasCF.add("dseg ENDS ;fim seg. dados");
-            geracaoMemoria.linhasCF.add("cseg SEGMENT PUBLIC ;início seg. código");
+            geracaoMemoria.linhasCF.add("cseg SEGMENT PUBLIC ;inï¿½cio seg. cï¿½digo");
             geracaoMemoria.linhasCF.add("  ASSUME CS:cseg, DS:dseg");
             geracaoMemoria.linhasCF.add("strt:");
             geracaoMemoria.linhasCF.add("  mov AX, dseg");
@@ -84,7 +84,7 @@ public class Parser {
             
             geracaoMemoria.linhasCF.add("mov ah, 4Ch");
             geracaoMemoria.linhasCF.add("int 21h");
-            geracaoMemoria.linhasCF.add("cseg ENDS ;fim seg. código");
+            geracaoMemoria.linhasCF.add("cseg ENDS ;fim seg. cï¿½digo");
             geracaoMemoria.linhasCF.add("END strt ;fim programa");
             
             geracaoMemoria.criarArquivoASM();
@@ -384,7 +384,10 @@ public class Parser {
             simboloId = simboloParaAnalise;
             casaToken(tabela.ATT);
             simboloEfor = E();
+            String rotInicio = rotuloPJ.novoRotulo(); // GeracaoCodigo28
+            String rotFim = rotuloPJ.novoRotulo(); // GeracaoCodigo28
             //geracaoMemoria.zerarTemp();
+            geracaoCodigo29(simboloId, simboloEfor);
             acaoSemantica31(simboloEfor, simboloId);
             acaoSemantica61(simboloEfor);
             // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
@@ -399,6 +402,8 @@ public class Parser {
             // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             acaoSemantica32(simboloEfor, simboloE2for, simboloId);
             acaoSemantica61(simboloE2for);
+            geracaoCodigo25(rotInicio);
+            geracaoCodigo30(simboloId, simboloE2for, rotFim);
             // }
             if (s.getToken() == tabela.STEP) {
                casaToken(tabela.STEP);
@@ -408,14 +413,19 @@ public class Parser {
                // acaoSemantica34(); // nï¿½o implementada a 34
             }
             casaToken(tabela.DO);
-            H();
+            H(rotInicio, simboloId);
+            geracaoCodigo25(rotFim);
          } else if (s.getToken() == tabela.IF) {
             casaToken(tabela.IF);
             simboloEif = E();
             //geracaoMemoria.zerarTemp();
             acaoSemantica35(simboloEif);
+            String rotuloFalse = rotuloPJ.novoRotulo();
+            String rotuloFim = rotuloPJ.novoRotulo();
+            geracaoCodigo23(simboloEif, rotuloFalse);
             casaToken(tabela.THEN);
-            J();
+            J(rotuloFalse, rotuloFim);
+            geracaoCodigo25(rotuloFim);
             // casaToken(tabela.PV);
          } else if (s.getToken() == tabela.PV) {
             casaToken(tabela.PV);
@@ -528,7 +538,7 @@ public class Parser {
    }
 
    // H -> C | '{' {C} '}'
-   void H() {
+   void H(String rotInicio, Simbolo contador) {
       try {
          checkEOF();
       
@@ -537,9 +547,12 @@ public class Parser {
             while (ehComando()) {
                C();
             }
+            geracaoCodigo31(contador);
+            geracaoCodigo27(rotInicio);
             casaToken(tabela.FCHAVE);
          } else {
             C();
+            geracaoCodigo27(rotInicio);
          }
       } catch (Exception e) {
          checkEOF();
@@ -548,7 +561,7 @@ public class Parser {
    }
 
    // J -> C [else ('{' {C} '}' || C)] | '{' {C} '}' [else ('{' {C} '}' || C)]
-   void J() {
+   void J(String rotuloFalse, String rotuloFim) {
       try {
          checkEOF();
       
@@ -556,10 +569,13 @@ public class Parser {
             casaToken(tabela.ACHAVE);
             do {
                C();
+
             } while (ehComando());
+            geracaoCodigo27(rotuloFim);
             casaToken(tabela.FCHAVE);
             if (s != null && s.getToken() == tabela.ELSE) { // caso o opcional seja no EOF
                casaToken(tabela.ELSE);
+               geracaoCodigo25(rotuloFalse);
                if (s.getToken() == tabela.ACHAVE) {
                   casaToken(tabela.ACHAVE);
                   do {
@@ -572,8 +588,10 @@ public class Parser {
             }
          } else {
             C();
+            geracaoCodigo27(rotuloFim);
             if (s != null && s.getToken() == tabela.ELSE) {
                casaToken(tabela.ELSE);
+               geracaoCodigo25(rotuloFalse);
                if (s.getToken() == tabela.ACHAVE) {
                   casaToken(tabela.ACHAVE);
                   C();
@@ -1296,7 +1314,7 @@ public class Parser {
    }
    
    void geracaoCodigo4(boolean condGC, Simbolo id){
-      if(condGC){ // como se fosse flag, ou seja não entrou no D1
+      if(condGC){ // como se fosse flag, ou seja nï¿½o entrou no D1
          if(id.getTipo().equals("tipo_inteiro")){
             endereco = geracaoMemoria.alocarTipoInteiro();
             id.setEndereco(endereco);
@@ -1468,11 +1486,11 @@ public class Parser {
                
             break;
          case 5:
-            geracaoMemoria.linhasCF.add("je " + Nrotulo);
+            geracaoMemoria.linhasCF.add("jne " + Nrotulo);
                
             break;
          case 6:
-            geracaoMemoria.linhasCF.add("jne " + Nrotulo);
+            geracaoMemoria.linhasCF.add("je " + Nrotulo);
                
             break;
       }
@@ -1486,7 +1504,7 @@ public class Parser {
          
       geracaoMemoria.linhasCF.add(Nrotulo + ":");
          
-      geracaoMemoria.linhasCF.add("mov AX, 0FFh");
+      geracaoMemoria.linhasCF.add("mov AX, 1");
          
       geracaoMemoria.linhasCF.add(rotFalso + ":");
       procExpend = geracaoMemoria.novoTemp();
@@ -1521,7 +1539,7 @@ public class Parser {
    
       if(simboloEwr.getTipo().equals("tipo_string")){
          geracaoMemoria.linhasCF.add("mov dx, "+simboloEwr.getEndereco()+";");
-         geracaoMemoria.linhasCF.add("mov ah, 09h;”");
+         geracaoMemoria.linhasCF.add("mov ah, 09h;ï¿½");
          geracaoMemoria.linhasCF.add("int 21h;");
       }else {
          geracaoMemoria.linhasCF.add("mov ax, DS:[" + procExpend + "]");
@@ -1577,4 +1595,36 @@ public class Parser {
       geracaoMemoria.linhasCF.add("int 21h");
    }
    
+   void geracaoCodigo23(Simbolo exp, String rotuloFalse){
+      geracaoMemoria.linhasCF.add("mov BX, DS:[" + exp.getEndereco() + "];");
+      geracaoMemoria.linhasCF.add("cmp BX, 0; Compara expressao do if");
+      geracaoMemoria.linhasCF.add("je " + rotuloFalse);
+   }
+
+   void geracaoCodigo25(String rotulo){
+      geracaoMemoria.linhasCF.add(rotulo + ":");
+   };
+
+   void geracaoCodigo27(String rotulo) {
+      geracaoMemoria.linhasCF.add("jmp " + rotulo + "");
+   }
+
+   void geracaoCodigo29(Simbolo id, Simbolo E) {
+      geracaoMemoria.linhasCF.add("mov AX, DS:["+E.getEndereco()+"]; Atribuicao de valor para o FOR");
+      geracaoMemoria.linhasCF.add("mov DS:["+id.getEndereco()+"], AX; Atribuicao de valor para o FOR");
+   }
+
+   void geracaoCodigo30(Simbolo id, Simbolo E, String rotuloFim){
+      geracaoMemoria.linhasCF.add("mov AX, DS:["+id.getEndereco()+"]; Atribuicao para comparacao do FOR");
+      geracaoMemoria.linhasCF.add("mov BX, "+E.getLexema()+"; AtribuiÃ§Ã£o para comparcao do FOR");
+      geracaoMemoria.linhasCF.add("cmp AX,BX");
+      geracaoMemoria.linhasCF.add("jg " + rotuloFim);
+   }
+
+   void geracaoCodigo31(Simbolo contador) {
+      geracaoMemoria.linhasCF.add("mov AX, DS:["+contador.getEndereco()+"]; Contador ++ do for");
+      geracaoMemoria.linhasCF.add("add AX, 1; Contador ++ do for");
+      geracaoMemoria.linhasCF.add("mov DS:["+contador.getEndereco()+"], AX; Contador ++ do for");
+   }
+
 }
