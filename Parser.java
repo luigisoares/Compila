@@ -513,10 +513,13 @@ public class Parser {
             acaoSemantica5(id);
             acaoSemantica64(id, simboloA1);
             casaToken(tabela.FCOL);
+            geracaoCodigo7_1(id,simboloA1);
             casaToken(tabela.ATT);
             simboloA2 = E(); // acaoSemantica49
             //geracaoMemoria.zerarTemp();
             acaoSemantica60(id, simboloA2);
+            geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpend + "] ; peguei o end do exp talvez"+simboloA2.getEndereco()+" << end do simboloA");
+            geracaoMemoria.linhasCF.add("mov DS:[" + id.getEndereco() + "], AX; salvando o valor no endereco correto");
          }
       } catch (Exception e) {
          checkEOF();
@@ -1496,6 +1499,17 @@ public class Parser {
       procFend = geracaoMemoria.novoTemp();
       geracaoMemoria.linhasCF.add("mov AX, DS:["+id.getEndereco()+"];   Endereco inicial do vetor"); // Endereco inicial do vetor
       geracaoMemoria.linhasCF.add("mov BX, DS:["+procExpend+"];   Endereco da expressao"); // Endereco da expressao
+      if(id.getTipo().equals("tipo_inteiro")){
+         geracaoMemoria.linhasCF.add("add BX,BX;   Inteiros ocupam 2 bytes"); // Inteiros ocupam 2 bytes
+         geracaoMemoria.linhasCF.add("add AX, BX;  Posicao inicial do vetor + posicao desejada"); // Posicao inicial do vetor + posicao desejada
+         geracaoMemoria.linhasCF.add("mov DS:["+procFend+"], AX;  FINAL");
+      }
+   }
+   
+   void geracaoCodigo7_1(Simbolo id, Simbolo exp){
+      procFend = geracaoMemoria.novoTemp();
+      geracaoMemoria.linhasCF.add("mov AX, DS:["+id.getEndereco()+"];   Endereco inicial do vetor"); // Endereco inicial do vetor
+      geracaoMemoria.linhasCF.add("mov BX, DS:["+exp.getEndereco()+"];   Endereco da expressao"); // Endereco da expressao
       if(id.getTipo().equals("tipo_inteiro")){
          geracaoMemoria.linhasCF.add("add BX,BX;   Inteiros ocupam 2 bytes"); // Inteiros ocupam 2 bytes
          geracaoMemoria.linhasCF.add("add AX, BX;  Posicao inicial do vetor + posicao desejada"); // Posicao inicial do vetor + posicao desejada
