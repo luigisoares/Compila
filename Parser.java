@@ -384,6 +384,7 @@ public class Parser {
             simboloId = simboloParaAnalise;
             casaToken(tabela.ATT);
             simboloEfor = E();
+            //geracaoMemoria.zerarTemp();
             acaoSemantica31(simboloEfor, simboloId);
             acaoSemantica61(simboloEfor);
             // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
@@ -394,6 +395,7 @@ public class Parser {
              * acaoSemantica32(simboloEfor,simboloid2,simboloId); } else {
              */
             simboloE2for = E();
+            //geracaoMemoria.zerarTemp();
             // casaToken(tabela.VALORCONST); // @TODOVITAO AQUI DEVERIA SER E()
             acaoSemantica32(simboloEfor, simboloE2for, simboloId);
             acaoSemantica61(simboloE2for);
@@ -410,6 +412,7 @@ public class Parser {
          } else if (s.getToken() == tabela.IF) {
             casaToken(tabela.IF);
             simboloEif = E();
+            //geracaoMemoria.zerarTemp();
             acaoSemantica35(simboloEif);
             casaToken(tabela.THEN);
             J();
@@ -436,29 +439,43 @@ public class Parser {
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
          } else if (s.getToken() == tabela.WRITELN) {
+            int tempString = geracaoMemoria.novoTemp();
             casaToken(tabela.WRITELN);
             casaToken(tabela.APAR);
             simboloEwr = E();
             acaoSemantica52(simboloEwr);
+            geracaoCodigo20(simboloEwr,tempString);
+            //geracaoCodigo22();
             while (s.getToken() == tabela.VIR) {
+               tempString = geracaoMemoria.novoTemp();
                casaToken(tabela.VIR);
                simboloEwr = E();
                acaoSemantica52(simboloEwr);
+               geracaoCodigo20(simboloEwr,tempString);
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
+            geracaoCodigo21();
+            //geracaoMemoria.zerarTemp();
          } else if (s.getToken() == tabela.WRITE) {
+            int tempString = geracaoMemoria.novoTemp();
             casaToken(tabela.WRITE);
             casaToken(tabela.APAR);
             simboloEwr = E();
             acaoSemantica52(simboloEwr);
+            geracaoCodigo20(simboloEwr,tempString);
+            //geracaoCodigo22();
             while (s.getToken() == tabela.VIR) {
+               tempString = geracaoMemoria.novoTemp();
                casaToken(tabela.VIR);
                simboloEwr = E();
                acaoSemantica52(simboloEwr);
+               geracaoCodigo20(simboloEwr,tempString);
+               //geracaoCodigo22();
             }
             casaToken(tabela.FPAR);
             casaToken(tabela.PV);
+            //geracaoMemoria.zerarTemp();
          } else {
             tokenInesperado();
          }
@@ -467,6 +484,7 @@ public class Parser {
          checkEOF();
          System.err.println(e.toString());
       }
+      //geracaoMemoria.zerarTemp();
    }
 
    // A -> = E | '['E']' = E
@@ -482,6 +500,7 @@ public class Parser {
             casaToken(tabela.ATT);
             acaoSemantica5(id);
             simboloA = E(); // acaoSemantica49
+            //geracaoMemoria.zerarTemp();
             acaoSemantica57(id, simboloA);
             acaoSemantica59(id, simboloA);
             geracaoMemoria.linhasCF.add("mov AX, DS:[" + procExpend + "] ; peguei o end do exp talvez"+simboloA.getEndereco()+" << end do simboloA");
@@ -490,11 +509,13 @@ public class Parser {
             acaoSemantica65(id);
             casaToken(tabela.ACOL);
             simboloA1 = E();
+            //geracaoMemoria.zerarTemp();
             acaoSemantica5(id);
             acaoSemantica64(id, simboloA1);
             casaToken(tabela.FCOL);
             casaToken(tabela.ATT);
             simboloA2 = E(); // acaoSemantica49
+            //geracaoMemoria.zerarTemp();
             acaoSemantica60(id, simboloA2);
          }
       } catch (Exception e) {
@@ -781,26 +802,7 @@ public class Parser {
                      simboloF.getTipo(), simboloF.getClasse(), simboloF.getTamanho());
                acaoSemantica58(simboloCloneF);
                casaToken(tabela.FCOL);
-               
-               
-               
-                  
-               
-               procFend = geracaoMemoria.novoTemp();
-               geracaoMemoria.linhasCF.add("mov AX, DS:["+simboloF.getEndereco()+"];"); // Endereco inicial do vetor
-               geracaoMemoria.linhasCF.add("mov BX, DS:["+procExpend+"];"); // Endereco da expressao
-               if(simboloF.getTipo().equals("tipo_inteiro")){
-                  geracaoMemoria.linhasCF.add("add BX,BX;"); // Inteiros ocupam 2 bytes
-                  geracaoMemoria.linhasCF.add("add AX, BX;"); // Posicao inicial do vetor + posicao desejada
-                  geracaoMemoria.linhasCF.add("mov DS:["+procFend+"], AX;");
-               }
-               
-               
-               
-               
-               
-               
-               
+               geracaoCodigo7(simboloF);
                return simboloCloneF;
             }
          }
@@ -1136,10 +1138,10 @@ public class Parser {
    }
 
    void acaoSemantica52(Simbolo E) {
-      if (E.getTipo() != "tipo_inteiro" && E.getTipo() != "tipo_caracter" && E.getTipo() != "tipo_string") {
+      /*if (E.getTipo() != "tipo_inteiro" && E.getTipo() != "tipo_caracter" && E.getTipo() != "tipo_string") {
          System.out.println((lexico.linha + 1) + ":tipos incompativeis");
          System.exit(0);
-      }
+      }*/
    }
 
    void acaoSemantica54(Simbolo E, Simbolo id) {
@@ -1375,6 +1377,19 @@ public class Parser {
    void geracaoCodigo19(int operador){
       geracaoMemoria.linhasCF.add("mov AX, DS:[" + procTend + "]");
       geracaoMemoria.linhasCF.add("mov BX, DS:[" + procFend + "]");
+      if(operador == 2 || operador == 4){
+      
+         geracaoMemoria.linhasCF.add("cwd");
+         geracaoMemoria.linhasCF.add("mov cx, ax ; salvar o que tinha em al");
+      			
+         geracaoMemoria.linhasCF.add("mov ax, DS:[" + procFend + "] ; mover F1.end para al");
+      			
+         geracaoMemoria.linhasCF.add("cwd");
+      			
+         geracaoMemoria.linhasCF.add("mov bx, ax ; voltar F1.end para bx");
+      			
+         geracaoMemoria.linhasCF.add("mov ax, cx ;voltar valor anterior de ax");
+      }
       switch(operador){   /* 1 para mul , 2 para div , 3 para mod, 4 para and, 0 default */
          case 1:
             geracaoMemoria.linhasCF.add("imul BX ; multiplicacao");
@@ -1382,11 +1397,13 @@ public class Parser {
                   
          case 2:
             geracaoMemoria.linhasCF.add("idiv BX ; divisao");
+            geracaoMemoria.linhasCF.add("sub AX, 256; divisao");
             break;
                   
          case 3:
             geracaoMemoria.linhasCF.add("idiv BX ; mod");
-            geracaoMemoria.linhasCF.add("mov AX, DX  ; mod");
+            geracaoMemoria.linhasCF.add("sub BX, 256; divisao");
+            geracaoMemoria.linhasCF.add("mov AX, BX  ; mod");
             break;  
             
          case 4:
@@ -1474,4 +1491,76 @@ public class Parser {
       geracaoMemoria.linhasCF.add("mov DS:[" + procExpend + "], AX");
             
    }
+   
+   void geracaoCodigo7(Simbolo id){
+      procFend = geracaoMemoria.novoTemp();
+      geracaoMemoria.linhasCF.add("mov AX, DS:["+id.getEndereco()+"];   Endereco inicial do vetor"); // Endereco inicial do vetor
+      geracaoMemoria.linhasCF.add("mov BX, DS:["+procExpend+"];   Endereco da expressao"); // Endereco da expressao
+      if(id.getTipo().equals("tipo_inteiro")){
+         geracaoMemoria.linhasCF.add("add BX,BX;   Inteiros ocupam 2 bytes"); // Inteiros ocupam 2 bytes
+         geracaoMemoria.linhasCF.add("add AX, BX;  Posicao inicial do vetor + posicao desejada"); // Posicao inicial do vetor + posicao desejada
+         geracaoMemoria.linhasCF.add("mov DS:["+procFend+"], AX;  FINAL");
+      }
+   }
+   
+   void geracaoCodigo20(Simbolo simboloEwr,int tempString){
+   
+      if(simboloEwr.getTipo().equals("tipo_string")){
+         geracaoMemoria.linhasCF.add("mov dx, "+simboloEwr.getEndereco()+";");
+         geracaoMemoria.linhasCF.add("mov ah, 09h;”");
+         geracaoMemoria.linhasCF.add("int 21h;");
+      }else {
+         geracaoMemoria.linhasCF.add("mov ax, DS:[" + procExpend + "]");
+         geracaoMemoria.linhasCF.add("mov di, " + tempString + " ;end. string temp.");
+         geracaoMemoria.linhasCF.add("mov cx, 0 ;contador");
+         geracaoMemoria.linhasCF.add("cmp ax,0 ;verifica sinal");
+            
+         String rotuloPos = rotuloPJ.novoRotulo();
+         geracaoMemoria.linhasCF.add("jge " + rotuloPos + " ;salta se numero positivo");
+         geracaoMemoria.linhasCF.add("mov bl, 2Dh ;senao, escreve sinal ");
+         geracaoMemoria.linhasCF.add("mov ds:[di], bl");
+         geracaoMemoria.linhasCF.add("add di, 1 ;incrementa indice");
+         geracaoMemoria.linhasCF.add("neg ax ;toma modulo do numero");
+         geracaoMemoria.linhasCF.add(rotuloPos + ":");
+         geracaoMemoria.linhasCF.add("mov bx, 10 ;divisor");
+            
+         String rotuloPos1 = rotuloPJ.novoRotulo();
+         geracaoMemoria.linhasCF.add(rotuloPos1 + ":");
+         geracaoMemoria.linhasCF.add("add cx, 1 ;incrementa contador");
+         geracaoMemoria.linhasCF.add("mov dx, 0 ;estende 32bits p/ div.");
+         geracaoMemoria.linhasCF.add("idiv bx ;divide DXAX por BX");
+         geracaoMemoria.linhasCF.add("push dx ;empilha valor do resto");
+         geracaoMemoria.linhasCF.add("cmp ax, 0 ;verifica se quoc.  0");
+         geracaoMemoria.linhasCF.add("jne " + rotuloPos1 + " ;se nao  0, continua");
+            				
+         String rotuloPos2 = rotuloPJ.novoRotulo();
+         geracaoMemoria.linhasCF.add(rotuloPos2 + ":");
+         geracaoMemoria.linhasCF.add("pop dx ;desempilha valor");
+         geracaoMemoria.linhasCF.add("add dx, 30h ;transforma em caractere");
+         geracaoMemoria.linhasCF.add("mov ds:[di],dl ;escreve caractere");
+         geracaoMemoria.linhasCF.add("add di, 1 ;incrementa base");
+         geracaoMemoria.linhasCF.add("add cx, -1 ;decrementa contador");
+         geracaoMemoria.linhasCF.add("cmp cx, 0 ;verifica pilha vazia");
+         geracaoMemoria.linhasCF.add("jne " + rotuloPos2 + " ;se nao pilha vazia, loop");
+         geracaoMemoria.linhasCF.add("mov dl, 024h ;fim de string");
+         geracaoMemoria.linhasCF.add("mov ds:[di], dl ;grava '$'");
+         geracaoMemoria.linhasCF.add("mov dx, " + tempString);
+         geracaoMemoria.linhasCF.add("mov ah, 09h");
+         geracaoMemoria.linhasCF.add("int 21h");
+      }
+   }
+   
+   void geracaoCodigo21(){ // WRITELN
+      geracaoMemoria.linhasCF.add("mov ah, 02h");
+      geracaoMemoria.linhasCF.add("mov dl, 0Dh");
+      geracaoMemoria.linhasCF.add("int 21h");
+      geracaoMemoria.linhasCF.add("mov DL, 0Ah");
+      geracaoMemoria.linhasCF.add("int 21h");
+   }
+   
+   void geracaoCodigo22(){ // WRITE
+      geracaoMemoria.linhasCF.add("mov ah, 09h");
+      geracaoMemoria.linhasCF.add("int 21h");
+   }
+   
 }
